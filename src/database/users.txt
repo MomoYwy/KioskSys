@@ -1,0 +1,2 @@
+A397,Admin 1,admin1,ADMIN
+S315,Leong,sales1,SALES_MANAGER
