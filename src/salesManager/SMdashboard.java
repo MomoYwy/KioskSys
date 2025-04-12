@@ -76,6 +76,11 @@ public class SMdashboard extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
         btnItemEntry.setText("Item Entry");
+        btnItemEntry.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnItemEntryActionPerformed(evt);
+            }
+        });
 
         btnSupplierEntry.setText("Supplier Entry");
 
@@ -158,6 +163,10 @@ public class SMdashboard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnItemEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemEntryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnItemEntryActionPerformed
 
     /**
      * @param args the command line arguments

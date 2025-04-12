@@ -220,18 +220,14 @@ public class RegisterScreen extends javax.swing.JFrame {
     }
     
      private void clearForm() {
-    // Clear text fields
     tfUsername.setText("");
     tfPassword.setText("");
     
-    // Reset combo box
     cbRole.setSelectedIndex(0);
     
-    // Clear any error highlights
     tfUsername.setBackground(Color.WHITE);
     tfPassword.setBackground(Color.WHITE);
     
-    // Set focus to first field
     tfUsername.requestFocus();
 }
     

@@ -1,11 +1,18 @@
 package shared.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
+
 public class FileUtils {
     
+// This method is used to check if a txt file for the item is created or not
+// if not, it will create a new file
     // Checks file and parent directories
     
     public static boolean ensureFileExists(String filePath) {
