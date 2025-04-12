@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
+import shared.utils.FileUtils.TableUtils;
 
 
 public class ItemEntry extends javax.swing.JFrame {
@@ -20,7 +22,32 @@ public class ItemEntry extends javax.swing.JFrame {
     public ItemEntry() {
         initComponents();
         initializeCategoryCombobox();
+        initializeSupplierComboBox();
         loadItemsToTable();
+    }
+    
+    private void initializeSupplierComboBox() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        try {
+            File supplierFile = new File("src/database/suppliers.txt");
+            if (supplierFile.exists()) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String[] parts = line.split(",");
+                        if (parts.length >= 2) {
+                            model.addElement(parts[1]);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error loading suppliers: " + e.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        cbSupplierName.setModel(model);
     }
     
     private void initializeCategoryCombobox() {
@@ -30,21 +57,21 @@ public class ItemEntry extends javax.swing.JFrame {
     }
         
    private void addNewItem() throws IOException {
-        //  First ensure the items file exists
-        File itemsFile = new File("src/database/items.txt");
+        // First ensure the items file exists
+        File itemsFile = new File(ITEMS_FILE);
         if (!itemsFile.exists()) {
             itemsFile.getParentFile().mkdirs();
             itemsFile.createNewFile();
         }
 
-        //  Get input values
+        // Get input values
         String itemName = tfEnterItemName.getText().trim();
-        String supplierId = tfEnterSupplierID.getText().trim();
         String priceText = tfEnterPrice.getText().trim();
         String category = (String) cbCategory.getSelectedItem();
+        String supplierName = (String) cbSupplierName.getSelectedItem();
 
-        //  Validate inputs
-        if (itemName.isEmpty() || supplierId.isEmpty() || priceText.isEmpty()) {
+        // Validate inputs
+        if (itemName.isEmpty() || priceText.isEmpty() || supplierName == null) {
             JOptionPane.showMessageDialog(this, 
                 "Please fill in all fields", 
                 "Input Error", 
@@ -55,7 +82,17 @@ public class ItemEntry extends javax.swing.JFrame {
         try {
             double price = Double.parseDouble(priceText);
 
-            //  Generate ID
+            // Get supplier ID from name
+            String supplierId = getSupplierIdByName(supplierName);
+            if (supplierId == null) {
+                JOptionPane.showMessageDialog(this,
+                    "Selected supplier not found in database",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Generate item ID
             String prefix = "";
             switch(category.toUpperCase()) {
                 case "GROCERIES": prefix = "G"; break;
@@ -84,19 +121,19 @@ public class ItemEntry extends javax.swing.JFrame {
 
             String itemId = prefix + String.format("%03d", maxNum + 1);
 
-            //  Save to file
+            // Save to file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsFile, true))) {
                 writer.write(String.join(",",
                     itemId,
                     itemName,
-                    supplierId,
+                    supplierId, // Store supplier ID (not name)
                     String.valueOf(price),
                     category
                 ));
                 writer.newLine();
             }
 
-            //  Refresh and clear
+            // Refresh and clear
             loadItemsToTable();
             clearItemForm();
 
@@ -113,40 +150,36 @@ public class ItemEntry extends javax.swing.JFrame {
         }
     }
    
-    private void clearItemForm() {
-        tfEnterItemName.setText("");
-        tfEnterSupplierID.setText("");
-        tfEnterPrice.setText("");
-        cbCategory.setSelectedIndex(0);
-        tfEnterItemName.requestFocus();
-    }
-    
-    private void loadItemsToTable() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); // Clear existing data
+   private String getSupplierIdByName(String supplierName) throws IOException {
+        File supplierFile = new File("src/database/suppliers.txt");
+        if (!supplierFile.exists()) return null;
 
-        try {
-            File file = new File(ITEMS_FILE);
-            if (file.exists()) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        String[] parts = line.split(",");
-                        if (parts.length == 5) {
-                            model.addRow(new Object[]{
-                                parts[0], // ID
-                                parts[1], // Name
-                                parts[2], // Supplier ID
-                                Double.parseDouble(parts[3]), // Price
-                                parts[4]  // Category
-                            });
-                        }
-                    }
+        try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2 && parts[1].equals(supplierName)) {
+                    return parts[0]; // Return supplier ID
                 }
             }
-        } catch (IOException | NumberFormatException e) {
+        }
+        return null;
+    }
+
+        private void clearItemForm() {
+            tfEnterItemName.setText("");
+            cbSupplierName.setSelectedIndex(0);
+            tfEnterPrice.setText("");
+            cbCategory.setSelectedIndex(0);
+            tfEnterItemName.requestFocus();
+        }
+
+        private void loadItemsToTable() {
+        try {
+            TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
+        } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(this, 
-                "Error loading items: " + e.getMessage(),
+                e.getMessage(),
                 "Database Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
@@ -165,7 +198,6 @@ public class ItemEntry extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         tfEnterItemName = new javax.swing.JTextField();
-        tfEnterSupplierID = new javax.swing.JTextField();
         tfEnterPrice = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -176,6 +208,7 @@ public class ItemEntry extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         cbCategory = new javax.swing.JComboBox<>();
         btnBack = new javax.swing.JButton();
+        cbSupplierName = new javax.swing.JComboBox<>();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -196,7 +229,7 @@ public class ItemEntry extends javax.swing.JFrame {
 
         jLabel1.setText("Item Name:");
 
-        jLabel2.setText("Supplier ID:");
+        jLabel2.setText("Supplier Name:");
 
         jLabel3.setText("Price:");
 
@@ -208,15 +241,22 @@ public class ItemEntry extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Item_ID", "Item_Name", "Supplier_ID", "Price", "Category"
+                "Item_ID", "Item_Name", "Supplier_ID", "Price(RM)", "Category"
             }
         ) {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(jTable1);
@@ -244,6 +284,11 @@ public class ItemEntry extends javax.swing.JFrame {
         btnDelete.setText("Delete");
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Category:");
 
@@ -256,6 +301,8 @@ public class ItemEntry extends javax.swing.JFrame {
             }
         });
 
+        cbSupplierName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -266,27 +313,31 @@ public class ItemEntry extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane1))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(44, 44, 44)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfEnterItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGap(25, 25, 25)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(12, 12, 12)
-                                        .addComponent(jLabel4))
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(tfEnterPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(tfEnterSupplierID, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(27, 27, 27)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel4))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(tfEnterPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(45, 45, 45))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cbSupplierName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(46, 46, 46)))
                                 .addComponent(btnAdd)))
-                        .addGap(0, 24, Short.MAX_VALUE)))
+                        .addGap(0, 6, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(113, 113, 113)
@@ -313,7 +364,7 @@ public class ItemEntry extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(tfEnterSupplierID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbSupplierName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -387,15 +438,33 @@ public class ItemEntry extends javax.swing.JFrame {
          }
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an item to edit",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Get selected item data
+        String itemId = (String) jTable1.getValueAt(selectedRow, 0);
+        String itemName = (String) jTable1.getValueAt(selectedRow, 1);
+        String supplierId = (String) jTable1.getValueAt(selectedRow, 2);
+        double price = (Double) jTable1.getValueAt(selectedRow, 3);
+        String category = (String) jTable1.getValueAt(selectedRow, 4);
+        
+        // Open edit frame with selected item data
+        EditItem editFrame = new EditItem(itemId, itemName, supplierId, price, category);
+        editFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnEditActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -429,6 +498,7 @@ public class ItemEntry extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> cbCategory;
+    private javax.swing.JComboBox<String> cbSupplierName;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -441,7 +511,6 @@ public class ItemEntry extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField tfEnterItemName;
     private javax.swing.JTextField tfEnterPrice;
-    private javax.swing.JTextField tfEnterSupplierID;
     private javax.swing.JLabel txtItemEntry;
     // End of variables declaration//GEN-END:variables
 

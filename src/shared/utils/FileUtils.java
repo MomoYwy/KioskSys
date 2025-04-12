@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 
 public class FileUtils {
@@ -50,6 +51,54 @@ public class FileUtils {
             }
         }
         return false;
+    }
+    
+    
+    // This will display the items in form of table
+    // Add  <<private static final String ITEMS_FILE = "src/database/items.txt";>> in the frame to use it
+    
+    /*-- USAGE EXAMPLE-- (Can copy paste if want)
+        private static final String ITEMS_FILE = "src/database/items.txt";
+
+            private void loadItems() {
+                try {
+                    TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) itemsTable.getModel());
+                } catch (RuntimeException e) {
+                    JOptionPane.showMessageDialog(this, 
+                        e.getMessage(),
+                        "Database Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+    */
+    public class TableUtils {
+    
+        public static void loadItemsToTable(String filePath, DefaultTableModel model) {
+            model.setRowCount(0); // Clear existing data
+
+            try {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            String[] parts = line.split(",");
+                            if (parts.length == 5) {
+                                model.addRow(new Object[]{
+                                    parts[0], // ID
+                                    parts[1], // Name
+                                    parts[2], // Supplier ID
+                                    Double.parseDouble(parts[3]), // Price
+                                    parts[4]  // Category
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (IOException | NumberFormatException e) {
+                throw new RuntimeException("Error loading items to table: " + e.getMessage(), e);
+            }
+        }
     }
     
     private static void showErrorDialog(String title, String message) {
