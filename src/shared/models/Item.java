@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package shared.models;
 
 /**
@@ -13,6 +10,7 @@ public class Item {
     private String name;
     private String supplierId;
     private int stock;
+    private String category;
     private double price;
     
     public Item(String itemCode, String name, String supplierId, int stock, double price) {
