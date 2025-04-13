@@ -439,26 +439,7 @@ public class ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Please select an item to edit",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Get selected item data
-        String itemId = (String) jTable1.getValueAt(selectedRow, 0);
-        String itemName = (String) jTable1.getValueAt(selectedRow, 1);
-        String supplierId = (String) jTable1.getValueAt(selectedRow, 2);
-        double price = (Double) jTable1.getValueAt(selectedRow, 3);
-        String category = (String) jTable1.getValueAt(selectedRow, 4);
-        
-        // Open edit frame with selected item data
-        EditItem editFrame = new EditItem(itemId, itemName, supplierId, price, category);
-        editFrame.setVisible(true);
-        this.dispose();
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnEditActionPerformed
 
     /**
