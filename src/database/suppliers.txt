@@ -1,2 +1,3 @@
 S001,Hongleong
 S002,Ali
+S003,CIMB,Money,073082312,3,Teknologi|Bukit jalil|Kuala Lumpur|57000

@@ -175,15 +175,15 @@ public class ItemEntry extends javax.swing.JFrame {
         }
 
         private void loadItemsToTable() {
-        try {
-            TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, 
-                e.getMessage(),
-                "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
+            try {
+                TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
+            } catch (RuntimeException e) {
+                JOptionPane.showMessageDialog(this, 
+                    e.getMessage(),
+                    "Database Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
         }
-    }
         
     private void deleteItemFromFile(String itemId) throws IOException {
         File itemsFile = new File(ITEMS_FILE);
