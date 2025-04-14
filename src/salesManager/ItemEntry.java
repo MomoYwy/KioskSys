@@ -175,13 +175,40 @@ public class ItemEntry extends javax.swing.JFrame {
         }
 
         private void loadItemsToTable() {
-        try {
-            TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, 
-                e.getMessage(),
-                "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
+            try {
+                TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
+            } catch (RuntimeException e) {
+                JOptionPane.showMessageDialog(this, 
+                    e.getMessage(),
+                    "Database Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+    private void deleteItemFromFile(String itemId) throws IOException {
+        File itemsFile = new File(ITEMS_FILE);
+        File tempFile = new File("src/database/items_temp.txt");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(itemsFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Only write lines that DON'T match the item ID to be deleted
+                if (parts.length > 0 && !parts[0].equals(itemId)) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        }
+
+        // Replace original file with updated file
+        if (!itemsFile.delete()) {
+            throw new IOException("Could not delete original file");
+        }
+        if (!tempFile.renameTo(itemsFile)) {
+            throw new IOException("Could not rename temp file");
         }
     }
 
@@ -282,6 +309,11 @@ public class ItemEntry extends javax.swing.JFrame {
         btnSave.setText("Save");
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -441,6 +473,43 @@ public class ItemEntry extends javax.swing.JFrame {
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+       int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an item to delete",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get selected item data
+        String itemId = (String) jTable1.getValueAt(selectedRow, 0);
+        String itemName = (String) jTable1.getValueAt(selectedRow, 1);
+
+        // Confirmation dialog
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete:\n" + itemName + " (ID: " + itemId + ")",
+            "Confirm Deletion",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                deleteItemFromFile(itemId);
+                loadItemsToTable(); // Refresh table
+                JOptionPane.showMessageDialog(this,
+                    "Item deleted successfully",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error deleting item: " + ex.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments

@@ -12,11 +12,11 @@ public class Supplier {
     private String supplierId;
     private String name;
     private String contact;
-    private String address;
+    private Address address;
     private String itemID;
     private int delivery_time;
     
-    public Supplier(String supplierId, String name, String contact, String address, String itemId, int delivery_time) {
+    public Supplier(String supplierId, String name, String contact, Address address, String itemId, int delivery_time) {
         this.supplierId = supplierId;
         this.name = name;
         this.contact = contact;
@@ -28,8 +28,9 @@ public class Supplier {
     // Getters
     public String getSupplierId() { return supplierId; }
     public String getName() { return name; }
-    public String getContact() {return contact;}
-    public String getAddress() { return address;}
-    public String getItemID() {return itemID;}
-    public int getDelivery_time() { return delivery_time;}
+    public String getContact() { return contact; }
+    public Address getAddress() { return address; }
+    public String getItemID() { return itemID; }
+    public int getDelivery_time() { return delivery_time; }
+    
 }
