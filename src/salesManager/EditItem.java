@@ -157,7 +157,7 @@ public class EditItem extends javax.swing.JFrame {
         jLabel5.setText("Category");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Edit");
+        jLabel1.setText("Edit Item");
 
         cbCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 

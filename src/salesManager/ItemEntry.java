@@ -185,32 +185,6 @@ public class ItemEntry extends javax.swing.JFrame {
             }
         }
         
-    private void deleteItemFromFile(String itemId) throws IOException {
-        File itemsFile = new File(ITEMS_FILE);
-        File tempFile = new File("src/database/items_temp.txt");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(itemsFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                // Only write lines that DON'T match the item ID to be deleted
-                if (parts.length > 0 && !parts[0].equals(itemId)) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
-        }
-
-        // Replace original file with updated file
-        if (!itemsFile.delete()) {
-            throw new IOException("Could not delete original file");
-        }
-        if (!tempFile.renameTo(itemsFile)) {
-            throw new IOException("Could not rename temp file");
-        }
-    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -475,7 +449,7 @@ public class ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-       int selectedRow = jTable1.getSelectedRow();
+        int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
                 "Please select an item to delete",
@@ -496,8 +470,12 @@ public class ItemEntry extends javax.swing.JFrame {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                deleteItemFromFile(itemId);
-                loadItemsToTable(); // Refresh table
+                // Use the reusable FileUtils method
+                FileUtils.deleteFromFileByField(ITEMS_FILE, 0, itemId);
+
+                // Refresh the table using the reusable TableUtils method
+                FileUtils.TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
+
                 JOptionPane.showMessageDialog(this,
                     "Item deleted successfully",
                     "Success",

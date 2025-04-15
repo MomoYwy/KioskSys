@@ -142,7 +142,7 @@ public class SupplierEntry extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-    private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
+    public static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
         @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -177,6 +177,7 @@ public class SupplierEntry extends javax.swing.JFrame {
         lblDay = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 204));
 
@@ -261,8 +262,18 @@ public class SupplierEntry extends javax.swing.JFrame {
         btnSave.setText("Save");
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnBack.setText("Back");
 
@@ -436,6 +447,68 @@ public class SupplierEntry extends javax.swing.JFrame {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
          addNewSupplier();
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a supplier to delete",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String supplierId = (String) jTable1.getValueAt(selectedRow, 0);
+        String supplierName = (String) jTable1.getValueAt(selectedRow, 1);
+        String suppliedItem = (String) jTable1.getValueAt(selectedRow, 2);
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete this supplier?\n\n" +
+            "Supplier ID: " + supplierId + "\n" +
+            "Name: " + supplierName + "\n" +
+            "Supplied Item: " + suppliedItem,
+            "Confirm Deletion",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                FileUtils.deleteFromFileByField(SUPPLIERS_FILE, 0, supplierId);
+
+                loadSuppliersToTable();
+
+                JOptionPane.showMessageDialog(this,
+                    "Supplier deleted successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                clearSupplierForm();
+
+            } catch (IOException ex) {
+                // Show error message if deletion fails
+                JOptionPane.showMessageDialog(this,
+                    "Error deleting supplier: " + ex.getMessage(),
+                    "Deletion Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a supplier to edit",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String supplierId = (String) jTable1.getValueAt(selectedRow, 0);
+        new EditSupplier(supplierId).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnEditActionPerformed
 
     /**
      * @param args the command line arguments

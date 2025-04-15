@@ -53,6 +53,63 @@ public class FileUtils {
         return false;
     }
     
+    public static void deleteFromFileByField(String filePath, int fieldIndex, String fieldValue) throws IOException {
+        File originalFile = new File(filePath);
+        File tempFile = new File(filePath + ".tmp");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Only write lines that DON'T match the field value to be deleted
+                if (parts.length > fieldIndex && !parts[fieldIndex].equals(fieldValue)) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        }
+
+        // Replace original file with updated file
+        if (!originalFile.delete()) {
+            throw new IOException("Could not delete original file");
+        }
+        if (!tempFile.renameTo(originalFile)) {
+            throw new IOException("Could not rename temp file");
+        }
+    }
+    
+    public static void updateRecordInFile(String filePath, String recordId, String updatedRecord) throws IOException {
+        File originalFile = new File(filePath);
+        File tempFile = new File(filePath + ".tmp");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length > 0 && parts[0].equals(recordId)) {
+                    // Replace with updated record
+                    writer.write(updatedRecord);
+                } else {
+                    // Keep original record
+                    writer.write(line);
+                }
+                writer.newLine();
+            }
+        }
+
+        // Replace original file with updated file
+        if (!originalFile.delete()) {
+            throw new IOException("Could not delete original file");
+        }
+        if (!tempFile.renameTo(originalFile)) {
+            throw new IOException("Could not rename temp file");
+        }
+    }
+    
     
     // This will display the items in form of table
     // Add  <<private static final String ITEMS_FILE = "src/database/items.txt";>> in the frame to use it
