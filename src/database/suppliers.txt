@@ -2,3 +2,4 @@ S001,Hongleong
 S002,Ali
 S003,CIMB,Money,073082312,3,Teknologi|Bukit jalil|Kuala Lumpur|57000
 S004,Zi Ning Leong,Magnum Ice Cream,0123456789,2,Jalan Beringin|Johor Bahru|Johor|81750
+S005,Bill,Berries,0987654,2,Bkt Jalil|KL|Kuala Lumpur|85500
