@@ -27,7 +27,6 @@ public class PMDashboard extends javax.swing.JFrame {
     private void initComponents() {
 
         BGFrame = new javax.swing.JPanel();
-        SidePanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         btnListOfSuppliers = new javax.swing.JButton();
@@ -41,12 +40,6 @@ public class PMDashboard extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         BGFrame.setBackground(new java.awt.Color(255, 255, 255));
-        BGFrame.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        SidePanel.setBackground(new java.awt.Color(255, 255, 204));
-        SidePanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, null, new java.awt.Color(204, 204, 204), new java.awt.Color(204, 204, 204)));
-        SidePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        BGFrame.add(SidePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1172, 23, -1, 517));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 204));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(252, 159, 184), new java.awt.Color(242, 242, 242)));
@@ -72,8 +65,6 @@ public class PMDashboard extends javax.swing.JFrame {
                 .addGap(34, 34, 34))
         );
 
-        BGFrame.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 698, -1));
-
         btnListOfSuppliers.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         btnListOfSuppliers.setText("List of Suppliers");
         btnListOfSuppliers.addActionListener(new java.awt.event.ActionListener() {
@@ -81,7 +72,6 @@ public class PMDashboard extends javax.swing.JFrame {
                 btnListOfSuppliersActionPerformed(evt);
             }
         });
-        BGFrame.add(btnListOfSuppliers, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 190, 200, 70));
 
         btnListOfItems.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         btnListOfItems.setText("List of Items");
@@ -91,7 +81,6 @@ public class PMDashboard extends javax.swing.JFrame {
                 btnListOfItemsActionPerformed(evt);
             }
         });
-        BGFrame.add(btnListOfItems, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, 200, 70));
 
         btnDisplayRequisition.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         btnDisplayRequisition.setText("Display Requisition");
@@ -100,7 +89,6 @@ public class PMDashboard extends javax.swing.JFrame {
                 btnDisplayRequisitionActionPerformed(evt);
             }
         });
-        BGFrame.add(btnDisplayRequisition, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 300, 200, 70));
 
         btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         btnLogout.setText("Logout");
@@ -109,7 +97,6 @@ public class PMDashboard extends javax.swing.JFrame {
                 btnLogoutActionPerformed(evt);
             }
         });
-        BGFrame.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 480, 80, 30));
 
         btnPO.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         btnPO.setText("Generate Purchase Order");
@@ -118,18 +105,65 @@ public class PMDashboard extends javax.swing.JFrame {
                 btnPOActionPerformed(evt);
             }
         });
-        BGFrame.add(btnPO, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 300, -1, 70));
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        BGFrame.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 160, 10, 260));
-        BGFrame.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 280, 560, 10));
+
+        javax.swing.GroupLayout BGFrameLayout = new javax.swing.GroupLayout(BGFrame);
+        BGFrame.setLayout(BGFrameLayout);
+        BGFrameLayout.setHorizontalGroup(
+            BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(BGFrameLayout.createSequentialGroup()
+                .addGap(70, 70, 70)
+                .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BGFrameLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnListOfItems, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDisplayRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(70, 70, 70)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60)
+                        .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnListOfSuppliers, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnPO)))
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BGFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnLogout)
+                .addGap(307, 307, 307))
+        );
+        BGFrameLayout.setVerticalGroup(
+            BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(BGFrameLayout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(51, 51, 51)
+                .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BGFrameLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(btnListOfItems, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)
+                        .addComponent(btnDisplayRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(BGFrameLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(btnListOfSuppliers, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)
+                        .addComponent(btnPO, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(BGFrameLayout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(BGFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(BGFrame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -152,13 +186,13 @@ public class PMDashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDisplayRequisitionActionPerformed
 
-    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnLogoutActionPerformed
-
     private void btnPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPOActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnPOActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,7 +232,6 @@ public class PMDashboard extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel BGFrame;
-    private javax.swing.JPanel SidePanel;
     private javax.swing.JButton btnDisplayRequisition;
     private javax.swing.JButton btnListOfItems;
     private javax.swing.JButton btnListOfSuppliers;
