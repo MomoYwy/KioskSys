@@ -18,13 +18,13 @@ public class FinanceReport {
     private String FRepID;
     private String status;
     
-        public FinanceReport(String grossSales, String discount, String netTotal, String date, String day, String status) {
+        public FinanceReport(String grossSales, String discount, String netTotal, String date, String status, String FRepID) {
         this.grossSales = grossSales;
         this.discount = discount;
         this.netTotal = netTotal;
         this.date = date;
-        this.day = day;
         this.status = status;
+        this.FRepID = FRepID;
     }
 
     public String getGrossSales() {
@@ -59,20 +59,20 @@ public class FinanceReport {
         this.date = date;
     }
 
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getFRepID() {
+        return FRepID;
+    }
+
+    public void setFRepID(String FRepID) {
+        this.FRepID = FRepID;
     }
         
 
