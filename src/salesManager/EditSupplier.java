@@ -138,7 +138,7 @@ public class EditSupplier extends javax.swing.JFrame {
                 "Success",
                 JOptionPane.INFORMATION_MESSAGE);
             
-            this.dispose();
+            
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                 "Error saving supplier: " + e.getMessage(),
@@ -193,7 +193,7 @@ public class EditSupplier extends javax.swing.JFrame {
 
         jLabel10.setText("Postal Code:");
 
-        tfState.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        tfState.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Johor", "Kedah", "Kelantan", "Malacca", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Terengganu", "Kuala Lumpur", "Putrajaya" }));
 
         tfStreet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -279,7 +279,7 @@ public class EditSupplier extends javax.swing.JFrame {
                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfPostalCode)
+                    .addComponent(tfPostalCode, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
                     .addComponent(tfState, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfCity)
                     .addComponent(tfStreet, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -381,7 +381,7 @@ public class EditSupplier extends javax.swing.JFrame {
         new SupplierEntry().setVisible(true);
     }//GEN-LAST:event_btnCancelActionPerformed
 
-
+ 
 
 
 

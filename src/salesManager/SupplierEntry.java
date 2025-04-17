@@ -253,6 +253,9 @@ public class SupplierEntry extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(5).setMinWidth(40);
             jTable1.getColumnModel().getColumn(5).setPreferredWidth(40);
             jTable1.getColumnModel().getColumn(5).setMaxWidth(40);
+            jTable1.getColumnModel().getColumn(4).setMinWidth(120);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(120);
+            jTable1.getColumnModel().getColumn(4).setMaxWidth(120);
         }
 
         btnAdd.setText("Add");
