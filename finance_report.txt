@@ -1,0 +1,30 @@
+Net Sales: 2345
+Net Total: 4567
+Discount: 77
+Date: 22.3ffrew
+Day: Tuesday
+
+Net Sales: 3456
+Net Total: 4567
+Discount: 543
+Date: 3456
+Day: Sunday
+
+Net Sales: 4567
+Net Total: 765
+Discount: 567
+Date: 7777
+Day: Sunday
+
+Net Sales: 4567
+Net Total: 765
+Discount: 567
+Date: 7777
+Day: Sunday
+
+Net Sales: 4567
+Net Total: fg
+Discount: dd
+Date: 4
+Day: Sunday
+
