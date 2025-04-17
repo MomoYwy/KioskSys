@@ -158,36 +158,37 @@ public class FileUtils {
         }
         
         public static void loadSuppliersToTable(String filePath, DefaultTableModel model) {
-        model.setRowCount(0); 
+            model.setRowCount(0); 
 
-        try {
-            File file = new File(filePath);
-            if (file.exists()) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        String[] parts = line.split(",");
-                        if (parts.length == 6) {
-                            // Parse address components
-                            String[] addressParts = parts[5].split("\\|");
-                            String formattedAddress = String.join(", ", addressParts);
+            try {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            String[] parts = line.split(",");
+                            if (parts.length == 7) {
+                                // Parse address components
+                                String[] addressParts = parts[6].split("\\|");
+                                String formattedAddress = String.join(", ", addressParts);
 
-                            model.addRow(new Object[]{
-                                parts[0], // Supplier ID
-                                parts[1], // Name
-                                parts[2], // Supplied Item
-                                parts[3], // Contact
-                                Integer.parseInt(parts[4]), // Delivery Time
-                                formattedAddress // Formatted Address
-                            });
+                                model.addRow(new Object[]{
+                                    parts[0], // Supplier ID
+                                    parts[1], // Name
+                                    parts[2], // Supplied Item
+                                    Double.parseDouble(parts[3]), // Item Price (new field)
+                                    parts[4], // Contact
+                                    Integer.parseInt(parts[5]), // Delivery Time
+                                    formattedAddress // Formatted Address
+                                });
+                            }
                         }
                     }
                 }
+            } catch (IOException | NumberFormatException e) {
+                throw new RuntimeException("Error loading suppliers to table: " + e.getMessage(), e);
             }
-        } catch (IOException | NumberFormatException e) {
-            throw new RuntimeException("Error loading suppliers to table: " + e.getMessage(), e);
         }
-    }
     }
     
     private static void showErrorDialog(String title, String message) {
