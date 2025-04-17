@@ -1,4 +1,4 @@
 S001,Hongleong
 S002,Ali
 S003,CIMB,Money;Check;Cash,073082312,3,Teknologi|Bukit jalil|Item 1|57000
-S004,Zi Ning Leong,Magnum Ice Cream,0123456789,2,Jalan Beringin|Johor Bahru|Johor|81750
+S004,Zi Ning Leong,Magnum Ice Cream,0123456789,2,Jalan Beringin|Johor Bahru|Item 1|57000

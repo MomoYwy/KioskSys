@@ -32,8 +32,8 @@ public class SupplierEntry extends javax.swing.JFrame {
     private static final String[] MALAYSIAN_STATES = {
         "Johor", "Kedah", "Kelantan", "Malacca", "Negeri Sembilan",
         "Pahang", "Penang", "Perak", "Perlis", "Sabah",
-        "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur",
-        "Labuan", "Putrajaya"
+        "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", 
+        "Putrajaya"
     };
     
     private void addNewSupplier() {
@@ -225,17 +225,17 @@ public class SupplierEntry extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Suplier_ID", "Supplier_Name", "Item", "Contact", "Delivery_Time(Day)", "Address"
+                "Suplier_ID", "Supplier_Name", "Item", "Item Price", "Contact", "Delivery_Time(Day)", "Address"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, true, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -247,9 +247,12 @@ public class SupplierEntry extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(0).setMinWidth(60);
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(60);
             jTable1.getColumnModel().getColumn(0).setMaxWidth(60);
-            jTable1.getColumnModel().getColumn(4).setMinWidth(40);
-            jTable1.getColumnModel().getColumn(4).setPreferredWidth(40);
-            jTable1.getColumnModel().getColumn(4).setMaxWidth(40);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(70);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(70);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(70);
+            jTable1.getColumnModel().getColumn(5).setMinWidth(40);
+            jTable1.getColumnModel().getColumn(5).setPreferredWidth(40);
+            jTable1.getColumnModel().getColumn(5).setMaxWidth(40);
         }
 
         btnAdd.setText("Add");

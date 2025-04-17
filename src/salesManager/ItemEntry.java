@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
 import shared.utils.FileUtils.TableUtils;
+import static shared.utils.FileUtils.ensureFileExists;
 
 
 public class ItemEntry extends javax.swing.JFrame {
@@ -57,11 +58,13 @@ public class ItemEntry extends javax.swing.JFrame {
     }
         
    private void addNewItem() throws IOException {
-        // First ensure the items file exists
-        File itemsFile = new File(ITEMS_FILE);
-        if (!itemsFile.exists()) {
-            itemsFile.getParentFile().mkdirs();
-            itemsFile.createNewFile();
+        // Ensure the items file exists using the utility method
+        if (!ensureFileExists(ITEMS_FILE)) {
+            JOptionPane.showMessageDialog(this,
+                "Failed to initialize items database file",
+                "File Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         // Get input values
@@ -103,17 +106,15 @@ public class ItemEntry extends javax.swing.JFrame {
 
             // Find highest existing ID number for this category
             int maxNum = 0;
-            if (itemsFile.exists()) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(itemsFile))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.startsWith(prefix)) {
-                            try {
-                                int currentNum = Integer.parseInt(line.substring(1, 4));
-                                maxNum = Math.max(maxNum, currentNum);
-                            } catch (NumberFormatException e) {
-                                // Skip if ID format is invalid
-                            }
+            try (BufferedReader reader = new BufferedReader(new FileReader(ITEMS_FILE))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith(prefix)) {
+                        try {
+                            int currentNum = Integer.parseInt(line.substring(1, 4));
+                            maxNum = Math.max(maxNum, currentNum);
+                        } catch (NumberFormatException e) {
+                            // Skip if ID format is invalid
                         }
                     }
                 }
@@ -122,7 +123,7 @@ public class ItemEntry extends javax.swing.JFrame {
             String itemId = prefix + String.format("%03d", maxNum + 1);
 
             // Save to file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemsFile, true))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(ITEMS_FILE, true))) {
                 writer.write(String.join(",",
                     itemId,
                     itemName,
@@ -268,9 +269,9 @@ public class ItemEntry extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(2).setMinWidth(80);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
             jTable1.getColumnModel().getColumn(2).setMaxWidth(80);
-            jTable1.getColumnModel().getColumn(3).setMinWidth(40);
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(40);
-            jTable1.getColumnModel().getColumn(3).setMaxWidth(40);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(70);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(70);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(70);
         }
 
         btnAdd.setText("Add");
@@ -314,19 +315,24 @@ public class ItemEntry extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnBack)
+                .addGap(36, 36, 36))
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(82, 82, 82)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(44, 44, 44)
+                                .addGap(19, 19, 19)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfEnterItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(25, 25, 25)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -342,21 +348,15 @@ public class ItemEntry extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cbSupplierName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(46, 46, 46)))
-                                .addComponent(btnAdd)))
-                        .addGap(0, 6, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(113, 113, 113)
-                .addComponent(btnSave)
-                .addGap(18, 18, 18)
-                .addComponent(btnDelete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEdit)
+                                .addComponent(btnAdd))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(196, 196, 196)
+                        .addComponent(btnSave)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEdit)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBack)
-                .addGap(36, 36, 36))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
