@@ -14,14 +14,17 @@ public class Supplier {
     private String contact;
     private Address address;
     private String itemID;
+    private double supplierItemPrice;
     private int delivery_time;
     
-    public Supplier(String supplierId, String name, String contact, Address address, String itemId, int delivery_time) {
+
+    public Supplier(String supplierId, String name, String contact, Address address, String itemID, double supplierItemPrice, int delivery_time) {
         this.supplierId = supplierId;
         this.name = name;
         this.contact = contact;
         this.address = address;
         this.itemID = itemID;
+        this.supplierItemPrice = supplierItemPrice;
         this.delivery_time = delivery_time;
     }
     
@@ -31,6 +34,7 @@ public class Supplier {
     public String getContact() { return contact; }
     public Address getAddress() { return address; }
     public String getItemID() { return itemID; }
+    public double getSupplierItemPrice() { return supplierItemPrice; }
     public int getDelivery_time() { return delivery_time; }
     
 }
