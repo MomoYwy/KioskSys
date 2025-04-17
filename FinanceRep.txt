@@ -1,0 +1,6 @@
+Net Sales: eee
+Net Total: d
+Discount: 5
+Date: 23
+Day: Sunday
+

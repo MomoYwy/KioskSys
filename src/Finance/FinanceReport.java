@@ -11,24 +11,44 @@ import java.util.Date;
  * @author User
  */
 public class FinanceReport {
-    private int reportID;           // Unique identifier for the report
-    private String date;            // Date of the report
-    private double totalRevenue;    // Total revenue for the report
-    private String status;          // Status of the report (e.g., Pending, Completed)
-
-    public FinanceReport(int reportID, String date, double totalRevenue, String status) {
-        this.reportID = reportID;
+    private String grossSales;
+    private String discount;
+    private String netTotal;
+    private String date;
+    private String FRepID;
+    private String status;
+    
+        public FinanceReport(String grossSales, String discount, String netTotal, String date, String day, String status) {
+        this.grossSales = grossSales;
+        this.discount = discount;
+        this.netTotal = netTotal;
         this.date = date;
-        this.totalRevenue = totalRevenue;
+        this.day = day;
         this.status = status;
     }
 
-    public int getReportID() {
-        return reportID;
+    public String getGrossSales() {
+        return grossSales;
     }
 
-    public void setReportID(int reportID) {
-        this.reportID = reportID;
+    public void setGrossSales(String grossSales) {
+        this.grossSales = grossSales;
+    }
+
+    public String getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(String discount) {
+        this.discount = discount;
+    }
+
+    public String getNetTotal() {
+        return netTotal;
+    }
+
+    public void setNetTotal(String netTotal) {
+        this.netTotal = netTotal;
     }
 
     public String getDate() {
@@ -39,12 +59,12 @@ public class FinanceReport {
         this.date = date;
     }
 
-    public double getTotalRevenue() {
-        return totalRevenue;
+    public String getDay() {
+        return day;
     }
 
-    public void setTotalRevenue(double totalRevenue) {
-        this.totalRevenue = totalRevenue;
+    public void setDay(String day) {
+        this.day = day;
     }
 
     public String getStatus() {
@@ -54,12 +74,7 @@ public class FinanceReport {
     public void setStatus(String status) {
         this.status = status;
     }
-    
-    // Method to display report details (optional)
-    public void displayFinanceReport() {
-        System.out.println("Report ID: " + reportID);
-        System.out.println("Date: " + date);
-        System.out.println("Total Revenue: " + totalRevenue);
-        System.out.println("Status: " + status);
-    } 
-}
+        
+
+    }
+
