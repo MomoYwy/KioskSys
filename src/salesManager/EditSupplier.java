@@ -122,7 +122,7 @@ public class EditSupplier extends javax.swing.JFrame {
         }
 
         // Combine items with semicolons
-        String itemsCombined = String.join(";", suppliedItems);
+        String itemsCombined = String.join("|", suppliedItems);
 
         // Create address string
         String address = String.join("|", 

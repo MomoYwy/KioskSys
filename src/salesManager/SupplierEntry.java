@@ -7,12 +7,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import shared.utils.FileUtils;
+import shared.utils.FileUtils; 
 import shared.utils.FileUtils.TableUtils;
 import static shared.utils.FileUtils.ensureFileExists;
+import shared.utils.SwingUtils;
 
 
 public class SupplierEntry extends javax.swing.JFrame {
@@ -35,86 +39,62 @@ public class SupplierEntry extends javax.swing.JFrame {
         "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", 
         "Putrajaya"
     };
-    
+
     private void addNewSupplier() {
-        // 1. Ensure suppliers file exists
-        if (!ensureFileExists(SUPPLIERS_FILE)) {
-            return;
-        }
+        // Get input values
+        Map<String, String> fields = new HashMap<>();
+        String itemName = tfSuppliedItem.getText().trim(); 
+        fields.put("name", tfSupplierName.getText().trim());
+        fields.put("itemName", itemName); 
+        fields.put("contact", tfContact.getText().trim());
+        fields.put("deliveryTime", String.valueOf(jSpinner1.getValue()));
+        fields.put("itemPrice", String.valueOf(spItemPRice.getValue()));
+        fields.put("street", tfStreet.getText().trim());
+        fields.put("city", tfCity.getText().trim());
+        fields.put("state", (String) tfState.getSelectedItem());
+        fields.put("postalCode", tfPostalCode.getText().trim());
 
-        // 2. Get input values
-        String name = tfSupplierName.getText().trim();
-        String itemId = tfSuppliedItem.getText().trim();
-        String contact = tfContact.getText().trim();
-        int deliveryTime = (int) jSpinner1.getValue();
-        double itemPrice = ((Number) spItemPRice.getValue()).doubleValue();
-
-        // Address components
-        String street = tfStreet.getText().trim();
-        String city = tfCity.getText().trim();
-        String state = (String) tfState.getSelectedItem();
-        String postalCode = tfPostalCode.getText().trim();
-
-        // 3. Validate inputs
-        if (name.isEmpty() || itemId.isEmpty() || contact.isEmpty() || 
-            street.isEmpty() || city.isEmpty() || postalCode.isEmpty()) {
+        // Validate inputs
+        if (fields.containsValue("") || fields.containsValue(null)) {
             showErrorDialog("Input Error", "Please fill in all fields");
             return;
         }
 
-        try {
-            // 4. Generate Supplier ID 
-            int maxId = 0;
-            File file = new File(SUPPLIERS_FILE);
-            if (file.exists()) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.startsWith("S")) {
-                            try {
-                                int currentId = Integer.parseInt(line.substring(1, 4));
-                                maxId = Math.max(maxId, currentId);
-                            } catch (NumberFormatException e) {
-                                // Skip if ID format is invalid
-                            }
-                        }
-                    }
-                }
+        // Add supplier
+        String supplierId = FileUtils.addToFile(SUPPLIERS_FILE, FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> {
+            try {
+                return FileUtils.generateSupplierId(SUPPLIERS_FILE);
+            } catch (IOException e) {
+                return null;
             }
+        });
 
-            String supplierId = "S" + String.format("%03d", maxId + 1);
-
-            // 5. Create address string (street, city, state, postalCode)
-            String address = String.join("|", street, city, state, postalCode);
-
-            // 6. Save to file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                writer.write(String.join(",",
-                    supplierId,
-                    name,
-                    itemId,
-                    String.valueOf(itemPrice),
-                    contact,
-                    String.valueOf(deliveryTime),
-                    address
-                ));
-                writer.newLine();
-            }
-
-            // 7. Refresh and clear
-            loadSuppliersToTable(); 
+        if (supplierId != null) {
+            loadSuppliersToTable();
             clearSupplierForm();
 
-            JOptionPane.showMessageDialog(this, 
-                "Supplier added successfully!\nID: " + supplierId,
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
+            // Check if item exists and offer to add if not
+            if (!itemExistsByName(itemName)) {
+                int choice = JOptionPane.showConfirmDialog(this,
+                    "Item '" + itemName + "' doesn't exist.\n" +
+                    "Would you like to add it to inventory now?",
+                    "Add New Item",
+                    JOptionPane.YES_NO_OPTION);
 
-        } catch (IOException e) {
-            showErrorDialog("File Error", "Failed to save supplier: " + e.getMessage());
+                if (choice == JOptionPane.YES_OPTION) {
+                    openItemEntryScreen(itemName);
+                }
+            }
         }
     }
-
+    
+    
+    private void openItemEntryScreen(String itemName) {
+        ItemEntry itemEntry = new ItemEntry();
+        itemEntry.setItemName(itemName);
+        itemEntry.setVisible(true);
+        this.dispose();
+    }    
     private void clearSupplierForm() {
         tfSupplierName.setText("");
         tfSuppliedItem.setText("");
@@ -145,6 +125,16 @@ public class SupplierEntry extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+   private boolean itemExistsByName(String itemName) {
+        try {
+            List<String[]> items = SwingUtils.loadItemsFromFile("src/database/items.txt");
+            return items.stream().anyMatch(item -> item[1].equalsIgnoreCase(itemName));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
     public static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
         @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -25,6 +27,11 @@ public class ItemEntry extends javax.swing.JFrame {
         initializeCategoryCombobox();
         initializeSupplierComboBox();
         loadItemsToTable();
+    }
+    
+    public void setItemName(String name) {
+        tfEnterItemName.setText(name);
+        tfEnterItemName.setEditable(false);
     }
     
     private void initializeSupplierComboBox() {
@@ -57,24 +64,17 @@ public class ItemEntry extends javax.swing.JFrame {
         ));
     }
         
-   private void addNewItem() throws IOException {
-        // Ensure the items file exists using the utility method
-        if (!ensureFileExists(ITEMS_FILE)) {
-            JOptionPane.showMessageDialog(this,
-                "Failed to initialize items database file",
-                "File Error",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+    private void addNewItem() throws IOException {
         // Get input values
-        String itemName = tfEnterItemName.getText().trim();
-        String priceText = tfEnterPrice.getText().trim();
-        String category = (String) cbCategory.getSelectedItem();
-        String supplierName = (String) cbSupplierName.getSelectedItem();
+        Map<String, String> fields = new HashMap<>();
+        fields.put("name", tfEnterItemName.getText().trim());
+        fields.put("price", tfEnterPrice.getText().trim());
+        fields.put("category", (String) cbCategory.getSelectedItem());
+        fields.put("supplierName", (String) cbSupplierName.getSelectedItem());
 
         // Validate inputs
-        if (itemName.isEmpty() || priceText.isEmpty() || supplierName == null) {
+        if (fields.get("name").isEmpty() || fields.get("price").isEmpty() || 
+            fields.get("supplierName") == null) {
             JOptionPane.showMessageDialog(this, 
                 "Please fill in all fields", 
                 "Input Error", 
@@ -83,10 +83,8 @@ public class ItemEntry extends javax.swing.JFrame {
         }
 
         try {
-            double price = Double.parseDouble(priceText);
-
-            // Get supplier ID from name
-            String supplierId = getSupplierIdByName(supplierName);
+            // Get supplier ID
+            String supplierId = getSupplierIdByName(fields.get("supplierName"));
             if (supplierId == null) {
                 JOptionPane.showMessageDialog(this,
                     "Selected supplier not found in database",
@@ -94,78 +92,48 @@ public class ItemEntry extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            fields.put("supplierId", supplierId);
 
-            // Generate item ID
-            String prefix = "";
-            switch(category.toUpperCase()) {
-                case "GROCERIES": prefix = "G"; break;
-                case "FRESH PRODUCE": prefix = "F"; break;
-                case "ESSENTIAL GOODS": prefix = "E"; break;
-                default: prefix = "X";
-            }
-
-            // Find highest existing ID number for this category
-            int maxNum = 0;
-            try (BufferedReader reader = new BufferedReader(new FileReader(ITEMS_FILE))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith(prefix)) {
-                        try {
-                            int currentNum = Integer.parseInt(line.substring(1, 4));
-                            maxNum = Math.max(maxNum, currentNum);
-                        } catch (NumberFormatException e) {
-                            // Skip if ID format is invalid
-                        }
-                    }
+            // Add to file using utility method
+            String itemId = FileUtils.addToFile(ITEMS_FILE, FileUtils.RECORD_TYPE_ITEM, fields, f -> {
+                try {
+                    return FileUtils.generateItemId(ITEMS_FILE, f.get("category"));
+                } catch (IOException e) {
+                    return null;
                 }
+            });
+
+            if (itemId != null) {
+                loadItemsToTable();
+                clearItemForm();
+                JOptionPane.showMessageDialog(this, 
+                    "Item added successfully!\nID: " + itemId,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
             }
-
-            String itemId = prefix + String.format("%03d", maxNum + 1);
-
-            // Save to file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(ITEMS_FILE, true))) {
-                writer.write(String.join(",",
-                    itemId,
-                    itemName,
-                    supplierId, // Store supplier ID (not name)
-                    String.valueOf(price),
-                    category
-                ));
-                writer.newLine();
-            }
-
-            // Refresh and clear
-            loadItemsToTable();
-            clearItemForm();
-
-            JOptionPane.showMessageDialog(this, 
-                "Item added successfully!\nID: " + itemId,
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, 
                 "Please enter a valid price", 
                 "Input Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
-    }
-   
-   private String getSupplierIdByName(String supplierName) throws IOException {
-        File supplierFile = new File("src/database/suppliers.txt");
-        if (!supplierFile.exists()) return null;
+    }   
+    
+    private String getSupplierIdByName(String supplierName) throws IOException {
+         File supplierFile = new File("src/database/suppliers.txt");
+         if (!supplierFile.exists()) return null;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2 && parts[1].equals(supplierName)) {
-                    return parts[0]; // Return supplier ID
-                }
-            }
-        }
-        return null;
-    }
+         try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
+             String line;
+             while ((line = reader.readLine()) != null) {
+                 String[] parts = line.split(",");
+                 if (parts.length >= 2 && parts[1].equals(supplierName)) {
+                     return parts[0]; // Return supplier ID
+                 }
+             }
+         }
+         return null;
+     }
 
         private void clearItemForm() {
             tfEnterItemName.setText("");
@@ -185,6 +153,7 @@ public class ItemEntry extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
             }
         }
+
         
 
     @SuppressWarnings("unchecked")
