@@ -167,12 +167,12 @@ public class FileUtils {
                     recordLine = String.join(",",
                         recordId,
                         fields.get("date"),
+                        fields.get("dateRequired"),
                         fields.get("customerName"),
                         fields.get("customerContact"),
                         fields.get("itemId"),
                         fields.get("itemName"),
-                        fields.get("quantity"),
-                        fields.get("dateRequired")
+                        fields.get("quantity")
                     );
                     break;
                 default:
@@ -344,6 +344,36 @@ public class FileUtils {
                 }
             } catch (IOException | NumberFormatException e) {
                 throw new RuntimeException("Error loading suppliers to table: " + e.getMessage(), e);
+            }
+        }
+        
+        public static void loadSalesToTable(String filePath, DefaultTableModel model) {
+            model.setRowCount(0); 
+
+            try {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            String[] parts = line.split(",");
+                            if (parts.length == 8) {
+                                model.addRow(new Object[]{
+                                    parts[0], // Sales ID
+                                    parts[1], // Date
+                                    parts[2], // Date Required
+                                    parts[3], // Customer Name
+                                    parts[4], // Customer Contact
+                                    parts[5], // Item ID
+                                    parts[6], // Item Name
+                                    Integer.parseInt(parts[7]) // Quantity
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (IOException | NumberFormatException e) {
+                throw new RuntimeException("Error loading sales to table: " + e.getMessage(), e);
             }
         }
     }

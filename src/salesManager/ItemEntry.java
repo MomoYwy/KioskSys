@@ -420,7 +420,27 @@ public class ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
+            int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select an item to edit.", 
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        } 
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+        // Assuming columns: Item ID, Item Name, Supplier ID, Price, Category
+        String itemId = model.getValueAt(selectedRow, 0).toString();
+        String itemName = model.getValueAt(selectedRow, 1).toString();
+        String supplierId = model.getValueAt(selectedRow, 2).toString();
+        double price = Double.parseDouble(model.getValueAt(selectedRow, 3).toString());
+        String category = model.getValueAt(selectedRow, 4).toString();
+
+        // Open the EditItem frame with selected data
+        EditItem editFrame = new EditItem(itemId, itemName, supplierId, price, category);
+        editFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed

@@ -7,41 +7,38 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import shared.models.SalesEntry;
 import shared.utils.FileUtils;
 import shared.utils.SwingUtils;
 
-
 public class DailySalesEntry extends javax.swing.JFrame {
     private List<String[]> itemsList;
-    
     private static final String SALES_FILE = "src/database/sales_entry.txt";
-
-
+    private static final String ITEMS_FILE = "src/database/items.txt";
 
     public DailySalesEntry() {
         initComponents();
         initializeDateComponents();
         loadItems();
+        loadSalesToTable(); // Load existing sales entries when form opens
+        ensureSalesFileExists();
     }
     
     private void initializeDateComponents() {
         SwingUtils.initializeDateComboBoxes(cbDay, cbMonth, cbYear);
-        
         SwingUtils.initializeDateComboBoxes(cbDayRequired, cbMonthRequired, cbYearRequired);
     }
     
     private void loadItems() {
-        // Load items from file
-        itemsList = SwingUtils.loadItemsFromFile("src/database/items.txt");
+        itemsList = SwingUtils.loadItemsFromFile(ITEMS_FILE);
         
-        // Populate the combo box with item IDs
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         for (String[] item : itemsList) {
             model.addElement(item[0]); // Add item ID
         }
         cbItemID.setModel(model);
         
-        // Set initial item name if items exist
         if (!itemsList.isEmpty()) {
             updateItemName();
         }
@@ -49,65 +46,172 @@ public class DailySalesEntry extends javax.swing.JFrame {
     
     private void updateItemName() {
         int selectedIndex = cbItemID.getSelectedIndex();
-        if (selectedIndex >= 0 && selectedIndex < itemsList.size()){
+        if (selectedIndex >= 0 && selectedIndex < itemsList.size()) {
             String[] selectedItem = itemsList.get(selectedIndex);
-            lbItemName.setText(selectedItem[1]);
+            lbItemName.setText(selectedItem[1]); // Set item name
+        }
+    }
+    
+    private void loadSalesToTable() {
+        DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+        model.setRowCount(0); // Clear existing data
+        
+        try {
+            FileUtils.TableUtils.loadSalesToTable(SALES_FILE, model);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error loading sales data: " + e.getMessage(),
+                "Database Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
     
     private void addSalesEntry() {
-        // Get all input values
-        Map<String, String> fields = new HashMap<>();
-        fields.put("customerName", tfCustomerName.getText().trim());
-        fields.put("customerContact", tfCustomerContact.getText().trim());
-        fields.put("itemId", (String) cbItemID.getSelectedItem());
-        fields.put("itemName", lbItemName.getText());
-        fields.put("quantity", String.valueOf(jSpinner1.getValue()));
+        try {
+            // Create a SalesEntry object from form data
+            SalesEntry entry = new SalesEntry(
+                String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()),
+                String.format("%s/%s/%s", cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem()),
+                tfCustomerName.getText().trim(),
+                tfCustomerContact.getText().trim(),
+                (String) cbItemID.getSelectedItem(),
+                lbItemName.getText(),
+                (int) spQuantity.getValue()
+            );
 
-        // Build date strings
-        fields.put("date", String.format("%s/%s/%s", 
-            cbDay.getSelectedItem(),
-            cbMonth.getSelectedItem(),
-            cbYear.getSelectedItem()));
+            // Validate inputs
+            if (entry.getCustomerName().isEmpty() || entry.getCustomerContact().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        fields.put("dateRequired", String.format("%s/%s/%s", 
-            cbDayRequired.getSelectedItem(),
-            cbMonthRequired.getSelectedItem(),
-            cbYearRequired.getSelectedItem()));
+            // Convert to map for FileUtils
+            Map<String, String> fields = new HashMap<>();
+            fields.put("date", entry.getDate());
+            fields.put("dateRequired", entry.getDateRequired());
+            fields.put("customerName", entry.getCustomerName());
+            fields.put("customerContact", entry.getCustomerContact());
+            fields.put("itemId", entry.getItemId());
+            fields.put("itemName", entry.getItemName());
+            fields.put("quantity", String.valueOf(entry.getQuantity()));
 
-        // Validate inputs
-        if (fields.get("customerName").isEmpty() || fields.get("customerContact").isEmpty() || 
-            fields.get("itemId") == null || fields.get("itemName").isEmpty()) {
+            // Add to file using FileUtils
+            String salesId = FileUtils.addToFile(
+                SALES_FILE, 
+                FileUtils.RECORD_TYPE_SALES, 
+                fields, 
+                f -> {
+                    try {
+                        return FileUtils.generateSalesId(SALES_FILE);
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            );
+
+            if (salesId != null) {
+                JOptionPane.showMessageDialog(this,
+                    "Sales entry added successfully!\nID: " + salesId,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                clearSalesForm();
+                loadSalesToTable(); // Refresh table
+            }
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                "Please fill in all required fields",
-                "Input Error",
+                "Error adding sales entry: " + e.getMessage(),
+                "Error",
                 JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    private void deleteSelectedEntry() {
+        int selectedRow = jTable3.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a sales entry to delete",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Add to file using FileUtils
-        String salesId = FileUtils.addToFile(SALES_FILE, FileUtils.RECORD_TYPE_SALES, fields, f -> {
-            try {
-                return FileUtils.generateSalesId(SALES_FILE);
-            } catch (IOException e) {
-                return null;
+        try {
+            String salesId = (String) jTable3.getValueAt(selectedRow, 0);
+            
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete this sales entry?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                FileUtils.deleteFromFileByField(SALES_FILE, 0, salesId);
+                JOptionPane.showMessageDialog(this,
+                    "Sales entry deleted successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                loadSalesToTable(); // Refresh table
             }
-        });
-
-        if (salesId != null) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                "Sales entry added successfully!\nID: " + salesId,
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-
-            clearSalesForm();
+                "Error deleting sales entry: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
+    private void loadSelectedEntryToForm() {
+        int selectedRow = jTable3.getSelectedRow();
+        if (selectedRow == -1) return;
+        
+        try {
+            // Get values from selected row
+            String date = (String) jTable3.getValueAt(selectedRow, 1);
+            String dateRequired = (String) jTable3.getValueAt(selectedRow, 2);
+            String customerName = (String) jTable3.getValueAt(selectedRow, 3);
+            String customerContact = (String) jTable3.getValueAt(selectedRow, 4);
+            String itemId = (String) jTable3.getValueAt(selectedRow, 5);
+            String itemName = (String) jTable3.getValueAt(selectedRow, 6);
+            int quantity = (Integer) jTable3.getValueAt(selectedRow, 7);
+            
+            // Parse and set dates
+            String[] dateParts = date.split("/");
+            if (dateParts.length == 3) {
+                cbDay.setSelectedItem(dateParts[0]);
+                cbMonth.setSelectedItem(dateParts[1]);
+                cbYear.setSelectedItem(dateParts[2]);
+            }
+            
+            String[] requiredDateParts = dateRequired.split("/");
+            if (requiredDateParts.length == 3) {
+                cbDayRequired.setSelectedItem(requiredDateParts[0]);
+                cbMonthRequired.setSelectedItem(requiredDateParts[1]);
+                cbYearRequired.setSelectedItem(requiredDateParts[2]);
+            }
+            
+            // Set other fields
+            tfCustomerName.setText(customerName);
+            tfCustomerContact.setText(customerContact);
+            cbItemID.setSelectedItem(itemId);
+            lbItemName.setText(itemName);
+            spQuantity.setValue(quantity);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error loading sales entry: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     private void clearSalesForm() {
         tfCustomerName.setText("");
         tfCustomerContact.setText("");
-        jSpinner1.setValue(1);
+        spQuantity.setValue(1);
+        // Reset dates to current date?
     }
 
     private void ensureSalesFileExists() {
@@ -119,11 +223,14 @@ public class DailySalesEntry extends javax.swing.JFrame {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -150,11 +257,39 @@ public class DailySalesEntry extends javax.swing.JFrame {
         tfCustomerContact = new javax.swing.JTextField();
         cbItemID = new javax.swing.JComboBox<>();
         lbItemName = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        spQuantity = new javax.swing.JSpinner();
         btnAdd = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(jTable2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -171,12 +306,12 @@ public class DailySalesEntry extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(243, Short.MAX_VALUE))
+                .addContainerGap(423, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(27, Short.MAX_VALUE)
+                .addContainerGap(35, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(24, 24, 24))
         );
@@ -240,8 +375,34 @@ public class DailySalesEntry extends javax.swing.JFrame {
         btnSave.setText("Save");
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
+
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "SalesID", "Date", "Date_Required", "Customer_Name", "Customer_Contact", "ItemID", "Item_Name", "Quantity"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(jTable3);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -251,94 +412,108 @@ public class DailySalesEntry extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnAdd)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit))
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbItemID, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(80, 80, 80)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(tfCustomerContact, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(tfCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(cbDayRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel13)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbMonthRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel14)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbYearRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel12))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(cbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel10)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel11))))
+                                    .addComponent(spQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cbItemID, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(lbItemName)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(lbItemName))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(tfCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(tfCustomerContact, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(cbDayRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel13)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbMonthRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel14)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbYearRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel12))
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(cbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel6)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel10)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel11)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnSave)
+                                            .addComponent(btnAdd)
+                                            .addComponent(btnEdit)
+                                            .addComponent(btnDelete))
+                                        .addGap(34, 34, 34)))))
+                        .addGap(29, 29, 29))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(cbDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11))
-                .addGap(6, 6, 6)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbDayRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cbMonthRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cbYearRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel13)
-                        .addComponent(jLabel14)
-                        .addComponent(jLabel12))
-                    .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(tfCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(tfCustomerContact, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(cbDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(cbMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10)
+                            .addComponent(cbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cbDayRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbMonthRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbYearRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel13)
+                                .addComponent(jLabel14)
+                                .addComponent(jLabel12))
+                            .addComponent(jLabel8))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(tfCustomerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(tfCustomerContact, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(btnAdd)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSave)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEdit)
+                        .addGap(1, 1, 1)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(cbItemID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -349,14 +524,10 @@ public class DailySalesEntry extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdd)
-                    .addComponent(btnSave)
-                    .addComponent(btnDelete)
-                    .addComponent(btnEdit))
-                .addContainerGap())
+                    .addComponent(spQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -364,17 +535,14 @@ public class DailySalesEntry extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -388,6 +556,11 @@ public class DailySalesEntry extends javax.swing.JFrame {
         addSalesEntry();
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        deleteSelectedEntry();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    
     /**
      * @param args the command line arguments
      */
@@ -451,8 +624,14 @@ public class DailySalesEntry extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
     private javax.swing.JLabel lbItemName;
+    private javax.swing.JSpinner spQuantity;
     private javax.swing.JTextField tfCustomerContact;
     private javax.swing.JTextField tfCustomerName;
     // End of variables declaration//GEN-END:variables
