@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
@@ -18,9 +19,24 @@ public class FinanceRepFrame extends javax.swing.JFrame {
 
     public FinanceRepFrame() {
         initComponents();
+        loadFRepToTable();
+        initializeStatusComboBox();
     }
 
     public static final String FinanceRep_FILE = "src/database/financeReport.txt";
+    
+        private void initializeStatusComboBox() {
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+    
+    // Add predefined values to the model
+    model.addElement("Approved");
+    model.addElement("Rejected");
+    model.addElement("Completed");
+    model.addElement("Pending");
+    
+    // Set the combo box model
+    cmbStatus.setModel(model);
+    }
 
         
     private void addNewFinanceRep() throws IOException {
@@ -43,14 +59,16 @@ public class FinanceRepFrame extends javax.swing.JFrame {
         }
         
         try {
+        
             // 4. Generate Finance Report ID 
+                
             int maxId = 0;
             File file = new File(FinanceRep_FILE);
             if (file.exists()) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        if (line.startsWith("S")) {
+                        if (line.startsWith("F")) {
                             try {
                                 int currentId = Integer.parseInt(line.substring(1, 4));
                                 maxId = Math.max(maxId, currentId);
@@ -76,7 +94,7 @@ public class FinanceRepFrame extends javax.swing.JFrame {
             }
             
             // 7. Refresh and clear
-            loadFinanceRepToTable(); 
+            loadFRepToTable(); 
             clearFinanceRep();
 
             JOptionPane.showMessageDialog(this, 
@@ -85,7 +103,7 @@ public class FinanceRepFrame extends javax.swing.JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
 
         } catch (IOException e) {
-            showErrorDialog("File Error", "Failed to save supplier: " + e.getMessage());
+            showErrorDialog("File Error", "Failed to save finance : " + e.getMessage());
         }
     }
 
@@ -104,19 +122,40 @@ public class FinanceRepFrame extends javax.swing.JFrame {
             JOptionPane.ERROR_MESSAGE);
     }
     
-    private void loadFinanceRepToTable() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        try {
-            FileUtils.TableUtils.loadSuppliersToTable(FinanceRep_FILE, model);
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, 
-                e.getMessage(),
-                "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
+    private void loadFRepToTable() {
+    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+    model.setRowCount(0);  // Clear any existing rows in the table
     
+    try {
+        File file = new File(FinanceRep_FILE);  // Use the financeReport file
+        if (file.exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            
+            // Read each line from the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");  // Split the line by commas
+                
+                // Ensure there are 4 elements (Report ID, Date, Net Total, Status)
+                if (parts.length == 4) {
+                    // Add data to the table model
+                    model.addRow(new Object[]{
+                        parts[0],  // Report ID
+                        parts[1],  // Date
+                        parts[2],  // Net Total
+                        parts[3]   // Status
+                    });
+                }
+            }
+            reader.close();  // Close the BufferedReader
+        } else {
+            JOptionPane.showMessageDialog(this, "File not found: " + FinanceRep_FILE, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
 
     @SuppressWarnings("unchecked")
@@ -139,9 +178,10 @@ public class FinanceRepFrame extends javax.swing.JFrame {
         txtDiscount = new javax.swing.JTextField();
         txtNetTotal = new javax.swing.JTextField();
         btnGenerate = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -183,17 +223,22 @@ public class FinanceRepFrame extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 233, 217));
 
-        jLabel2.setText("Gross Sales:");
+        jLabel2.setText("Gross Sales (RM):");
 
-        jLabel3.setText("Discount:");
+        jLabel3.setText("Discount (RM):");
 
-        jLabel4.setText("Net Total:");
+        jLabel4.setText("Net Total (RM):");
 
         jLabel5.setText("Date:");
 
         jLabel6.setText("Status:");
 
         cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Approved", "Rejected", "Completed", "Pending" }));
+        cmbStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbStatusActionPerformed(evt);
+            }
+        });
 
         btnGenerate.setText("Generate");
         btnGenerate.addActionListener(new java.awt.event.ActionListener() {
@@ -202,7 +247,12 @@ public class FinanceRepFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Cancel");
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -212,10 +262,17 @@ public class FinanceRepFrame extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Report ID", "Date", "Net Total", "Status"
+                "Report ID", "Date", "Net Total (RM)", "Status"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
+
+        jButton1.setText("Edit");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -232,22 +289,25 @@ public class FinanceRepFrame extends javax.swing.JFrame {
                     .addComponent(txtDiscount, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                     .addComponent(txtGrossSales)
                     .addComponent(txtNetTotal))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                            .addGap(32, 32, 32)
+                            .addComponent(jLabel5)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                            .addGap(24, 24, 24)
+                            .addComponent(jLabel6)
+                            .addGap(18, 18, 18)
+                            .addComponent(cmbStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(jLabel5)
+                        .addGap(42, 42, 42)
+                        .addComponent(btnGenerate)
                         .addGap(18, 18, 18)
-                        .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel6)
+                        .addComponent(btnDelete)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(btnGenerate)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2))
-                            .addComponent(cmbStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jButton1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
         );
@@ -271,7 +331,8 @@ public class FinanceRepFrame extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(txtNetTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnGenerate)
-                    .addComponent(jButton2))
+                    .addComponent(btnDelete)
+                    .addComponent(jButton1))
                 .addGap(29, 29, 29)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -297,11 +358,95 @@ public class FinanceRepFrame extends javax.swing.JFrame {
 
     private void btnGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateActionPerformed
             try {
-        addNewFinanceRep();
-    } catch (IOException e) {
-        e.printStackTrace(); // You can log the exception or show an error message
+                addNewFinanceRep();
+    } catch (IOException ex) {
+        showErrorDialog("File Error", "Failed to add finance report: " + ex.getMessage());
     }
     }//GEN-LAST:event_btnGenerateActionPerformed
+
+    private void cmbStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStatusActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStatusActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+    int selectedRow = jTable2.getSelectedRow();  // Get the selected row index
+
+    // Check if a row is selected
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this,
+            "Please select an item to delete",
+            "No Selection",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Get the selected row's Report ID (FRepID) and Date
+    String FRepID = (String) jTable2.getValueAt(selectedRow, 0);
+    String date = (String) jTable2.getValueAt(selectedRow, 1);
+
+    // Confirmation dialog
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Are you sure you want to delete:\n" + date + " (ID: " + FRepID + ")",
+        "Confirm Deletion",
+        JOptionPane.YES_NO_OPTION);
+
+    // If the user confirms the deletion
+    if (confirm == JOptionPane.YES_OPTION) {
+        try {
+            // Delete the row from the file based on Report ID (FRepID)
+            FileUtils.deleteFromFileByField(FinanceRep_FILE, 0, FRepID);  // Field 0 is Report ID
+
+            // Remove the row from the table (DefaultTableModel)
+            DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+            model.removeRow(selectedRow);  // Remove the row from the table
+
+            JOptionPane.showMessageDialog(this,
+                "Item deleted successfully",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error deleting item: " + ex.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+            int selectedRow = jTable2.getSelectedRow();  // Get the selected row index
+
+    // Check if a row is selected
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this,
+            "Please select an item to edit",
+            "No Selection",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Get the selected row's Report ID (FRepID) and Date
+    String FRepID = (String) jTable2.getValueAt(selectedRow, 0);
+    String date = (String) jTable2.getValueAt(selectedRow, 1);
+    String netTotal = (String) jTable2.getValueAt(selectedRow, 2);
+    String status = (String) jTable2.getValueAt(selectedRow, 3);
+
+    // Show confirmation dialog
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Are you sure you want to edit:\n" + date + " (ID: " + FRepID + ")",
+        "Confirm Edit",
+        JOptionPane.YES_NO_OPTION);
+
+    // If the user confirms the edit
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Allow user to edit the fields (e.g., Gross Sales, Date, Discount, etc.)
+        txtGrossSales.setText("");  // You can pre-fill these with the current values
+        txtDiscount.setText("");    // Add the current values if you wish
+        txtNetTotal.setText(netTotal);
+        txtDate.setText(date);
+        cmbStatus.setSelectedItem(status);  // Set the current status
+    }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -339,9 +484,10 @@ public class FinanceRepFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnGenerate;
     private javax.swing.JComboBox<String> cmbStatus;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
