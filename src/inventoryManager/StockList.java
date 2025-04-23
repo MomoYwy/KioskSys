@@ -12,6 +12,9 @@ import java.awt.Component;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import java.util.Map;
+import java.util.HashMap;
+
 
 public class StockList extends javax.swing.JFrame {
     
@@ -24,29 +27,89 @@ public class StockList extends javax.swing.JFrame {
     
     private void loadSalesData(String filePath){
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            DefaultTableModel model = new DefaultTableModel(new String[]{"Item ID", "Item Name", "Quantity"},0);
-                  
-            String line;
-            while((line = br.readLine()) != null){
-                String[] data = line.split(",");
-                if(data.length >= 8){
-                    String itemId = data[5];
-                    String itemName = data[6];
-                    String quantity = data[7];
-                    model.addRow(new String[]{itemId, itemName, quantity});
-                }
-        }    
-            StockTable.setModel(model);
-            
-            
-            
-        }catch (IOException e){
-          JOptionPane.showMessageDialog(this,"Cannot read message:" + e.getMessage());  
-        }
-    }
-    
-    
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Item ID", "Item Name", "Quantity"}, 0);
 
+        // 模拟初始化库存（你可以从其他文件加载）
+        Map<String, Integer> stockMap = new HashMap<>();
+        Map<String, String> itemNameMap = new HashMap<>();
+
+       
+
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] data = line.split(",");
+            if(data.length >= 8){
+                String itemId = data[5];
+                String itemName = data[6];
+                int soldQty = Integer.parseInt(data[7]);
+
+                // 如果 item 存在库存中就减数量
+                if(stockMap.containsKey(itemId)){
+                    int currentQty = stockMap.get(itemId);
+                    stockMap.put(itemId, currentQty - soldQty); // 扣除数量
+                } else {
+                    // 若是新 item，则添加进库存（也可忽略）
+                    stockMap.put(itemId, -soldQty);
+                    itemNameMap.put(itemId, itemName);
+                }
+            }
+        }
+
+        // 把库存放进表格
+        for(String id : stockMap.keySet()){
+            String name = itemNameMap.get(id);
+            String qty = String.valueOf(stockMap.get(id));
+            model.addRow(new String[]{id, name, qty});
+        }
+
+        StockTable.setModel(model);
+
+        // 低库存高亮（复用前面提到的 CellRenderer）
+        StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                try {
+                    int quantity = Integer.parseInt(table.getValueAt(row, 2).toString());
+                    if (quantity < 10) {
+                        c.setBackground(Color.PINK);
+                    } else {
+                        c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+                    }
+                } catch (NumberFormatException e) {
+                    c.setBackground(Color.WHITE);
+                }
+                return c;
+            }
+        });
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Cannot read message: " + e.getMessage());
+    }
+
+        
+    StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        
+        String quantityStr = table.getValueAt(row, 2).toString(); 
+        try {
+            int quantity = Integer.parseInt(quantityStr);
+            if (quantity < 10) {
+                c.setBackground(Color.PINK); 
+            } else {
+                c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+            }
+        } catch (NumberFormatException e) {
+            c.setBackground(Color.WHITE); 
+        }
+        
+        return c;
+        }
+    });
+
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
