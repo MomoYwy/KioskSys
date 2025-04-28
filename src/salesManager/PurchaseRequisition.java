@@ -30,19 +30,26 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         lblPR = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblStockList = new javax.swing.JTable();
         lblFlaggedStock = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        lblItemID = new javax.swing.JLabel();
+        lblItemNm = new javax.swing.JLabel();
+        lblCategory = new javax.swing.JLabel();
+        lblStockAmt = new javax.swing.JLabel();
+        lblQuantity = new javax.swing.JLabel();
+        lblDateRequired = new javax.swing.JLabel();
+        lblSupplier = new javax.swing.JLabel();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnViewList = new javax.swing.JButton();
+        lblSHItemID = new javax.swing.JLabel();
+        lblSHItemNm = new javax.swing.JLabel();
+        lblSHCategory = new javax.swing.JLabel();
+        lblSHStockAmt = new javax.swing.JLabel();
+        cboSHQuantity = new javax.swing.JComboBox<>();
+        txtDateRequired = new javax.swing.JTextField();
+        cboSHSupplierNm = new javax.swing.JComboBox<>();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -70,7 +77,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(lblPR, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(419, Short.MAX_VALUE))
+                .addContainerGap(416, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -80,7 +87,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                 .addGap(26, 26, 26))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblStockList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -88,27 +95,27 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Item_ID", "Item_Name", "Stock_Amount", "Category"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblStockList);
 
         lblFlaggedStock.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblFlaggedStock.setText("Flagged Stock:");
 
-        jLabel1.setText("Item_ID:");
+        lblItemID.setText("Item_ID:");
 
-        jLabel2.setText("Item_Name:");
+        lblItemNm.setText("Item_Name:");
 
-        jLabel3.setText("Category:");
+        lblCategory.setText("Category:");
 
-        jLabel4.setText("Stock_Amount:");
+        lblStockAmt.setText("Stock_Amount:");
 
-        jLabel5.setText("Quantity:");
+        lblQuantity.setText("Quantity:");
 
-        jLabel6.setText("Date_Required:");
+        lblDateRequired.setText("Date_Required:");
 
-        jLabel7.setText("Supplier:");
+        lblSupplier.setText("Supplier:");
 
         btnAdd.setText("Add");
 
@@ -122,6 +129,20 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         btnDelete.setText("Delete");
 
         btnViewList.setText("View List");
+
+        lblSHItemID.setText("jLabel8");
+
+        lblSHItemNm.setText("jLabel9");
+
+        lblSHCategory.setText("jLabel10");
+
+        lblSHStockAmt.setText("jLabel11");
+
+        cboSHQuantity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        txtDateRequired.setText("(DD/MM/YYYY)");
+
+        cboSHSupplierNm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,16 +158,31 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(233, 233, 233)
+                            .addComponent(lblItemID)
+                            .addComponent(lblItemNm)
+                            .addComponent(lblCategory)
+                            .addComponent(lblStockAmt))
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblSHItemID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblSHItemNm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblSHCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                            .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(107, 107, 107)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel5))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblQuantity)
+                                .addGap(51, 51, 51)
+                                .addComponent(cboSHQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblDateRequired)
+                                    .addComponent(lblSupplier))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtDateRequired, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                                    .addComponent(cboSHSupplierNm, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addContainerGap(125, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -168,19 +204,27 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel5))
+                    .addComponent(lblItemID)
+                    .addComponent(lblQuantity)
+                    .addComponent(lblSHItemID)
+                    .addComponent(cboSHQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel6))
+                    .addComponent(lblItemNm)
+                    .addComponent(lblDateRequired)
+                    .addComponent(lblSHItemNm)
+                    .addComponent(txtDateRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel7))
+                    .addComponent(lblCategory)
+                    .addComponent(lblSupplier)
+                    .addComponent(lblSHCategory)
+                    .addComponent(cboSHSupplierNm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblStockAmt)
+                    .addComponent(lblSHStockAmt))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnEdit)
@@ -236,18 +280,25 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnViewList;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JComboBox<String> cboSHQuantity;
+    private javax.swing.JComboBox<String> cboSHSupplierNm;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lblCategory;
+    private javax.swing.JLabel lblDateRequired;
     private javax.swing.JLabel lblFlaggedStock;
+    private javax.swing.JLabel lblItemID;
+    private javax.swing.JLabel lblItemNm;
     private javax.swing.JLabel lblPR;
+    private javax.swing.JLabel lblQuantity;
+    private javax.swing.JLabel lblSHCategory;
+    private javax.swing.JLabel lblSHItemID;
+    private javax.swing.JLabel lblSHItemNm;
+    private javax.swing.JLabel lblSHStockAmt;
+    private javax.swing.JLabel lblStockAmt;
+    private javax.swing.JLabel lblSupplier;
+    private javax.swing.JTable tblStockList;
+    private javax.swing.JTextField txtDateRequired;
     // End of variables declaration//GEN-END:variables
 }
