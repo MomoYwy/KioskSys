@@ -25,52 +25,67 @@ public class StockList extends javax.swing.JFrame {
         setVisible(true);
     }
     
-    private void loadSalesData(String filePath){
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Item ID", "Item Name", "Quantity"}, 0);
+    private void loadSalesData(String filePath) {
+    try {
+       
+        Map<String, String> categoryMap = new HashMap<>();
+        try (BufferedReader itemReader = new BufferedReader(new FileReader("src/database/items.txt"))) {
+            String line;
+            while ((line = itemReader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2) {
+                    String itemId = parts[0].trim();
+                    String category = parts[parts.length - 1].trim();  
+                    categoryMap.put(itemId, category);
+                }
+            }
+        }
 
-        // 模拟初始化库存（你可以从其他文件加载）
+     
+        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Item ID", "Item Name", "Category", "Stock Amount"}, 0);
+
         Map<String, Integer> stockMap = new HashMap<>();
         Map<String, String> itemNameMap = new HashMap<>();
-
-       
 
         String line;
         while ((line = br.readLine()) != null) {
             String[] data = line.split(",");
-            if(data.length >= 8){
-                String itemId = data[5];
-                String itemName = data[6];
-                int soldQty = Integer.parseInt(data[7]);
+            if (data.length >= 8) {
+                String itemId = data[5].trim();
+                String itemName = data[6].trim();
+                int soldQty = Integer.parseInt(data[7].trim());
 
-                // 如果 item 存在库存中就减数量
-                if(stockMap.containsKey(itemId)){
+                if (stockMap.containsKey(itemId)) {
                     int currentQty = stockMap.get(itemId);
-                    stockMap.put(itemId, currentQty - soldQty); // 扣除数量
+                    stockMap.put(itemId, currentQty - soldQty);
                 } else {
-                    // 若是新 item，则添加进库存（也可忽略）
                     stockMap.put(itemId, -soldQty);
                     itemNameMap.put(itemId, itemName);
                 }
             }
         }
+        br.close();
 
-        // 把库存放进表格
-        for(String id : stockMap.keySet()){
-            String name = itemNameMap.get(id);
-            String qty = String.valueOf(stockMap.get(id));
-            model.addRow(new String[]{id, name, qty});
+      
+        for (Map.Entry<String, Integer> entry : stockMap.entrySet()) {
+            String itemId = entry.getKey();
+            int quantity = entry.getValue();
+            String itemName = itemNameMap.get(itemId);
+            String category = categoryMap.getOrDefault(itemId, "N/A");
+
+            model.addRow(new Object[]{itemId, itemName, category, quantity});
         }
 
         StockTable.setModel(model);
 
-        // 低库存高亮（复用前面提到的 CellRenderer）
         StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
                 try {
-                    int quantity = Integer.parseInt(table.getValueAt(row, 2).toString());
+                    int quantity = Integer.parseInt(table.getValueAt(row, 3).toString());
                     if (quantity < 10) {
                         c.setBackground(Color.PINK);
                     } else {
@@ -79,6 +94,7 @@ public class StockList extends javax.swing.JFrame {
                 } catch (NumberFormatException e) {
                     c.setBackground(Color.WHITE);
                 }
+
                 return c;
             }
         });
@@ -86,30 +102,10 @@ public class StockList extends javax.swing.JFrame {
     } catch (IOException e) {
         JOptionPane.showMessageDialog(this, "Cannot read message: " + e.getMessage());
     }
-
-        
-    StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        
-        String quantityStr = table.getValueAt(row, 2).toString(); 
-        try {
-            int quantity = Integer.parseInt(quantityStr);
-            if (quantity < 10) {
-                c.setBackground(Color.PINK); 
-            } else {
-                c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
-            }
-        } catch (NumberFormatException e) {
-            c.setBackground(Color.WHITE); 
-        }
-        
-        return c;
-        }
-    });
-
 }
+
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -123,6 +119,7 @@ public class StockList extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         StockTable = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -143,7 +140,7 @@ public class StockList extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(492, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,16 +152,23 @@ public class StockList extends javax.swing.JFrame {
 
         StockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Item ID", "Item Name", "Quantity"
+                "Item ID", "Item Name", "Category", "Stock Amount"
             }
         ));
         jScrollPane1.setViewportView(StockTable);
+
+        jButton1.setText("Update stocks");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -173,16 +177,22 @@ public class StockList extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addGap(0, 68, Short.MAX_VALUE))
         );
 
         pack();
@@ -191,6 +201,13 @@ public class StockList extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
        
     }//GEN-LAST:event_formWindowOpened
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        loadSalesData("src/database/sales_entry.txt");
+        JOptionPane.showMessageDialog(null, "Stocks updated");
+    
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -231,6 +248,7 @@ public class StockList extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable StockTable;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
