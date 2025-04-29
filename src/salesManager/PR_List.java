@@ -59,13 +59,13 @@ public class PR_List extends javax.swing.JFrame {
 
         tblPRList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "PR_ID", "Item_ID", "Item_Name", "Category", "Stock_Amount", "Quantity", "Date_Required", "Supplier_ID", "Supplier_Name", "SalesManeger_ID", "Date_Created", "Status"
+                "PR_ID", "Item_ID", "Item_Name", "Category", "Quantity", "Date_Required", "Supplier_ID", "Supplier_Name", "SalesManeger_ID", "Date_Created", "Status"
             }
         ));
         jScrollPane1.setViewportView(tblPRList);

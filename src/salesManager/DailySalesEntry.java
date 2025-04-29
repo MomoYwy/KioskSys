@@ -1,224 +1,257 @@
 
-package salesManager;
+    package salesManager;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import shared.models.SalesEntry;
-import shared.utils.FileUtils;
-import shared.utils.SwingUtils;
+    import java.io.IOException;
+    import java.util.HashMap;
+    import java.util.List;
+    import java.util.Map;
+    import javax.swing.DefaultComboBoxModel;
+    import javax.swing.JOptionPane;
+    import javax.swing.table.DefaultTableModel;
+import shared.models.Customer;
+import shared.models.Item;
+    import shared.models.SalesEntry;
+    import shared.utils.FileUtils;
+    import shared.utils.SwingUtils;
 
-public class DailySalesEntry extends javax.swing.JFrame {
-    private List<String[]> itemsList;
-    private static final String SALES_FILE = "src/database/sales_entry.txt";
-    private static final String ITEMS_FILE = "src/database/items.txt";
+    public class DailySalesEntry extends javax.swing.JFrame {
+        private List<String[]> itemsList;
+        private static final String SALES_FILE = "src/database/sales_entry.txt";
+        private static final String ITEMS_FILE = "src/database/items.txt";
 
-    public DailySalesEntry() {
-        initComponents();
-        initializeDateComponents();
-        loadItems();
-        loadSalesToTable(); // Load existing sales entries when form opens
-        ensureSalesFileExists();
-    }
-    
-    private void initializeDateComponents() {
-        SwingUtils.initializeDateComboBoxes(cbDay, cbMonth, cbYear);
-        SwingUtils.initializeDateComboBoxes(cbDayRequired, cbMonthRequired, cbYearRequired);
-    }
-    
-    private void loadItems() {
-        itemsList = SwingUtils.loadItemsFromFile(ITEMS_FILE);
-        
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for (String[] item : itemsList) {
-            model.addElement(item[0]); // Add item ID
+        public DailySalesEntry() {
+            initComponents();
+            initializeDateComponents();
+            loadItems();
+            loadSalesToTable(); // Load existing sales entries when form opens
+            ensureSalesFileExists();
         }
-        cbItemID.setModel(model);
-        
-        if (!itemsList.isEmpty()) {
-            updateItemName();
-        }
-    }
-    
-    private void updateItemName() {
-        int selectedIndex = cbItemID.getSelectedIndex();
-        if (selectedIndex >= 0 && selectedIndex < itemsList.size()) {
-            String[] selectedItem = itemsList.get(selectedIndex);
-            lbItemName.setText(selectedItem[1]); // Set item name
-        }
-    }
-    
-    private void loadSalesToTable() {
-        DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        model.setRowCount(0); // Clear existing data
-        
-        try {
-            FileUtils.TableUtils.loadSalesToTable(SALES_FILE, model);
-        } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error loading sales data: " + e.getMessage(),
-                "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    private void addSalesEntry() {
-        try {
-            // Create a SalesEntry object from form data
-            SalesEntry entry = new SalesEntry(
-                String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()),
-                String.format("%s/%s/%s", cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem()),
-                tfCustomerName.getText().trim(),
-                tfCustomerContact.getText().trim(),
-                (String) cbItemID.getSelectedItem(),
-                lbItemName.getText(),
-                (int) spQuantity.getValue()
-            );
 
-            // Validate inputs
-            if (entry.getCustomerName().isEmpty() || entry.getCustomerContact().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields",
-                    "Input Error",
+        private void initializeDateComponents() {
+            SwingUtils.initializeDateComboBoxes(cbDay, cbMonth, cbYear);
+            SwingUtils.initializeDateComboBoxes(cbDayRequired, cbMonthRequired, cbYearRequired);
+        }
+
+        private void loadItems() {
+            itemsList = SwingUtils.loadItemsFromFile(ITEMS_FILE);
+
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            for (String[] item : itemsList) {
+                model.addElement(item[0]); // Add item ID
+            }
+            cbItemID.setModel(model);
+
+            if (!itemsList.isEmpty()) {
+                updateItemName();
+            }
+        }
+
+        private void updateItemName() {
+            int selectedIndex = cbItemID.getSelectedIndex();
+            if (selectedIndex >= 0 && selectedIndex < itemsList.size()) {
+                String[] selectedItem = itemsList.get(selectedIndex);
+                lbItemName.setText(selectedItem[1]); // Set item name
+            }
+        }
+
+        private void loadSalesToTable() {
+            DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+            model.setRowCount(0); // Clear existing data
+
+            try {
+                FileUtils.TableUtils.loadSalesToTable(SALES_FILE, model);
+            } catch (RuntimeException e) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error loading sales data: " + e.getMessage(),
+                    "Database Error", 
                     JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        private void addSalesEntry() {
+            try {
+                // Get item based on selection
+                int selectedIndex = cbItemID.getSelectedIndex();
+                if (selectedIndex < 0 || selectedIndex >= itemsList.size()) {
+                    JOptionPane.showMessageDialog(this, "Invalid item selected.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                String[] selectedItemArray = itemsList.get(selectedIndex);
+                Item selectedItem = new Item(
+                    selectedItemArray[0], // itemCode
+                    selectedItemArray[1], // name
+                    selectedItemArray[2], // supplierId
+                    Integer.parseInt(selectedItemArray[3]), // stock
+                    Double.parseDouble(selectedItemArray[5]) // price
+                );
+
+                // Create Customer object
+                Customer customer = new Customer(
+                    tfCustomerName.getText().trim(),
+                    tfCustomerContact.getText().trim()
+                );
+
+                // Create SalesEntry object
+                SalesEntry entry = new SalesEntry(
+                    String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()),
+                    String.format("%s/%s/%s", cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem()),
+                    customer,
+                    selectedItem,
+                    (int) spQuantity.getValue()
+                );
+
+                // Validate inputs
+                if (customer.getName().isEmpty() || customer.getContact().isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                        "Please fill in all required fields",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Convert to map for FileUtils
+                Map<String, String> fields = new HashMap<>();
+                fields.put("date", entry.getDate());
+                fields.put("dateRequired", entry.getDateRequired());
+                fields.put("customerName", customer.getName());
+                fields.put("customerContact", customer.getContact());
+                fields.put("itemId", selectedItem.getItemCode());
+                fields.put("itemName", selectedItem.getName());
+                fields.put("quantity", String.valueOf(entry.getQuantity()));
+
+                // Add to file
+                String salesId = FileUtils.addToFile(
+                    SALES_FILE,
+                    FileUtils.RECORD_TYPE_SALES,
+                    fields,
+                    f -> {
+                        try {
+                            return FileUtils.generateSalesId(SALES_FILE);
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    }
+                );
+
+                if (salesId != null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Sales entry added successfully!\nID: " + salesId,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                    clearSalesForm();
+                    loadSalesToTable(); // Refresh table
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error adding sales entry: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        private void editSelectedEntry() {
+            int selectedRow = jTable3.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,
+                    "Please select a sales entry to edit",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Convert to map for FileUtils
-            Map<String, String> fields = new HashMap<>();
-            fields.put("date", entry.getDate());
-            fields.put("dateRequired", entry.getDateRequired());
-            fields.put("customerName", entry.getCustomerName());
-            fields.put("customerContact", entry.getCustomerContact());
-            fields.put("itemId", entry.getItemId());
-            fields.put("itemName", entry.getItemName());
-            fields.put("quantity", String.valueOf(entry.getQuantity()));
+            try {
+                // Recreate Customer
+                Customer customer = new Customer(
+                    (String) jTable3.getValueAt(selectedRow, 3), // Customer Name
+                    (String) jTable3.getValueAt(selectedRow, 4)  // Customer Contact
+                );
 
-            // Add to file using FileUtils
-            String salesId = FileUtils.addToFile(
-                SALES_FILE, 
-                FileUtils.RECORD_TYPE_SALES, 
-                fields, 
-                f -> {
-                    try {
-                        return FileUtils.generateSalesId(SALES_FILE);
-                    } catch (IOException e) {
-                        return null;
-                    }
+                // Recreate Item
+                Item item = new Item(
+                    (String) jTable3.getValueAt(selectedRow, 5), // Item Code
+                    (String) jTable3.getValueAt(selectedRow, 6), // Item Name
+                    "", // supplierId unknown here (optional to fix)
+                    0,  // stock unknown here (optional to fix)
+                    0.0 // price unknown here (optional to fix)
+                );
+
+                // Recreate SalesEntry
+                SalesEntry entry = new SalesEntry(
+                    (String) jTable3.getValueAt(selectedRow, 0), // Sales ID
+                    (String) jTable3.getValueAt(selectedRow, 1), // Date
+                    (String) jTable3.getValueAt(selectedRow, 2), // Date Required
+                    customer,
+                    item,
+                    Integer.parseInt(jTable3.getValueAt(selectedRow, 7).toString()) // Quantity
+                );
+
+                // Open EditSales frame
+                EditSales editFrame = new EditSales(entry);
+                editFrame.setVisible(true);
+                editFrame.setLocationRelativeTo(this);
+
+                loadSalesToTable(); // Refresh after editing
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error preparing edit: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+
+        private void deleteSelectedEntry() {
+            int selectedRow = jTable3.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,
+                    "Please select a sales entry to delete",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                String salesId = (String) jTable3.getValueAt(selectedRow, 0);
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this sales entry?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    FileUtils.deleteFromFileByField(SALES_FILE, 0, salesId);
+                    JOptionPane.showMessageDialog(this,
+                        "Sales entry deleted successfully!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    loadSalesToTable(); // Refresh table
                 }
-            );
-
-            if (salesId != null) {
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                    "Sales entry added successfully!\nID: " + salesId,
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-                clearSalesForm();
-                loadSalesToTable(); // Refresh table
+                    "Error deleting sales entry: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                "Error adding sales entry: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    private void editSelectedEntry() {
-        int selectedRow = jTable3.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Please select a sales entry to edit",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
         }
 
-        try {
-            // Create SalesEntry from selected row
-            SalesEntry entry = new SalesEntry(
-                (String) jTable3.getValueAt(selectedRow, 0), // Sales ID
-                (String) jTable3.getValueAt(selectedRow, 1), // Date
-                (String) jTable3.getValueAt(selectedRow, 2), // Date Required
-                (String) jTable3.getValueAt(selectedRow, 3), // Customer Name
-                (String) jTable3.getValueAt(selectedRow, 4), // Customer Contact
-                (String) jTable3.getValueAt(selectedRow, 5), // Item ID
-                (String) jTable3.getValueAt(selectedRow, 6), // Item Name
-                (Integer) jTable3.getValueAt(selectedRow, 7)  // Quantity
-            );
 
-            // Open EditSales frame with the selected entry
-            EditSales editFrame = new EditSales(entry);
-            editFrame.setVisible(true);
-            editFrame.setLocationRelativeTo(this); // Center relative to parent
-            
-            // Refresh table after editing (assuming EditSales will dispose itself)
-            loadSalesToTable();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                "Error preparing edit: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    
-    private void deleteSelectedEntry() {
-        int selectedRow = jTable3.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Please select a sales entry to delete",
-                "No Selection",
-                JOptionPane.WARNING_MESSAGE);
-            return;
+        private void clearSalesForm() {
+            tfCustomerName.setText("");
+            tfCustomerContact.setText("");
+            spQuantity.setValue(1);
+            // Reset dates to current date?
         }
 
-        try {
-            String salesId = (String) jTable3.getValueAt(selectedRow, 0);
-            
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete this sales entry?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION);
-            
-            if (confirm == JOptionPane.YES_OPTION) {
-                FileUtils.deleteFromFileByField(SALES_FILE, 0, salesId);
+        private void ensureSalesFileExists() {
+            if (!FileUtils.ensureFileExists(SALES_FILE)) {
                 JOptionPane.showMessageDialog(this,
-                    "Sales entry deleted successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                loadSalesToTable(); // Refresh table
+                    "Failed to initialize sales database file",
+                    "File Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                "Error deleting sales entry: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
         }
-    }
-    
-    
-    private void clearSalesForm() {
-        tfCustomerName.setText("");
-        tfCustomerContact.setText("");
-        spQuantity.setValue(1);
-        // Reset dates to current date?
-    }
 
-    private void ensureSalesFileExists() {
-        if (!FileUtils.ensureFileExists(SALES_FILE)) {
-            JOptionPane.showMessageDialog(this,
-                "Failed to initialize sales database file",
-                "File Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
     
 
     @SuppressWarnings("unchecked")

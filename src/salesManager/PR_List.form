@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="resizable" type="boolean" value="false"/>
@@ -108,12 +108,11 @@
             <Component class="javax.swing.JTable" name="tblPRList">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="12" rowCount="4">
+                  <Table columnCount="11" rowCount="4">
                     <Column editable="true" title="PR_ID" type="java.lang.Object"/>
                     <Column editable="true" title="Item_ID" type="java.lang.Object"/>
                     <Column editable="true" title="Item_Name" type="java.lang.Object"/>
                     <Column editable="true" title="Category" type="java.lang.Object"/>
-                    <Column editable="true" title="Stock_Amount" type="java.lang.Object"/>
                     <Column editable="true" title="Quantity" type="java.lang.Object"/>
                     <Column editable="true" title="Date_Required" type="java.lang.Object"/>
                     <Column editable="true" title="Supplier_ID" type="java.lang.Object"/>
@@ -125,11 +124,6 @@
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>

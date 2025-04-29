@@ -24,7 +24,10 @@ public class Item {
     // Getters
     public String getItemCode() { return itemCode; }
     public String getName() { return name; }
+    public String getSupplierId() { return supplierId; }
     public int getStock() { return stock; }
+    public String getCategory() { return category; }
+    public double getPrice() { return price; }
     
     // Business logic
     public void updateStock(int quantity) {

@@ -1,6 +1,8 @@
 package salesManager;
 
 import shared.models.SalesEntry;
+import shared.models.Customer;
+import shared.models.Item;
 import shared.utils.FileUtils;
 import shared.utils.SwingUtils;
 import javax.swing.JOptionPane;
@@ -8,11 +10,11 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class EditSales extends javax.swing.JFrame {
-    private String salesId; // To store the ID of the sales entry being edited
+    private String salesId; // Store the ID of the sales entry being edited
+    private String originalDate; // Store the original date (not shown but preserved)
+    private String originalCustomerContact; // Store the original contact (not shown but preserved)
     private static final String SALES_FILE = "src/database/sales_entry.txt";
 
-    
-    
     public EditSales(SalesEntry entry) {
         initComponents();
         initializeDateComponents();
@@ -22,43 +24,32 @@ public class EditSales extends javax.swing.JFrame {
     private void initializeDateComponents() {
         SwingUtils.initializeDateComboBoxes(cbDay, cbMonth, cbYear);
     }
-    
+
     private void loadSalesEntryData(SalesEntry entry) {
         this.salesId = entry.getSalesId();
-        lbCustomerName.setText(entry.getCustomerName());
+        this.originalDate = entry.getDate(); // Preserve original date
+        this.originalCustomerContact = entry.getCustomer().getContact(); // Preserve contact
         
-        // Parse and set dates
+        // Set fields based on new model
+        lbCustomerName.setText(entry.getCustomer().getName());
+
+        // Parse and set required date
         String[] dateParts = entry.getDateRequired().split("/");
         if (dateParts.length == 3) {
             cbDay.setSelectedItem(dateParts[0]);
             cbMonth.setSelectedItem(dateParts[1]);
             cbYear.setSelectedItem(dateParts[2]);
         }
-        
-        // Set other fields
-        cbItemID.setSelectedItem(entry.getItemId());
-        lbItemName.setText(entry.getItemName());
+
+        cbItemID.setSelectedItem(entry.getItem().getItemCode());
+        lbItemName.setText(entry.getItem().getName());
         spQuantity.setValue(entry.getQuantity());
     }
-    
-    
-    
+
     private void saveChanges() {
         try {
-            // Create updated SalesEntry
-            SalesEntry updatedEntry = new SalesEntry(
-                salesId,
-                "", // Original date not needed for update
-                String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()),
-                lbCustomerName.getText(),
-                "", // Contact not shown in this form
-                (String) cbItemID.getSelectedItem(),
-                lbItemName.getText(),
-                (int) spQuantity.getValue()
-            );
-
-            // Validate inputs
-            if (updatedEntry.getCustomerName().isEmpty()) {
+            // Validate fields
+            if (lbCustomerName.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                     "Customer name cannot be empty",
                     "Input Error",
@@ -66,26 +57,26 @@ public class EditSales extends javax.swing.JFrame {
                 return;
             }
 
-            // Build the updated record line
+            // Build the updated record manually
             String updatedRecord = String.join(",",
-                updatedEntry.getSalesId(),
-                "", // Original date preserved
-                updatedEntry.getDateRequired(),
-                updatedEntry.getCustomerName(),
-                "", // Original contact preserved
-                updatedEntry.getItemId(),
-                updatedEntry.getItemName(),
-                String.valueOf(updatedEntry.getQuantity())
+                salesId,
+                originalDate, // Use preserved original date
+                String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()), // New required date
+                lbCustomerName.getText().trim(), // Updated customer name
+                originalCustomerContact, // Use preserved original contact
+                (String) cbItemID.getSelectedItem(), // Updated item ID
+                lbItemName.getText().trim(), // Updated item name
+                String.valueOf(spQuantity.getValue()) // Updated quantity
             );
 
             // Update in file
             FileUtils.updateRecordInFile(SALES_FILE, salesId, updatedRecord);
-            
+
             JOptionPane.showMessageDialog(this,
                 "Sales entry updated successfully!",
                 "Success",
                 JOptionPane.INFORMATION_MESSAGE);
-            
+
             this.dispose(); // Close the edit window
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
@@ -94,6 +85,7 @@ public class EditSales extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
