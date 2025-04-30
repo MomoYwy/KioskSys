@@ -255,7 +255,7 @@ public class FileUtils {
                             int currentId = Integer.parseInt(line.substring(2, 6));
                             maxId = Math.max(maxId, currentId);
                         } catch (NumberFormatException e) {
-                            // Skip if ID format is invalid
+                            
                         }
                     }
                 }

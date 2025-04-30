@@ -8,8 +8,8 @@
     import javax.swing.DefaultComboBoxModel;
     import javax.swing.JOptionPane;
     import javax.swing.table.DefaultTableModel;
-import shared.models.Customer;
-import shared.models.Item;
+    import shared.models.Customer;
+    import shared.models.Item;
     import shared.models.SalesEntry;
     import shared.utils.FileUtils;
     import shared.utils.SwingUtils;
@@ -69,57 +69,42 @@ import shared.models.Item;
         }
 
         private void addSalesEntry() {
+            // Get input values
+            String customerName = tfCustomerName.getText().trim();
+            String customerContact = tfCustomerContact.getText().trim();
+            String itemId = (String) cbItemID.getSelectedItem();
+            String itemName = lbItemName.getText();
+            String quantity = String.valueOf(spQuantity.getValue()); // or jSpinner1 if that's still used
+
+            String date = String.format("%s/%s/%s", 
+                cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem());
+            String dateRequired = String.format("%s/%s/%s", 
+                cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem());
+
+            // Validate inputs
+            if (customerName.isEmpty() || customerContact.isEmpty() || 
+                itemId == null || itemId.trim().isEmpty() || 
+                itemName == null || itemName.trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Prepare fields to save
+            Map<String, String> fields = new HashMap<>();
+            fields.put("customerName", customerName);
+            fields.put("customerContact", customerContact);
+            fields.put("itemId", itemId);
+            fields.put("itemName", itemName);
+            fields.put("quantity", quantity);
+            fields.put("date", date);
+            fields.put("dateRequired", dateRequired);
+
+            // Attempt to save
             try {
-                // Get item based on selection
-                int selectedIndex = cbItemID.getSelectedIndex();
-                if (selectedIndex < 0 || selectedIndex >= itemsList.size()) {
-                    JOptionPane.showMessageDialog(this, "Invalid item selected.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                String[] selectedItemArray = itemsList.get(selectedIndex);
-                Item selectedItem = new Item(
-                    selectedItemArray[0], // itemCode
-                    selectedItemArray[1], // name
-                    selectedItemArray[2], // supplierId
-                    Integer.parseInt(selectedItemArray[3]), // stock
-                    Double.parseDouble(selectedItemArray[5]) // price
-                );
-
-                // Create Customer object
-                Customer customer = new Customer(
-                    tfCustomerName.getText().trim(),
-                    tfCustomerContact.getText().trim()
-                );
-
-                // Create SalesEntry object
-                SalesEntry entry = new SalesEntry(
-                    String.format("%s/%s/%s", cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem()),
-                    String.format("%s/%s/%s", cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem()),
-                    customer,
-                    selectedItem,
-                    (int) spQuantity.getValue()
-                );
-
-                // Validate inputs
-                if (customer.getName().isEmpty() || customer.getContact().isEmpty()) {
-                    JOptionPane.showMessageDialog(this,
-                        "Please fill in all required fields",
-                        "Input Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // Convert to map for FileUtils
-                Map<String, String> fields = new HashMap<>();
-                fields.put("date", entry.getDate());
-                fields.put("dateRequired", entry.getDateRequired());
-                fields.put("customerName", customer.getName());
-                fields.put("customerContact", customer.getContact());
-                fields.put("itemId", selectedItem.getItemCode());
-                fields.put("itemName", selectedItem.getName());
-                fields.put("quantity", String.valueOf(entry.getQuantity()));
-
-                // Add to file
                 String salesId = FileUtils.addToFile(
                     SALES_FILE,
                     FileUtils.RECORD_TYPE_SALES,
@@ -138,9 +123,8 @@ import shared.models.Item;
                         "Sales entry added successfully!\nID: " + salesId,
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
-
                     clearSalesForm();
-                    loadSalesToTable(); // Refresh table
+                    loadSalesToTable(); // If needed
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
