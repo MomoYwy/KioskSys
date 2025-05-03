@@ -9,7 +9,7 @@ import shared.utils.FileUtils;
  * @author User
  */
 public class ViewSalesEntry extends javax.swing.JFrame {
-    private static final String SALES_FILE = "sales_data.txt";
+    private static final String SALES_FILE = "src/database/sales_entry.txt";
 
     /**
      * Creates new form ViewSalesEntry
