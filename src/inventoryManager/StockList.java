@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.Map;
 import java.util.HashMap;
+import shared.frames.ViewSalesEntry;
 
 
 public class StockList extends javax.swing.JFrame {
@@ -120,6 +121,7 @@ public class StockList extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         StockTable = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        btnViewSalesEntry = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -170,6 +172,13 @@ public class StockList extends javax.swing.JFrame {
             }
         });
 
+        btnViewSalesEntry.setText("View Sales Entry");
+        btnViewSalesEntry.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewSalesEntryActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -181,6 +190,8 @@ public class StockList extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnViewSalesEntry)
+                        .addGap(31, 31, 31)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -191,7 +202,9 @@ public class StockList extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(btnViewSalesEntry))
                 .addGap(0, 68, Short.MAX_VALUE))
         );
 
@@ -208,6 +221,30 @@ public class StockList extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Stocks updated");
     
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnViewSalesEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewSalesEntryActionPerformed
+        ViewSalesEntry salesEntryFrame = new ViewSalesEntry();
+    
+        // Position it to the right of the StockList frame
+        Point stockListLocation = this.getLocation();
+        int x = stockListLocation.x + this.getWidth() + 10; // 10 pixels gap
+        int y = stockListLocation.y;
+        salesEntryFrame.setLocation(x, y);
+
+        // Make sure both frames stay on top when either is clicked
+        salesEntryFrame.setAlwaysOnTop(this.isAlwaysOnTop());
+
+        // Show the sales entry frame
+        salesEntryFrame.setVisible(true);
+
+        // Add listener to refresh stock list when sales entry is closed
+        salesEntryFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadSalesData("src/database/sales_entry.txt");
+            }
+        });
+    }//GEN-LAST:event_btnViewSalesEntryActionPerformed
 
     /**
      * @param args the command line arguments
@@ -248,6 +285,7 @@ public class StockList extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable StockTable;
+    private javax.swing.JButton btnViewSalesEntry;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
