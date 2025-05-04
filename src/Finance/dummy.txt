@@ -1,0 +1,35 @@
+PO ID: PO001
+Supplier ID: SUP001
+Total Amount: 1500.00
+Payment Status: Paid
+PO Status: Approved
+Date: 2024-04-15
+
+PO ID: PO002
+Supplier ID: SUP002
+Total Amount: 2500.00
+Payment Status: Pending
+PO Status: Pending
+Date: 2024-04-16
+
+PO ID: PO003
+Supplier ID: SUP003
+Total Amount: 1000.00
+Payment Status: Paid
+PO Status: Dispatched
+Date: 2024-04-17
+
+PO ID: PO004
+Supplier ID: SUP004
+Total Amount: 3000.00
+Payment Status: Overdue
+PO Status: Received
+Date: 2024-04-18
+
+PO ID: PO005
+Supplier ID: SUP005
+Total Amount: 5000.00
+Payment Status: Refunded
+PO Status: Approved
+Date: 2024-04-19
+
