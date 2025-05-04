@@ -2,6 +2,7 @@ package Finance;
 
 import javax.swing.*;
 import java.awt.event.*;
+import salesManager.PurchaseRequisition;
 
 /**
  *
@@ -14,7 +15,17 @@ public class FinanceDashboard extends javax.swing.JFrame {
      */
     public FinanceDashboard() {
         initComponents();
+        
+         // Add action listener for the "View PR" button
+        btnViewPR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewPRActionPerformed(evt);  // Call the method when the button is clicked
+            }
+        });
     }
+    
+    
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -188,7 +199,12 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewPOActionPerformed
 
     private void btnViewPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPRActionPerformed
-        // TODO add your handling code here:
+            // Open the Purchase Requisition frame
+        PurchaseRequisition prFrame = new PurchaseRequisition();
+        prFrame.setVisible(true);  // Display the Purchase Requisition frame
+
+            // Optionally, close the current Finance Dashboard frame
+        this.dispose();  // Close the Finance Dashboard frame (if you want it closed)
     }//GEN-LAST:event_btnViewPRActionPerformed
 
     private void btnFinanceReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinanceReportActionPerformed

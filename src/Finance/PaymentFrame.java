@@ -1,11 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package Finance;
 
-import javax.swing.JOptionPane;
 
+import javax.swing.JOptionPane;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  *
  * @author User
@@ -18,7 +21,8 @@ public class PaymentFrame extends javax.swing.JFrame {
     public PaymentFrame() {
         initComponents();
     }
-
+   
+ 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -115,7 +119,7 @@ public class PaymentFrame extends javax.swing.JFrame {
 
         jLabel4.setText("Payment Method:");
 
-        jLabel5.setText("Payment Amount:");
+        jLabel5.setText("Payment Amount (RM):");
 
         jLabel6.setText("Payment Date:");
 
@@ -142,10 +146,6 @@ public class PaymentFrame extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(cmbPMethod, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel3)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -154,8 +154,13 @@ public class PaymentFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtPAmount)
-                            .addComponent(txtPDate))))
-                .addGap(175, 175, 175)
+                            .addComponent(txtPDate)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbPMethod, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(146, 146, 146)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnPayment)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
@@ -170,10 +175,10 @@ public class PaymentFrame extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cmbPMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)))
+                        .addGap(21, 21, 21)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(cmbPMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(57, 57, 57)
                         .addComponent(btnPayment)))
@@ -181,10 +186,10 @@ public class PaymentFrame extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtPAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtPDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                .addGap(32, 32, 32)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtPDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(58, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -215,22 +220,46 @@ public class PaymentFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
-        String paymentAmount = txtPAmount.getText().trim();
-        String paymentDate = txtPDate.getText().trim();
-        String paymentMethod = (String) cmbPMethod.getSelectedItem(); 
-        
-        if (paymentAmount.isEmpty() || paymentDate.isEmpty() || paymentMethod.isEmpty()) {
+    // Retrieve input data from the text fields and combo box
+    String paymentAmount = txtPAmount.getText().trim();
+    String paymentDate = txtPDate.getText().trim();
+    String paymentMethod = (String) cmbPMethod.getSelectedItem(); 
+
+    // Debug prints
+    System.out.println("Payment Method: " + paymentMethod);
+    System.out.println("Payment Amount: " + paymentAmount);
+    System.out.println("Payment Date: " + paymentDate);
+
+    // Check if any field is empty
+    if (paymentAmount.isEmpty() || paymentDate.isEmpty() || paymentMethod.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Please fill in all the fields!", "Missing Information", JOptionPane.WARNING_MESSAGE);
     } else {
         // Proceed if all fields are filled
         JOptionPane.showMessageDialog(this, "Paid Successfully!", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
 
+        // Store data into payment.txt file using BufferedWriter
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/payment.txt", true))) {
+            // Prepare the payment details to write to the file
+            String recordLine = "Payment Method: " + paymentMethod + "\n" +
+                                 "Payment Amount: " + paymentAmount + "\n" +
+                                 "Payment Date: " + paymentDate + "\n";
+
+            // Write the record to the file
+            writer.write(recordLine);
+            writer.newLine();  // Blank line between entries for readability
+            System.out.println("Payment details saved to file.");
+            
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error saving payment information.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error: " + ex.getMessage());
+        }
+
         // Optional: Clear fields after success
         txtPAmount.setText("");
         txtPDate.setText("");
         cmbPMethod.setSelectedIndex(0); // reset to first option
-    }
-        
+    
+}
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed

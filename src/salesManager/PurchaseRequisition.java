@@ -7,7 +7,10 @@ public class PurchaseRequisition extends javax.swing.JFrame {
    
     public PurchaseRequisition() {
         initComponents();
+        
+        
     }
+    
 
 
     @SuppressWarnings("unchecked")
