@@ -9,6 +9,8 @@ import shared.utils.FileUtils;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import javax.swing.JOptionPane;
 
 public class RegisterScreen extends javax.swing.JFrame {
@@ -157,8 +159,8 @@ public class RegisterScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public static String generateUserId(String role) {
-    String prefix = "";
-    
+        String prefix = "";
+
         // Determine prefix based on role
         prefix = switch (role) {
             case "ADMIN" -> "A";
@@ -167,51 +169,79 @@ public class RegisterScreen extends javax.swing.JFrame {
             case "INVENTORY_MANAGER" -> "I";
             case "FINANCE_MANAGER" -> "F";
             default -> "U";
-        }; 
+        };
 
-        // Generate timestamp suffix (last 6 digits of current time)
+        // Generate timestamp suffix (last 3 digits of current time)
         String timestamp = String.valueOf(System.currentTimeMillis());
         String suffix = timestamp.substring(timestamp.length() - 3);
 
-        return prefix + suffix; 
+        return prefix + suffix;
     }
     
     private void registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerActionPerformed
         String username = tfUsername.getText().trim();
-        String password = tfPassword.getText().trim();
+        String password = new String(tfPassword.getText());
         String role = (String) cbRole.getSelectedItem();
-        
+
         try {
-        // Generate role-specific ID
-        String userId = generateUserId(role);
-        
-        // Check if username exists
-        if (FileUtils.isUsernameTaken(USERS_FILE, username)) {
-            JOptionPane.showMessageDialog(this, 
-                "Username already exists", 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Save to file (with hashed password in production)
-        saveUser(userId, username, password, role);
-        
-        JOptionPane.showMessageDialog(this, 
-            "User registered successfully!\nAssigned ID: " + userId,
-            "Success",
-            JOptionPane.INFORMATION_MESSAGE);
-        clearForm();
-        
+            // Generate role-specific ID
+            String userId = generateUserId(role);
+
+            // Check if username exists
+            if (FileUtils.isUsernameTaken(USERS_FILE, username)) {
+                JOptionPane.showMessageDialog(this,
+                        "Username already exists",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Encrypt the password
+            String encryptedPassword = encryptPassword(password);
+            if (encryptedPassword == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Password encryption failed",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Save to file with the encrypted password
+            saveUser(userId, username, encryptedPassword, role);
+
+            JOptionPane.showMessageDialog(this,
+                    "User registered successfully!\nAssigned ID: " + userId,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            clearForm();
+
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Registration failed: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Registration failed: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_registerActionPerformed
 
-    private void saveUser(String userId, String username, String password, String role) 
+    private String encryptPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256"); // You can choose a different algorithm
+            byte[] hashedBytes = md.digest(password.getBytes());
+
+            // Convert byte array to a hexadecimal string
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : hashedBytes) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    
+    private void saveUser(String userId, String username, String password, String role)
             throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USERS_FILE, true))) {
             writer.write(String.join(",", userId, username, password, role));
