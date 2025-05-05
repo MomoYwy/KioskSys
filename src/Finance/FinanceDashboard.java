@@ -3,6 +3,7 @@ package Finance;
 import javax.swing.*;
 import java.awt.event.*;
 import salesManager.PurchaseRequisition;
+import Finance.InventoryUpdates; 
 
 /**
  *
@@ -22,6 +23,17 @@ public class FinanceDashboard extends javax.swing.JFrame {
                 btnViewPRActionPerformed(evt);  // Call the method when the button is clicked
             }
         });
+        
+        btnInventoryUpdate.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        // Create and display the InventoryUpdates frame when the button is clicked
+        InventoryUpdates inventoryUpdatesFrame = new InventoryUpdates();  // Create the InventoryUpdates instance
+        inventoryUpdatesFrame.setVisible(true);  // Make the InventoryUpdates frame visible
+        setVisible(false);  // Optionally hide the current FinanceDashboard frame
+    }
+        });
+        
+        
     }
     
     
@@ -199,12 +211,16 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewPOActionPerformed
 
     private void btnViewPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPRActionPerformed
-            // Open the Purchase Requisition frame
-        PurchaseRequisition prFrame = new PurchaseRequisition();
-        prFrame.setVisible(true);  // Display the Purchase Requisition frame
-
-            // Optionally, close the current Finance Dashboard frame
-        this.dispose();  // Close the Finance Dashboard frame (if you want it closed)
+        btnViewPR.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        // Create and display the ViewPR frame when the button is clicked
+        ViewPR viewPRFrame = new ViewPR(); // Create the PR frame instance
+        viewPRFrame.setVisible(true); // Make the PR frame visible
+        
+        // Optionally, you can close the current Finance Dashboard frame
+        dispose(); // Close the Finance Dashboard frame if needed
+    }
+});
     }//GEN-LAST:event_btnViewPRActionPerformed
 
     private void btnFinanceReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinanceReportActionPerformed
@@ -221,7 +237,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFinanceReportActionPerformed
 
     private void btnInventoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryUpdateActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btnInventoryUpdateActionPerformed
 
     /**

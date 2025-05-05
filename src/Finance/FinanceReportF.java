@@ -1,5 +1,7 @@
 package Finance;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -177,6 +179,7 @@ public class FinanceReportF extends javax.swing.JFrame {
         txtTotalPo = new javax.swing.JTextField();
         txtPending = new javax.swing.JTextField();
         txtPaid = new javax.swing.JTextField();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -258,6 +261,13 @@ public class FinanceReportF extends javax.swing.JFrame {
             }
         });
 
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -274,21 +284,24 @@ public class FinanceReportF extends javax.swing.JFrame {
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(31, 31, 31)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(cmbPoStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel3)
+                                            .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(31, 31, 31)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(cmbPoStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(81, 81, 81)
+                                        .addComponent(btnRefresh)
+                                        .addGap(46, 46, 46)
+                                        .addComponent(btnOK)))
                                 .addGap(32, 32, 32)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnBack)
                                     .addComponent(jLabel5)
                                     .addComponent(cmbPaymentStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(141, 141, 141)
-                        .addComponent(btnRefresh)
-                        .addGap(82, 82, 82)
-                        .addComponent(btnOK))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addComponent(jLabel6)
@@ -324,7 +337,8 @@ public class FinanceReportF extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRefresh)
-                    .addComponent(btnOK))
+                    .addComponent(btnOK)
+                    .addComponent(btnBack))
                 .addGap(37, 37, 37)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
@@ -380,6 +394,16 @@ public class FinanceReportF extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPendingActionPerformed
 
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        btnBack.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        
+        FinanceDashboard financeDashboard = new FinanceDashboard();
+        financeDashboard.setVisible(true);       
+        dispose();
+        }});
+    }//GEN-LAST:event_btnBackActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -417,6 +441,7 @@ public class FinanceReportF extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnOK;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JComboBox<String> cmbDay;

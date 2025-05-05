@@ -1,7 +1,16 @@
 package Finance;
 
+import java.awt.Color;
+import java.awt.Component;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,10 +23,88 @@ public class InventoryUpdates extends javax.swing.JFrame {
      */
     public InventoryUpdates() {
         initComponents();
-        
+        loadSalesData("src/database/sales_entry.txt");
      
-         
     }
+    
+        private void loadSalesData(String filePath) {
+    try {
+       
+        Map<String, String> categoryMap = new HashMap<>();
+        try (BufferedReader itemReader = new BufferedReader(new FileReader("src/database/items.txt"))) {
+            String line;
+            while ((line = itemReader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2) {
+                    String itemId = parts[0].trim();
+                    String category = parts[parts.length - 1].trim();  
+                    categoryMap.put(itemId, category);
+                }
+            }
+        }
+
+     
+        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Item ID", "Item Name", "Category", "Stock Amount"}, 0);
+
+        Map<String, Integer> stockMap = new HashMap<>();
+        Map<String, String> itemNameMap = new HashMap<>();
+
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] data = line.split(",");
+            if (data.length >= 8) {
+                String itemId = data[5].trim();
+                String itemName = data[6].trim();
+                int soldQty = Integer.parseInt(data[7].trim());
+
+                if (stockMap.containsKey(itemId)) {
+                    int currentQty = stockMap.get(itemId);
+                    stockMap.put(itemId, currentQty - soldQty);
+                } else {
+                    stockMap.put(itemId, -soldQty);
+                    itemNameMap.put(itemId, itemName);
+                }
+            }
+        }
+        br.close();
+
+      
+        for (Map.Entry<String, Integer> entry : stockMap.entrySet()) {
+            String itemId = entry.getKey();
+            int quantity = entry.getValue();
+            String itemName = itemNameMap.get(itemId);
+            String category = categoryMap.getOrDefault(itemId, "N/A");
+
+            model.addRow(new Object[]{itemId, itemName, category, quantity});
+        }
+
+        StockTable.setModel(model);
+
+        StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                try {
+                    int quantity = Integer.parseInt(table.getValueAt(row, 3).toString());
+                    if (quantity < 10) {
+                        c.setBackground(Color.PINK);
+                    } else {
+                        c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+                    }
+                } catch (NumberFormatException e) {
+                    c.setBackground(Color.WHITE);
+                }
+
+                return c;
+            }
+        });
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Cannot read message: " + e.getMessage());
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -32,8 +119,9 @@ public class InventoryUpdates extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        StockTable = new javax.swing.JTable();
         btnProceedtoPayment = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -60,22 +148,22 @@ public class InventoryUpdates extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        StockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Item_ID", "Item_Name", "Supplier_ID", "Price(RM)", "Category"
+                "Item ID", "Item Name", "Category", "Stock Amount"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -86,7 +174,7 @@ public class InventoryUpdates extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(StockTable);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -108,6 +196,13 @@ public class InventoryUpdates extends javax.swing.JFrame {
             }
         });
 
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,8 +210,10 @@ public class InventoryUpdates extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(231, 231, 231)
-                .addComponent(btnProceedtoPayment)
+                .addGap(142, 142, 142)
+                .addComponent(btnProceedtoPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -126,7 +223,9 @@ public class InventoryUpdates extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(btnProceedtoPayment)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnProceedtoPayment)
+                    .addComponent(btnBack))
                 .addGap(0, 19, Short.MAX_VALUE))
         );
 
@@ -144,6 +243,16 @@ public class InventoryUpdates extends javax.swing.JFrame {
         setVisible(false); // Optionally hide the current frame
     }});
     }//GEN-LAST:event_btnProceedtoPaymentActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        btnBack.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        
+        FinanceDashboard financeDashboard = new FinanceDashboard();
+        financeDashboard.setVisible(true);       
+        dispose();
+        }});     
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -182,11 +291,12 @@ public class InventoryUpdates extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable StockTable;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnProceedtoPayment;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
