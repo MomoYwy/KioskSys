@@ -6,10 +6,7 @@ package Finance;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.table.DefaultTableModel;
+
 public class ViewPR extends javax.swing.JFrame {
 
     /**

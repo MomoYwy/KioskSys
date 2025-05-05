@@ -16,24 +16,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
      */
     public FinanceDashboard() {
         initComponents();
-        
-         // Add action listener for the "View PR" button
-        btnViewPR.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnViewPRActionPerformed(evt);  // Call the method when the button is clicked
-            }
-        });
-        
-        btnInventoryUpdate.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        // Create and display the InventoryUpdates frame when the button is clicked
-        InventoryUpdates inventoryUpdatesFrame = new InventoryUpdates();  // Create the InventoryUpdates instance
-        inventoryUpdatesFrame.setVisible(true);  // Make the InventoryUpdates frame visible
-        setVisible(false);  // Optionally hide the current FinanceDashboard frame
-    }
-        });
-        
-        
+
     }
     
     
@@ -237,7 +220,14 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFinanceReportActionPerformed
 
     private void btnInventoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryUpdateActionPerformed
-
+        btnInventoryUpdate.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        // Create and display the InventoryUpdates frame when the button is clicked
+        InventoryUpdates inventoryUpdatesFrame = new InventoryUpdates();  // Create the InventoryUpdates instance
+        inventoryUpdatesFrame.setVisible(true);  // Make the InventoryUpdates frame visible
+        setVisible(false);  // Optionally hide the current FinanceDashboard frame
+    }
+        });
     }//GEN-LAST:event_btnInventoryUpdateActionPerformed
 
     /**
