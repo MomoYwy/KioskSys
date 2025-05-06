@@ -2,6 +2,8 @@ package salesManager;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 import shared.utils.FileUtils;
 
@@ -16,6 +18,12 @@ public class EditSupplier extends javax.swing.JFrame {
         initComponents();
         loadSupplierData();
         itemFields.add(tfSuppliedItem);
+        
+        // Hide new item fields by default
+        tfNewItemName.setVisible(false);
+        spNewItemPrice.setVisible(false);
+        jLabel12.setVisible(false);
+        jLabel13.setVisible(false);
     }
     
     private void loadSupplierData() {
@@ -30,12 +38,12 @@ public class EditSupplier extends javax.swing.JFrame {
                             // Load basic supplier info
                             tfSupplierName.setText(parts[1]);
                             tfSuppliedItem.setText(parts[2]);
-                            tfContact.setText(parts[3]);
-                            jSpinner1.setValue(Integer.parseInt(parts[4]));
-                            spItemPrice.setValue(Integer.parseInt(parts[3]));
+                            spItemPrice.setValue(Double.parseDouble(parts[3]));
+                            tfContact.setText(parts[4]);
+                            jSpinner1.setValue(Integer.parseInt(parts[5]));
                             
                             // Parse address components
-                            String[] addressParts = parts[5].split("\\|");
+                            String[] addressParts = parts[6].split("\\|");
                             if (addressParts.length >= 4) {
                                 tfStreet.setText(addressParts[0]);
                                 tfCity.setText(addressParts[1]);
@@ -54,13 +62,11 @@ public class EditSupplier extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    
-    
+                                         
+
     private void saveSupplier() {
-        // Validate inputs
+        // Validate common fields
         if (tfSupplierName.getText().trim().isEmpty() || 
-            tfSuppliedItem.getText().trim().isEmpty() ||
             tfContact.getText().trim().isEmpty() ||
             tfStreet.getText().trim().isEmpty() ||
             tfCity.getText().trim().isEmpty() ||
@@ -73,7 +79,23 @@ public class EditSupplier extends javax.swing.JFrame {
             return;
         }
 
-        // Validate item price is positive
+        if (rbAddNewItem.isSelected()) {
+            saveNewItem();
+        } else {
+            saveOriginalItem();
+        }
+    }
+    
+    private void saveOriginalItem() {
+        // Validate item fields
+        if (tfSuppliedItem.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter at least one supplied item",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         double itemPrice = ((Number) spItemPrice.getValue()).doubleValue();
         if (itemPrice <= 0) {
             JOptionPane.showMessageDialog(this,
@@ -83,56 +105,30 @@ public class EditSupplier extends javax.swing.JFrame {
             return;
         }
 
-        // Collect all supplied items (skip empty fields)
-        ArrayList<String> suppliedItems = new ArrayList<>();
-        for (JTextField field : itemFields) {
-            String item = field.getText().trim();
-            if (!item.isEmpty()) {
-                suppliedItems.add(item);
-            }
-        }
-
-        if (suppliedItems.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Please enter at least one supplied item",
-                "Validation Error",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Combine items with semicolons
-        String itemsCombined = String.join("|", suppliedItems);
-
-        // Create address string
-        String address = String.join("|", 
-            tfStreet.getText().trim(),
-            tfCity.getText().trim(),
-            tfState.getSelectedItem().toString(),
-            tfPostalCode.getText().trim());
-
-        // Create the updated supplier record with price
-        String updatedRecord = String.join(",",
-            supplierId,
-            tfSupplierName.getText().trim(),
-            itemsCombined,
-            String.format("%.2f", itemPrice), // Format price to 2 decimal places
-            tfContact.getText().trim(),
-            jSpinner1.getValue().toString(),
-            address);
-
         try {
-            // Update the supplier in the file
-            FileUtils.updateRecordInFile(SupplierEntry.SUPPLIERS_FILE, supplierId, updatedRecord);
+            // Prepare fields for update
+            Map<String, String> fields = new HashMap<>();
+            fields.put("name", tfSupplierName.getText().trim());
+            fields.put("itemName", tfSuppliedItem.getText().trim());
+            fields.put("itemPrice", String.valueOf(itemPrice));
+            fields.put("contact", tfContact.getText().trim());
+            fields.put("deliveryTime", jSpinner1.getValue().toString());
+            fields.put("street", tfStreet.getText().trim());
+            fields.put("city", tfCity.getText().trim());
+            fields.put("state", tfState.getSelectedItem().toString());
+            fields.put("postalCode", tfPostalCode.getText().trim());
+
+            // Update the record
+            FileUtils.updateRecordInFile(SupplierEntry.SUPPLIERS_FILE, supplierId, 
+                FileUtils.addToFile(SupplierEntry.SUPPLIERS_FILE, FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> supplierId));
 
             JOptionPane.showMessageDialog(this,
                 "Supplier updated successfully!",
                 "Success",
                 JOptionPane.INFORMATION_MESSAGE);
 
-            // Return to supplier entry screen
             this.dispose();
             new SupplierEntry().setVisible(true);
-
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                 "Error saving supplier: " + e.getMessage(),
@@ -140,6 +136,82 @@ public class EditSupplier extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private void saveNewItem() {
+       // Validate new item fields
+       if (tfNewItemName.getText().trim().isEmpty()) {
+           JOptionPane.showMessageDialog(this,
+               "Please enter a new item name",
+               "Validation Error",
+               JOptionPane.WARNING_MESSAGE);
+           return;
+       }
+
+       double newItemPrice = ((Number) spNewItemPrice.getValue()).doubleValue();
+       if (newItemPrice <= 0) {
+           JOptionPane.showMessageDialog(this,
+               "New item price must be greater than 0",
+               "Validation Error",
+               JOptionPane.WARNING_MESSAGE);
+           return;
+       }
+
+       String newItemName = tfNewItemName.getText().trim();
+
+       try {
+           // Check if item exists in inventory
+           if (!FileUtils.itemExistsByName("src/database/items.txt", newItemName)) {
+               int choice = JOptionPane.showConfirmDialog(this,
+                   "Item '" + newItemName + "' doesn't exist in inventory.\n" +
+                   "Would you like to add it now?",
+                   "Add New Item",
+                   JOptionPane.YES_NO_OPTION);
+
+               if (choice == JOptionPane.YES_OPTION) {
+                   openItemEntryScreen(newItemName);
+                   return; // Exit saving process - user will need to save again after adding item
+               }
+           }
+
+           // Prepare fields for new record
+           Map<String, String> fields = new HashMap<>();
+           fields.put("name", tfSupplierName.getText().trim());
+           fields.put("itemName", newItemName);
+           fields.put("itemPrice", String.valueOf(newItemPrice));
+           fields.put("contact", tfContact.getText().trim());
+           fields.put("deliveryTime", jSpinner1.getValue().toString());
+           fields.put("street", tfStreet.getText().trim());
+           fields.put("city", tfCity.getText().trim());
+           fields.put("state", tfState.getSelectedItem().toString());
+           fields.put("postalCode", tfPostalCode.getText().trim());
+
+           // Add as a new record (keeping the same supplier ID)
+           String newSupplierId = FileUtils.addToFile(SupplierEntry.SUPPLIERS_FILE, 
+               FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> supplierId);
+
+           if (newSupplierId != null) {
+               JOptionPane.showMessageDialog(this,
+                   "New supplier item added successfully!",
+                   "Success",
+                   JOptionPane.INFORMATION_MESSAGE);
+
+               this.dispose();
+               new SupplierEntry().setVisible(true);
+           }
+       } catch (Exception e) {
+           JOptionPane.showMessageDialog(this,
+               "Error saving new supplier item: " + e.getMessage(),
+               "Error",
+               JOptionPane.ERROR_MESSAGE);
+       }
+   }
+
+   private void openItemEntryScreen(String itemName) {
+       ItemEntry itemEntry = new ItemEntry();
+       itemEntry.setItemName(itemName);
+       itemEntry.setVisible(true);
+       this.dispose();
+   }
 
 
     @SuppressWarnings("unchecked")
@@ -400,7 +472,16 @@ public class EditSupplier extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void rbAddNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbAddNewItemActionPerformed
+        boolean selected = rbAddNewItem.isSelected();
+        tfNewItemName.setVisible(selected);
+        spNewItemPrice.setVisible(selected);
+        jLabel12.setVisible(selected);
+        jLabel13.setVisible(selected);
         
+        if (selected) {
+            tfNewItemName.setText("");
+            spNewItemPrice.setValue(0.0);
+        }
     }//GEN-LAST:event_rbAddNewItemActionPerformed
 
  

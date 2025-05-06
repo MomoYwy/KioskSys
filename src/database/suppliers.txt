@@ -5,3 +5,4 @@ S002,Alibaba,Socks|G004,2,080123124,7,Alibaba in the house|Bukit Bintang|Kuala L
 S003,Momo,chocalate,3,0123123142,1,Seri Alam|Masai|Johor|81750
 S004,Timmy,chocalate,2,010331131,2,George Town|Pulao pinang|Penang|13123123
 S005,Polar,banana,12,009990213,5,Taman RInting|beringin|Malacca|12993
+S005,Polar,papaya,4.0,009990213,5,Taman RInting|beringin|Malacca|12993

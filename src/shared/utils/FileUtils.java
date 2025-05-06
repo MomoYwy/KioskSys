@@ -89,6 +89,22 @@ public class FileUtils {
         }
     }
     
+    public static boolean itemExistsByName(String filePath, String itemName) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) return false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2 && parts[1].equalsIgnoreCase(itemName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public static void updateRecordInFile(String filePath, String recordId, String updatedRecord) throws IOException {
         File originalFile = new File(filePath);
         File tempFile = new File(filePath + ".tmp");
@@ -378,6 +394,8 @@ public class FileUtils {
             }
         }
     }
+    
+    
     
     private static void showErrorDialog(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);

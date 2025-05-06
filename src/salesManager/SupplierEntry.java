@@ -127,13 +127,16 @@ public class SupplierEntry extends javax.swing.JFrame {
     }
     
    private boolean itemExistsByName(String itemName) {
-        try {
-            List<String[]> items = SwingUtils.loadItemsFromFile("src/database/items.txt");
-            return items.stream().anyMatch(item -> item[1].equalsIgnoreCase(itemName));
-        } catch (Exception e) {
-            return false;
-        }
+    try {
+        return FileUtils.itemExistsByName("src/database/items.txt", itemName);
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this,
+            "Error checking item existence: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return false;
     }
+}
     
     public static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
         @SuppressWarnings("unchecked")
