@@ -19,6 +19,7 @@ public class FileUtils {
     public static final String RECORD_TYPE_ITEM = "ITEM";
     public static final String RECORD_TYPE_SUPPLIER = "SUPPLIER";
     public static final String RECORD_TYPE_SALES = "SALES";
+    public static final String RECORD_TYPE_PR = "PR";
     
 // This method is used to check if a txt file for the item is created or not
 // if not, it will create a new file

@@ -1,3 +1,4 @@
+Item_ID Item_Name Supplier_ID Price Category
 G001,Bread,S001,3.0,GROCERIES
 E001,Scissors,S002,9.5,ESSENTIAL GOODS
 G002,Strawberry,S004,30.0,GROCERIES

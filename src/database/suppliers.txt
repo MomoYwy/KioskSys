@@ -1,3 +1,4 @@
+Supplier_ID Supplier_Name Item_Name Item_Price Contact Address
 
 S001,Leong,banana,30.0,0102233442,2,Sri Petaling|Bukit Jalil|Kuala Lumpur|57000
 S002,Alibaba,Socks|G004,2,080123124,7,Alibaba in the house|Bukit Bintang|Kuala Lumpur|57500

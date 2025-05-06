@@ -1,3 +1,5 @@
+Sales_ID Date Date_Required Customer_Name Customer_Contact Price Quantity
+
 SE0001,21/4/2025,24/4/2025,Habibi,01022399433,G003,Cabbage(per kg),40
 SE0002,29/6/2025,22/7/2025,guangwei,01111955422,G003,Cabbage(per kg),5
 SE0003,22/4/2025,22/4/2025,najib,0128764567,Item 4,Socks,50
