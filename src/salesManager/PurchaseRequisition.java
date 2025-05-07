@@ -25,7 +25,6 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         lblFlaggedStock = new javax.swing.JLabel();
         lblItemID = new javax.swing.JLabel();
         lblItemNm = new javax.swing.JLabel();
-        lblCategory = new javax.swing.JLabel();
         lblStockAmt = new javax.swing.JLabel();
         lblQuantity = new javax.swing.JLabel();
         lblDateRequired = new javax.swing.JLabel();
@@ -36,11 +35,11 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         btnViewList = new javax.swing.JButton();
         lblSHItemID = new javax.swing.JLabel();
         lblSHItemNm = new javax.swing.JLabel();
-        lblSHCategory = new javax.swing.JLabel();
         lblSHStockAmt = new javax.swing.JLabel();
         cboSHQuantity = new javax.swing.JComboBox<>();
         txtDateRequired = new javax.swing.JTextField();
-        cboSHSupplierNm = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listSupplier = new javax.swing.JList<>();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -68,7 +67,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(lblPR, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(416, Short.MAX_VALUE))
+                .addContainerGap(429, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -98,8 +97,6 @@ public class PurchaseRequisition extends javax.swing.JFrame {
 
         lblItemNm.setText("Item_Name:");
 
-        lblCategory.setText("Category:");
-
         lblStockAmt.setText("Stock_Amount:");
 
         lblQuantity.setText("Quantity:");
@@ -125,15 +122,13 @@ public class PurchaseRequisition extends javax.swing.JFrame {
 
         lblSHItemNm.setText("jLabel9");
 
-        lblSHCategory.setText("jLabel10");
-
         lblSHStockAmt.setText("jLabel11");
 
         cboSHQuantity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         txtDateRequired.setText("(DD/MM/YYYY)");
 
-        cboSHSupplierNm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jScrollPane2.setViewportView(listSupplier);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -151,14 +146,12 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblItemID)
                             .addComponent(lblItemNm)
-                            .addComponent(lblCategory)
                             .addComponent(lblStockAmt))
                         .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblSHItemID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblSHItemNm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblSHCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                            .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                         .addGap(107, 107, 107)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -170,10 +163,10 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                                     .addComponent(lblDateRequired)
                                     .addComponent(lblSupplier))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtDateRequired, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                                    .addComponent(cboSHSupplierNm, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addContainerGap(125, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtDateRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -200,28 +193,31 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                     .addComponent(lblSHItemID)
                     .addComponent(cboSHQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblItemNm)
-                    .addComponent(lblDateRequired)
-                    .addComponent(lblSHItemNm)
-                    .addComponent(txtDateRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblDateRequired)
+                        .addComponent(txtDateRequired, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblItemNm)
+                        .addComponent(lblSHItemNm)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCategory)
-                    .addComponent(lblSupplier)
-                    .addComponent(lblSHCategory)
-                    .addComponent(cboSHSupplierNm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblStockAmt)
-                    .addComponent(lblSHStockAmt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdd)
-                    .addComponent(btnEdit)
-                    .addComponent(btnDelete)
-                    .addComponent(btnViewList))
-                .addGap(39, 39, 39))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblSupplier)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblStockAmt)
+                                .addComponent(lblSHStockAmt)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdd)
+                            .addComponent(btnEdit)
+                            .addComponent(btnDelete)
+                            .addComponent(btnViewList))
+                        .addGap(39, 39, 39))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(106, Short.MAX_VALUE))))
         );
 
         pack();
@@ -272,23 +268,22 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnViewList;
     private javax.swing.JComboBox<String> cboSHQuantity;
-    private javax.swing.JComboBox<String> cboSHSupplierNm;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblCategory;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblDateRequired;
     private javax.swing.JLabel lblFlaggedStock;
     private javax.swing.JLabel lblItemID;
     private javax.swing.JLabel lblItemNm;
     private javax.swing.JLabel lblPR;
     private javax.swing.JLabel lblQuantity;
-    private javax.swing.JLabel lblSHCategory;
     private javax.swing.JLabel lblSHItemID;
     private javax.swing.JLabel lblSHItemNm;
     private javax.swing.JLabel lblSHStockAmt;
     private javax.swing.JLabel lblStockAmt;
     private javax.swing.JLabel lblSupplier;
+    private javax.swing.JList<String> listSupplier;
     private javax.swing.JTable tblStockList;
     private javax.swing.JTextField txtDateRequired;
     // End of variables declaration//GEN-END:variables

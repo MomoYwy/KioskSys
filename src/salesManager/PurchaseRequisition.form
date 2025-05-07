@@ -54,19 +54,17 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblItemID" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lblItemNm" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblCategory" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lblStockAmt" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="lblSHItemID" max="32767" attributes="0"/>
                           <Component id="lblSHItemNm" max="32767" attributes="0"/>
-                          <Component id="lblSHCategory" alignment="0" pref="90" max="32767" attributes="0"/>
-                          <Component id="lblSHStockAmt" alignment="1" max="32767" attributes="0"/>
+                          <Component id="lblSHStockAmt" alignment="1" pref="90" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="107" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="lblQuantity" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                               <Component id="cboSHQuantity" min="-2" max="-2" attributes="0"/>
@@ -77,15 +75,15 @@
                                   <Component id="lblSupplier" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtDateRequired" pref="125" max="32767" attributes="0"/>
-                                  <Component id="cboSHSupplierNm" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="txtDateRequired" min="-2" pref="125" max="-2" attributes="0"/>
+                                  <Component id="jScrollPane2" min="-2" pref="178" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="125" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="32767" attributes="0"/>
@@ -116,32 +114,40 @@
                   <Component id="cboSHQuantity" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblItemNm" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblDateRequired" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblSHItemNm" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtDateRequired" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="lblDateRequired" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtDateRequired" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                      <Component id="lblItemNm" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lblSHItemNm" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblCategory" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblSupplier" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblSHCategory" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="cboSHSupplierNm" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblSupplier" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                              <Component id="lblStockAmt" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblSHStockAmt" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnAdd" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnEdit" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnViewList" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane2" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="106" max="32767" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblStockAmt" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblSHStockAmt" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="32" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnAdd" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnEdit" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnViewList" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -160,7 +166,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="lblPR" min="-2" pref="249" max="-2" attributes="0"/>
-                  <EmptySpace pref="416" max="32767" attributes="0"/>
+                  <EmptySpace pref="429" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -251,11 +257,6 @@
         <Property name="text" type="java.lang.String" value="Item_Name:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lblCategory">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Category:"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="lblStockAmt">
       <Properties>
         <Property name="text" type="java.lang.String" value="Stock_Amount:"/>
@@ -309,11 +310,6 @@
         <Property name="text" type="java.lang.String" value="jLabel9"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lblSHCategory">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel10"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="lblSHStockAmt">
       <Properties>
         <Property name="text" type="java.lang.String" value="jLabel11"/>
@@ -339,20 +335,24 @@
         <Property name="text" type="java.lang.String" value="(DD/MM/YYYY)"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JComboBox" name="cboSHSupplierNm">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="4">
-            <StringItem index="0" value="Item 1"/>
-            <StringItem index="1" value="Item 2"/>
-            <StringItem index="2" value="Item 3"/>
-            <StringItem index="3" value="Item 4"/>
-          </StringArray>
-        </Property>
-      </Properties>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
-    </Component>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="listSupplier">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

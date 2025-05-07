@@ -7,3 +7,4 @@ G003,Cabbage(per kg),S002,4.0,GROCERIES
 G004,Socks,S002,5,GROCERIES
 G005,chocalate,S003,10,GROCERIES
 G006,banana,S005,20,GROCERIES
+            

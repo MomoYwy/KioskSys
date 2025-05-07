@@ -1,0 +1,6 @@
+PR_ID Item_ID Item_Name Stock_Amount Quantity Date_Required Supplier_ID User_ID Status
+
+PR001,G001,Bread,10,5,15/06/2025,S001,S001,Pending
+PR002,E001,Scissors,10,10,16/07/2025,S002,S002,Approved
+PR003,G002,Strawberry,20,2,17/06/2025,S001,S003,Rejected
+
