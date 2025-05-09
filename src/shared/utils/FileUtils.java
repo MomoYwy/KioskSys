@@ -401,6 +401,28 @@ public class FileUtils {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
     
+    public static List<String[]> getLowStockItems(String filePath) {
+        List<String[]> lowStockItems = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5 && parts[4].trim().equalsIgnoreCase("low stock")) {
+                    lowStockItems.add(new String[]{parts[0], parts[1], parts[2], parts[3]});
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                "Error reading stock list: " + e.getMessage(),
+                "File Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+
+        return lowStockItems;
+    }
+
+    
     
 }
 

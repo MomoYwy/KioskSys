@@ -1,7 +1,5 @@
-F001,Papaya,FRESH PRODUCE,-114,low stock
-G001,Bread,GROCERIES,-34,low stock
-G004,Socks,GROCERIES,-56,low stock
-E001,Scissors,ESSENTIAL GOODS,-48,low stock
-G003,Cabbage(per kg),GROCERIES,-108,low stock
-G006,banana,GROCERIES,127,normal
-G005,chocalate,GROCERIES,-45,low stock
+Item 4,Socks,N/A,-50,low stock
+G004,Socks,GROCERIES,-20,low stock
+E001,Scissors,ESSENTIAL GOODS,-30,low stock
+G003,Cabbage(per kg),GROCERIES,-45,low stock
+G006,banana,GROCERIES,-100,normal

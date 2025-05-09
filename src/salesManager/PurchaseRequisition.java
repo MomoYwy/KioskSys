@@ -1,18 +1,29 @@
 
 package salesManager;
 
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import shared.utils.FileUtils;
+
 
 public class PurchaseRequisition extends javax.swing.JFrame {
 
-   
+    private static final String STOCK_FILE = "src/database/stocklist.txt";
+    
     public PurchaseRequisition() {
         initComponents();
-        
-        
+        List<String[]> data = FileUtils.getLowStockItems(STOCK_FILE);
+        DefaultTableModel model = (DefaultTableModel) tblStockList.getModel();
+        model.setRowCount(0);
+
+        for (String[] row : data) {
+            model.addRow(row);
+        }
     }
     
+    
 
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -203,11 +214,11 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblSupplier)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(lblStockAmt)
-                                .addComponent(lblSHStockAmt)))
+                                .addComponent(lblSHStockAmt))
+                            .addComponent(lblSupplier))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAdd)

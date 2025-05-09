@@ -140,7 +140,7 @@ public class StockList extends javax.swing.JFrame {
 
                 int quantity = Integer.parseInt(table.getValueAt(row, 3).toString());
                 
-                comp.setBackground(Color.WHITE);
+                comp.setBackground(Color.WHITE); 
 
                 if (quantity < 10) {
                     comp.setBackground(Color.PINK);
