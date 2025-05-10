@@ -19,7 +19,9 @@ public class FileUtils {
     public static final String RECORD_TYPE_ITEM = "ITEM";
     public static final String RECORD_TYPE_SUPPLIER = "SUPPLIER";
     public static final String RECORD_TYPE_SALES = "SALES";
-    public static final String RECORD_TYPE_PR = "PR";
+    public static final String RECORD_TYPE_PURCHASE_REQUISITION = "PURCHASE_REQUISITION";
+    private static final String DEFAULT_STATUS = "pending"; 
+   
     
 // This method is used to check if a txt file for the item is created or not
 // if not, it will create a new file
@@ -135,20 +137,18 @@ public class FileUtils {
         }
     }
     
-    public static String addToFile(String filePath, String recordType, 
-                                                Map<String, String> fields,
-                                                Function<Map<String, String>, String> idGenerator) {
+    public static String addToFile(String filePath, String recordType,
+            Map<String, String> fields,
+            Function<Map<String, String>, String> idGenerator) {
         try {
             // Ensure file exists
             if (!ensureFileExists(filePath)) {
-                showErrorDialog("File Error", "Failed to initialize database file");
                 return null;
             }
 
             // Generate ID
             String recordId = idGenerator.apply(fields);
             if (recordId == null) {
-                showErrorDialog("ID Generation Error", "Failed to generate ID");
                 return null;
             }
 
@@ -157,43 +157,53 @@ public class FileUtils {
             switch (recordType) {
                 case RECORD_TYPE_ITEM:
                     recordLine = String.join(",",
-                        recordId,
-                        fields.get("name"),
-                        fields.get("supplierId"),
-                        fields.get("price"),
-                        fields.get("category")
-                    );
+                            recordId,
+                            fields.get("name"),
+                            fields.get("supplierId"),
+                            fields.get("price"),
+                            fields.get("category"));
                     break;
                 case RECORD_TYPE_SUPPLIER:
                     recordLine = String.join(",",
-                        recordId,
-                        fields.get("name"),
-                        fields.get("itemName"),
-                        fields.get("itemPrice"),
-                        fields.get("contact"),
-                        fields.get("deliveryTime"),
-                        String.join("|", 
-                            fields.get("street"),
-                            fields.get("city"),
-                            fields.get("state"),
-                            fields.get("postalCode")
-                        )
-                    );
+                            recordId,
+                            fields.get("name"),
+                            fields.get("itemName"),
+                            fields.get("itemPrice"),
+                            fields.get("contact"),
+                            fields.get("deliveryTime"),
+                            String.join("|",
+                                    fields.get("street"),
+                                    fields.get("city"),
+                                    fields.get("state"),
+                                    fields.get("postalCode")
+                            ));
                     break;
                 case RECORD_TYPE_SALES:
                     recordLine = String.join(",",
-                        recordId,
-                        fields.get("date"),
-                        fields.get("dateRequired"),
-                        fields.get("customerName"),
-                        fields.get("customerContact"),
-                        fields.get("itemId"),
-                        fields.get("itemName"),
-                        fields.get("quantity")
+                            recordId,
+                            fields.get("date"),
+                            fields.get("dateRequired"),
+                            fields.get("customerName"),
+                            fields.get("customerContact"),
+                            fields.get("itemId"),
+                            fields.get("itemName"),
+                            fields.get("quantity")
+                    );
+                    break;
+                case RECORD_TYPE_PURCHASE_REQUISITION: // Added for Purchase Requisition
+                    recordLine = String.join(",",
+                            recordId,
+                            fields.get("salesManagerId"),  // Add the salesManagerId
+                            fields.get("itemId"),
+                            fields.get("itemName"),
+                            fields.get("quantity"),
+                            fields.get("dateRequired"),
+                            fields.get("supplier"), // Join the suppliers
+                            DEFAULT_STATUS // Add the status
                     );
                     break;
                 default:
-                    showErrorDialog("Error", "Invalid record type");
+                    JOptionPane.showMessageDialog(null, "Invalid record type", "Error", JOptionPane.ERROR_MESSAGE);
                     return null;
             }
 
@@ -205,80 +215,67 @@ public class FileUtils {
 
             return recordId;
         } catch (IOException e) {
-            showErrorDialog("File Error", "Failed to save record: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Failed to save record: " + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
     
+   public static String generateId(String filePath, String prefix, int idLength) {
+        int maxId = 0;
+        File file = new File(filePath);
+        if (!file.exists()) {
+            return prefix + String.format("%0" + idLength + "d", 1);
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(prefix)) {
+                    try {
+                        int currentId = Integer.parseInt(line.substring(prefix.length(), prefix.length() + idLength));
+                        maxId = Math.max(maxId, currentId);
+                    } catch (NumberFormatException e) {
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            return null;
+        }
+        return prefix + String.format("%0" + idLength + "d", maxId + 1);
+    }
+
     public static String generateItemId(String filePath, String category) throws IOException {
         String prefix = "";
-        switch(category.toUpperCase()) {
-            case "GROCERIES": prefix = "G"; break;
-            case "FRESH PRODUCE": prefix = "F"; break;
-            case "ESSENTIAL GOODS": prefix = "E"; break;
-            default: prefix = "X";
+        switch (category.toUpperCase()) {
+            case "GROCERIES":
+                prefix = "G";
+                break;
+            case "FRESH PRODUCE":
+                prefix = "F";
+                break;
+            case "ESSENTIAL GOODS":
+                prefix = "E";
+                break;
+            default:
+                prefix = "X";
         }
+        return generateId(filePath, prefix, 3);
+    }
 
-        int maxNum = 0;
-        File file = new File(filePath);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith(prefix)) {
-                        try {
-                            int currentNum = Integer.parseInt(line.substring(1, 4));
-                            maxNum = Math.max(maxNum, currentNum);
-                        } catch (NumberFormatException e) {
-                            // Skip if ID format is invalid
-                        }
-                    }
-                }
-            }
-        }
-        return prefix + String.format("%03d", maxNum + 1);
-    }
-    
     public static String generateSupplierId(String filePath) throws IOException {
-        int maxId = 0;
-        File file = new File(filePath);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith("S")) {
-                        try {
-                            int currentId = Integer.parseInt(line.substring(1, 4));
-                            maxId = Math.max(maxId, currentId);
-                        } catch (NumberFormatException e) {
-                            // Skip if ID format is invalid
-                        }
-                    }
-                }
-            }
-        }
-        return "S" + String.format("%03d", maxId + 1);
+        return generateId(filePath, "S", 3);
+    }
+
+    public static String generateSalesId(String filePath) throws IOException {
+        return generateId(filePath, "SE", 4);
     }
     
-    public static String generateSalesId(String filePath) throws IOException {
-        int maxId = 0;
-        File file = new File(filePath);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith("SE")) {
-                        try {
-                            int currentId = Integer.parseInt(line.substring(2, 6));
-                            maxId = Math.max(maxId, currentId);
-                        } catch (NumberFormatException e) {
-                            
-                        }
-                    }
-                }
-            }
-        }
-        return "SE" + String.format("%04d", maxId + 1);
+    public static String generatePurchaseRequisitionId(String filePath) throws IOException {
+        return generateId(filePath, "PR",4);
+    }
+
+    public static String generatePurchaseRequistionId(String PR_FILE) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     
@@ -422,7 +419,24 @@ public class FileUtils {
         return lowStockItems;
     }
 
-    
+    public static List<String> findLinesWithValue(String filePath, String valueToFind) {
+        List<String> matchingLines = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains(valueToFind)) {
+                    matchingLines.add(line); // Add the line to the list
+                }
+            }
+            if (matchingLines.isEmpty()) {
+                return null;
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            return null; // Return null in case of error
+        }
+        return matchingLines; // Return the list of matching lines
+    }
     
 }
 

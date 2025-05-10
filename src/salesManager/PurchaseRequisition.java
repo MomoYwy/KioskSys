@@ -1,25 +1,88 @@
 
 package salesManager;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
+
 
 
 public class PurchaseRequisition extends javax.swing.JFrame {
 
     private static final String STOCK_FILE = "src/database/stocklist.txt";
+    private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
+    private static final String ITEMS_FILE = "src/database/items.txt";
+    private static final String PR_FILE = "src/database/purchase_requisition.txt";
+    private static final String RECORD_TYPE_ITEM = "ITEM";
+    private static final String RECORD_TYPE_SUPPLIER = "SUPPLIER";
+    private static final String RECORD_TYPE_SALES = "SALES";
+    public static final String RECORD_TYPE_PURCHASE_REQUISITION = "PURCHASE_REQUISITION";
+
     
     public PurchaseRequisition() {
         initComponents();
+        loadStockList();
+        selectFromTable();
+    }
+    
+    private void loadStockList() {
         List<String[]> data = FileUtils.getLowStockItems(STOCK_FILE);
         DefaultTableModel model = (DefaultTableModel) tblStockList.getModel();
-        model.setRowCount(0);
-
+        model.setRowCount(0); // Clear the table before adding rows
         for (String[] row : data) {
             model.addRow(row);
         }
     }
+    
+    private void selectFromTable(){
+        tblStockList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { // Only handle the final selection event
+                    int selectedRow = tblStockList.getSelectedRow();
+                    if (selectedRow != -1) { // Check if a row is actually selected
+                        displaySelectedItemDetails(selectedRow);
+                    }
+                }
+            }
+        });
+    }
+    
+    private void displaySelectedItemDetails(int selectedRow) {
+        DefaultTableModel model = (DefaultTableModel) tblStockList.getModel();
+        String itemID = (String) model.getValueAt(selectedRow, 0);
+        String itemName = (String) model.getValueAt(selectedRow, 1);
+        String stockAmount = (String) model.getValueAt(selectedRow, 2);
+
+        lblSHItemID.setText(itemID);
+        lblSHItemNm.setText(itemName);
+        lblSHStockAmt.setText(stockAmount);
+
+        // Use findLineWithValue to get supplier info
+        List<String> supplierLines = FileUtils.findLinesWithValue(SUPPLIERS_FILE, itemName);
+        if (supplierLines != null && !supplierLines.isEmpty()) {
+            //split the line with ","
+            List<String> supplierNames = new ArrayList<>();
+            for (String supplierLine : supplierLines) {
+                String[] supplierData = supplierLine.split(",");
+                if (supplierData.length > 1) {
+                    supplierNames.add(supplierData[1].trim());
+                }
+            }
+            listSupplier.setListData(supplierNames.toArray(new String[0]));
+        } else {
+            listSupplier.setListData(new String[]{"Supplier Not Found"});
+        }
+    }
+
     
     
 
@@ -47,10 +110,10 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         lblSHItemID = new javax.swing.JLabel();
         lblSHItemNm = new javax.swing.JLabel();
         lblSHStockAmt = new javax.swing.JLabel();
-        cboSHQuantity = new javax.swing.JComboBox<>();
         txtDateRequired = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         listSupplier = new javax.swing.JList<>();
+        spQuantity = new javax.swing.JSpinner();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -117,6 +180,11 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         lblSupplier.setText("Supplier:");
 
         btnAdd.setText("Add");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -134,8 +202,6 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         lblSHItemNm.setText("jLabel9");
 
         lblSHStockAmt.setText("jLabel11");
-
-        cboSHQuantity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         txtDateRequired.setText("(DD/MM/YYYY)");
 
@@ -165,19 +231,15 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                             .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                         .addGap(107, 107, 107)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblQuantity)
-                                .addGap(51, 51, 51)
-                                .addComponent(cboSHQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblDateRequired)
-                                    .addComponent(lblSupplier))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtDateRequired, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lblDateRequired)
+                            .addComponent(lblSupplier)
+                            .addComponent(lblQuantity))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtDateRequired, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(spQuantity))))
+                .addContainerGap(139, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -202,7 +264,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                     .addComponent(lblItemID)
                     .addComponent(lblQuantity)
                     .addComponent(lblSHItemID)
-                    .addComponent(cboSHQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -213,22 +275,18 @@ public class PurchaseRequisition extends javax.swing.JFrame {
                         .addComponent(lblSHItemNm)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblStockAmt)
-                                .addComponent(lblSHStockAmt))
-                            .addComponent(lblSupplier))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAdd)
-                            .addComponent(btnEdit)
-                            .addComponent(btnDelete)
-                            .addComponent(btnViewList))
-                        .addGap(39, 39, 39))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(106, Short.MAX_VALUE))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblStockAmt)
+                        .addComponent(lblSHStockAmt))
+                    .addComponent(lblSupplier)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd)
+                    .addComponent(btnEdit)
+                    .addComponent(btnDelete)
+                    .addComponent(btnViewList))
+                .addGap(39, 39, 39))
         );
 
         pack();
@@ -237,6 +295,59 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+            // Prepare data fields
+        Map<String, String> fields = new HashMap<>();
+        String itemId = lblSHItemID.getText().trim();
+        String itemName = lblSHItemNm.getText().trim();
+        String dateRequired = txtDateRequired.getText().trim();
+        int quantity = (Integer) spQuantity.getValue();
+
+        // Get ALL suppliers from the list model
+        ListModel<String> supplierModel = listSupplier.getModel();
+        List<String> allSuppliers = new ArrayList<>();
+        for (int i = 0; i < supplierModel.getSize(); i++) {
+            allSuppliers.add(supplierModel.getElementAt(i));
+        }
+        String supplierString = String.join("|", allSuppliers);
+
+        fields.put("itemId", itemId);
+        fields.put("itemName", itemName);
+        fields.put("quantity", String.valueOf(quantity));
+        fields.put("dateRequired", dateRequired);
+        fields.put("supplier", supplierString);
+        fields.put("salesManagerId", "null"); // hardcoded for now
+
+        // Validate input
+        if (fields.containsValue("") || fields.containsValue(null) || quantity <= 0 || allSuppliers.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all required fields and ensure suppliers are available.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Attempt to add record
+        String prId = FileUtils.addToFile(PR_FILE, RECORD_TYPE_PURCHASE_REQUISITION, fields, f -> {
+            try {
+                return FileUtils.generatePurchaseRequisitionId(PR_FILE);
+            } catch (IOException e) {
+                return null;
+            }
+        });
+
+        if (prId != null) {
+            JOptionPane.showMessageDialog(this, "Record added successfully with PR ID: " + prId, "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Clear form
+            lblSHItemID.setText("");
+            lblSHItemNm.setText("");
+            lblSHStockAmt.setText("");
+            spQuantity.setValue(0);
+            txtDateRequired.setText("");
+            listSupplier.clearSelection();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to add record.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAddActionPerformed
 
     /**
      * @param args the command line arguments
@@ -278,7 +389,6 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnViewList;
-    private javax.swing.JComboBox<String> cboSHQuantity;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -295,6 +405,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private javax.swing.JLabel lblStockAmt;
     private javax.swing.JLabel lblSupplier;
     private javax.swing.JList<String> listSupplier;
+    private javax.swing.JSpinner spQuantity;
     private javax.swing.JTable tblStockList;
     private javax.swing.JTextField txtDateRequired;
     // End of variables declaration//GEN-END:variables
