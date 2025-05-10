@@ -2,15 +2,66 @@
 package PurchaseManager;
 
 
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import shared.utils.PurchaseOrderUtils;
+
 public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
- 
+     private PMDashboard previousForm;
+     
     public GeneratePurchaseOrderForm() {
         initComponents();
-        
+        setupTableListeners();
+        loadPendingPurchaseRequisitions();
+        loadPurchaseOrders();
+    }
+    public GeneratePurchaseOrderForm(PMDashboard previousForm) {
+        this();
+        this.previousForm = previousForm;
     }
 
-    
+    private void setupTableListeners() {
+        // Add selection listener to the pending PR table
+        jTable2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTable2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int selectedRow = jTable2.getSelectedRow();
+                    generatePOButton.setEnabled(selectedRow >= 0);
+                }
+            }
+        });
+    }
+
+    private void loadPendingPurchaseRequisitions() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+            PurchaseOrderUtils.loadPendingPRsToTable(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error loading pending purchase requisitions: " + e.getMessage(),
+                    "Database Error", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadPurchaseOrders() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) poTable.getModel();
+            PurchaseOrderUtils.loadPurchaseOrdersToTable(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error loading purchase orders: " + e.getMessage(),
+                    "Database Error", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    } 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,7 +96,7 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         FrameBG.setAlignmentY(0.0F);
         FrameBG.setPreferredSize(new java.awt.Dimension(750, 550));
 
-        titlePanel.setBackground(new java.awt.Color(255, 204, 153));
+        titlePanel.setBackground(new java.awt.Color(255, 255, 204));
         titlePanel.setAlignmentX(0.0F);
         titlePanel.setAlignmentY(0.0F);
         titlePanel.setPreferredSize(new java.awt.Dimension(706, 70));
@@ -69,26 +120,26 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "PR ID", "Item ID", "Quantity", "Requested By", "Status"
+                "PR ID", "Item ID", "Quantity", "Date Required", "Status", "Requested By(Sales Manager Id)"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, true
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -112,30 +163,30 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
         poTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "PO ID", "PR ID", "Item ID", "Quantity", "Item Price", "Total Price", "Date Created", "Supplier ID", "Status"
+                "PO ID", "PR ID", "Item ID", "Quantity", "Item Price", "Total Price", "Date Created PO", "Supplier ID", "Status", "Date Required"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -222,15 +273,103 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-
+        if (previousForm != null) {
+            previousForm.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void generatePOButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatePOButtonActionPerformed
-
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        try {
+            // Get PR details from the table
+            String prId = jTable2.getValueAt(selectedRow, 0).toString();
+            String itemId = jTable2.getValueAt(selectedRow, 1).toString();
+            int quantity = Integer.parseInt(jTable2.getValueAt(selectedRow, 2).toString());
+            String dateRequired = jTable2.getValueAt(selectedRow, 3).toString();
+            String salesManagerId = jTable2.getValueAt(selectedRow, 5).toString();
+            
+            // Get item name from the itemId
+            String itemName = getItemName(itemId);
+            if (itemName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                        "Error: Could not find item name for item ID: " + itemId,
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Open the AddPurchaseOrderDialog with these details
+            AddPurchaseOrderDialog dialog = new AddPurchaseOrderDialog(
+                    this, true, prId, itemId, itemName, quantity, dateRequired, salesManagerId);
+            
+            // Position the dialog relative to this form
+            dialog.setLocationRelativeTo(this);
+            
+            // Show dialog
+            dialog.setVisible(true);
+            
+            // If confirmed, refresh the tables
+            if (dialog.isConfirmed()) {
+                loadPendingPurchaseRequisitions();
+                loadPurchaseOrders();
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error generating Purchase Order: " + e.getMessage(),
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_generatePOButtonActionPerformed
-
+    private String getItemName(String itemId) {
+        try {
+            java.io.File file = new java.io.File("src/database/items.txt");
+            if (!file.exists()) {
+                return "";
+            }
+            
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.FileReader(file))) {
+                String line;
+                boolean headerSkipped = false;
+                
+                while ((line = reader.readLine()) != null) {
+                    // Skip header line
+                    if (!headerSkipped) {
+                        headerSkipped = true;
+                        continue;
+                    }
+                    
+                    // Skip empty lines
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    
+                    String[] parts = line.split(",");
+                    if (parts.length >= 2 && parts[0].trim().equals(itemId)) {
+                        return parts[1].trim();
+                    }
+                }
+            }
+            
+            return "";
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error finding item name: " + e.getMessage(),
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return "";
+        }
+    }
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        // TODO add your handling code here:
+        loadPendingPurchaseRequisitions();
+        loadPurchaseOrders();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     /**

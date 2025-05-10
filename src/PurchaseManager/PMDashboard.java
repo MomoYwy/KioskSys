@@ -207,7 +207,17 @@ public class PMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewPurchaseRequisitionActionPerformed
 
     private void btnGeneratePurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeneratePurchaseOrdersActionPerformed
-        // TODO add your handling code here:
+        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(this);
+        
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        poForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        // Make dashboard invisible while working with PO form
+        this.setVisible(false);
+        
+        // Show the PO form
+        poForm.setVisible(true);
     }//GEN-LAST:event_btnGeneratePurchaseOrdersActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
