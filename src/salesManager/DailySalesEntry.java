@@ -105,11 +105,7 @@
 
             // Attempt to save
             try {
-                String salesId = FileUtils.addToFile(
-                    SALES_FILE,
-                    FileUtils.RECORD_TYPE_SALES,
-                    fields,
-                    f -> {
+                String salesId = FileUtils.addToFile(SALES_FILE, FileUtils.RECORD_TYPE_SALES,fields, f -> {
                         try {
                             return FileUtils.generateSalesId(SALES_FILE);
                         } catch (IOException e) {

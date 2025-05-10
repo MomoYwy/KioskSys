@@ -164,10 +164,10 @@ public class RegisterScreen extends javax.swing.JFrame {
         // Determine prefix based on role
         prefix = switch (role) {
             case "ADMIN" -> "A";
-            case "SALES_MANAGER" -> "S";
-            case "PURCHASE_MANAGER" -> "P";
-            case "INVENTORY_MANAGER" -> "I";
-            case "FINANCE_MANAGER" -> "F";
+            case "SALES_MANAGER" -> "SM";
+            case "PURCHASE_MANAGER" -> "PM";
+            case "INVENTORY_MANAGER" -> "IM";
+            case "FINANCE_MANAGER" -> "FM";
             default -> "U";
         };
 
