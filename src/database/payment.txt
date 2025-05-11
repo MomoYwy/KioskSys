@@ -1,20 +1,12 @@
-Payment Method: Cheque
-Payment Amount: 110
-Payment Date: 11.11.2024
-
-Payment Method: Credit
-Payment Amount: 7780
-Payment Date: 11.11.2024
-
-Payment Method: Bank Transfer
-Payment Amount: 770
-Payment Date: 15.2.2025
-
-Payment Method: Bank Transfer
-Payment Amount: 33
-Payment Date: 333
+Payment Method: Cash
+Payment Amount: 740
+Payment Date: July 13
 
 Payment Method: Cheque
-Payment Amount: 100
-Payment Date: 10.10.2024
+Payment Amount: 95
+Payment Date: Jul 16
+
+Payment Method: Cash
+Payment Amount: 250
+Payment Date: Jun 25
 
