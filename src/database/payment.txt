@@ -1,12 +1,4 @@
-Payment Method: Cash
-Payment Amount: 740
-Payment Date: July 13
-
-Payment Method: Cheque
-Payment Amount: 95
-Payment Date: Jul 16
-
-Payment Method: Cash
-Payment Amount: 250
-Payment Date: Jun 25
+PO_ID,Item_Name,Quantity,Item_Price,Total_Price,Supplier_ID,Status,Payment_Method,Amount,Payment_Date
+PO004,Apple,35,6.50,227.50,S001,APPROVED,Bank Transfer,227.50,12/5/2025
+PO004,Apple,35,6.50,227.50,S001,APPROVED,Credit,227.50,12/05/2025
 

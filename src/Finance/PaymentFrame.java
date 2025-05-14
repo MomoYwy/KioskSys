@@ -1,23 +1,21 @@
-
 package Finance;
 
-
 import javax.swing.JOptionPane;
+import java.awt.event.*;
+import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.List;
-import javax.swing.table.DefaultTableModel;
-import shared.models.PurchaseOrder;
-/**
- *
- * @author User
- */
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+
+
+
+
 public class PaymentFrame extends javax.swing.JFrame {
 
     /**
@@ -25,9 +23,76 @@ public class PaymentFrame extends javax.swing.JFrame {
      */
     public PaymentFrame() {
         initComponents();
+        initializeTableListener();
     }
-   
- 
+    
+    // Function to read the "APPROVED" PO details from the "purchase_orders.txt" file and display selected fields in the JTable
+    private void loadApprovedPOs() {
+        DefaultTableModel model = (DefaultTableModel) tblPO.getModel();
+        model.setRowCount(0);  // Clear the table first
+        
+        try {
+            File file = new File("src/database/purchase_orders.txt"); // Ensure file path is correct
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+        
+            while ((line = reader.readLine()) != null) {
+            // Check if the line contains "APPROVED"
+                if (line.contains("APPROVED")) {
+                // Split the line by commas
+                    String[] poDetails = line.split(",");
+                
+                // Extract only the relevant fields (PO ID, Item Name, Quantity, Item Price, Total Price, Supplier ID, Status)
+                    String poId = poDetails[0];  // PO ID
+                    String itemName = poDetails[3];  // Item Name
+                    String quantity = poDetails[4];  // Quantity
+                    String itemPrice = poDetails[5];  // Item Price
+                    String totalPrice = poDetails[6];  // Total Price
+                    String supplierId = poDetails[9];  // Supplier ID
+                    String status = poDetails[12];  // Status
+                
+                // Add only the relevant fields to the table
+                    model.addRow(new Object[] {poId, itemName, quantity, itemPrice, totalPrice, supplierId, status});
+                                       
+                }
+            }        
+            reader.close();
+                    // Make the Quantity column non-editable (Column 2 corresponds to "Quantity")
+        tblPO.getColumnModel().getColumn(2).setCellEditor(null);  // Disable editing for Quantity column
+        
+        // Alternatively, make the whole column non-editable
+        tblPO.getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+            } catch (IOException ex) {
+        ex.printStackTrace();
+    }
+}
+    
+    
+    private void initializeTableListener() {
+    tblPO.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            // Check if a row is selected
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = tblPO.getSelectedRow();
+                if (selectedRow >= 0) {
+                    // Get the total price from the selected row (assuming it's in column 6, index 6)
+                    String totalAmount = tblPO.getValueAt(selectedRow, 4).toString();
+                    
+                    // Set the total amount in the payment amount field (txtPAmount)
+                    txtPAmount.setText(totalAmount);
+                }
+            }
+        }
+    });
+}
+    
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,13 +153,13 @@ public class PaymentFrame extends javax.swing.JFrame {
 
         tblPO.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "PO ID", "PR ID", "Item ID", "Item Name", "Quantity", "Item Price", "Total Price", "Date Created", "Date Required", "Supplier ID", "Sales Manager ID", "Purchase Manager ID", "Status"
+                "PO ID", "Item Name", "Quantity", "Item Price", "Total Price", "Supplier ID", "Status"
             }
         ));
         jScrollPane1.setViewportView(tblPO);
@@ -205,29 +270,25 @@ public class PaymentFrame extends javax.swing.JFrame {
                             .addComponent(cmbPMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(btnPayment)
-                        .addGap(10, 10, 10)))
+                        .addComponent(btnLoadPO)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(txtPAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
+                            .addComponent(txtPAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(33, 33, 33))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPayment)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCancel)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnBack)))
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtPDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(btnLoadPO)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(btnBack))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -253,36 +314,45 @@ public class PaymentFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
-    // Retrieve input data from the text fields and combo box
-    String paymentAmount = txtPAmount.getText().trim();
-    String paymentDate = txtPDate.getText().trim();
-    String paymentMethod = (String) cmbPMethod.getSelectedItem(); 
+        // Retrieve input data from the text fields and combo box
+    String paymentAmount = txtPAmount.getText().trim(); // Get the payment amount
+    String paymentDate = txtPDate.getText().trim(); // Get the payment date
+    String paymentMethod = cmbPMethod.getSelectedItem() != null ? cmbPMethod.getSelectedItem().toString() : ""; // Get the payment method
 
-    // Debug prints
-    System.out.println("Payment Method: " + paymentMethod);
-    System.out.println("Payment Amount: " + paymentAmount);
-    System.out.println("Payment Date: " + paymentDate);
 
-    // Check if any field is empty
+    // Check if any required field is empty
     if (paymentAmount.isEmpty() || paymentDate.isEmpty() || paymentMethod.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Please fill in all the fields!", "Missing Information", JOptionPane.WARNING_MESSAGE);
     } else {
         // Proceed if all fields are filled
         JOptionPane.showMessageDialog(this, "Paid Successfully!", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
 
-        // Store data into payment.txt file using BufferedWriter
+        // Store payment data into payment.txt file using BufferedWriter
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/payment.txt", true))) {
-            // Prepare the payment details to write to the file
-            String recordLine = "Payment Method: " + paymentMethod + "\n" +
-                                 "Payment Amount: " + paymentAmount + "\n" +
-                                 "Payment Date: " + paymentDate + "\n";
+            // Retrieve details from the selected purchase order in the JTable
+            int selectedRow = tblPO.getSelectedRow();
+            String poId = tblPO.getValueAt(selectedRow, 0).toString();  // PO ID
+            String itemName = tblPO.getValueAt(selectedRow, 1).toString();  // Item Name
+            String quantity = tblPO.getValueAt(selectedRow, 2).toString();  // Quantity
+            String itemPrice = tblPO.getValueAt(selectedRow, 3).toString();  // Item Price
+            String totalPrice = tblPO.getValueAt(selectedRow, 4).toString();  // Total Price
+            String supplierId = tblPO.getValueAt(selectedRow, 5).toString();  // Supplier ID
+            String status = tblPO.getValueAt(selectedRow, 6).toString();  // Status
+            
+            // Prepare the payment details string to write to the file
+            String recordLine = poId + "," + itemName + "," + quantity + "," + itemPrice + "," + totalPrice + "," + supplierId + "," + status + ","
+                    + paymentMethod + "," + paymentAmount + "," + paymentDate + "\n";
 
             // Write the record to the file
             writer.write(recordLine);
             writer.newLine();  // Blank line between entries for readability
             System.out.println("Payment details saved to file.");
-            
+
+            // Optionally, show a confirmation dialog or log the success
+            JOptionPane.showMessageDialog(this, "Payment details saved successfully.", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (IOException ex) {
+            // Catch exceptions and display the error
             JOptionPane.showMessageDialog(this, "Error saving payment information.", "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("Error: " + ex.getMessage());
         }
@@ -291,8 +361,9 @@ public class PaymentFrame extends javax.swing.JFrame {
         txtPAmount.setText("");
         txtPDate.setText("");
         cmbPMethod.setSelectedIndex(0); // reset to first option
+    }
+
     
-}
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
@@ -312,31 +383,7 @@ public class PaymentFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnLoadPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadPOActionPerformed
-    dataOperation LD1 = new dataOperation();
-    List<PurchaseOrder> purchaseOrders = LD1.ReadFile("purchase_orders", PurchaseOrder.class); // Pass the PurchaseOrder class type
-
-    // Get the DefaultTableModel for your JTable
-    DefaultTableModel model = (DefaultTableModel) tblPO.getModel();
-    model.setRowCount(0);  // Clear any existing rows
-
-    // Loop through each PurchaseOrder and add it to the JTable
-    for (PurchaseOrder po : purchaseOrders) {
-        model.addRow(new Object[]{
-            po.getPurchaseOrderId(),
-            po.getPurchaseRequisitionId(),
-            po.getItemId(),
-            po.getItemName(),
-            po.getQuantity(),
-            po.getItemPrice(),
-            po.getTotalPrice(),
-            po.getDateCreated(),
-            po.getDateRequired(),
-            po.getSupplierId(),
-            po.getSalesManagerId(),
-            po.getPurchaseManagerId(),
-            po.getStatus()
-        });}
-    
+         loadApprovedPOs();
     }//GEN-LAST:event_btnLoadPOActionPerformed
 
     /**

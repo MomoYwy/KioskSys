@@ -173,7 +173,15 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnApprovePOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApprovePOActionPerformed
-        // TODO add your handling code here:
+        btnApprovePO.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        // Create and display the ViewPR frame when the button is clicked
+        ViewPO ViewPO = new ViewPO(); 
+        ViewPO.setVisible(true); 
+             
+        dispose();
+    }
+});
     }//GEN-LAST:event_btnApprovePOActionPerformed
 
     private void btnProcessPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessPaymentActionPerformed

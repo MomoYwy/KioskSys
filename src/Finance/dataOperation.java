@@ -14,10 +14,7 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- *
- * @author User
- */
+
 
 public class dataOperation {
     public static <T> List<T> ReadFile(String fileName, Class<T> classs) {
