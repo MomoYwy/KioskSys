@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import shared.models.Address;
+import shared.models.Supplier;
 import shared.utils.FileUtils; 
 import shared.utils.FileUtils.TableUtils;
 import static shared.utils.FileUtils.ensureFileExists;
@@ -42,34 +44,64 @@ public class SupplierEntry extends javax.swing.JFrame {
 
     private void addNewSupplier() {
         // Get input values
-        Map<String, String> fields = new HashMap<>();
-        String itemName = tfSuppliedItem.getText().trim(); 
-        fields.put("name", tfSupplierName.getText().trim());
-        fields.put("itemName", itemName); 
-        fields.put("contact", tfContact.getText().trim());
-        fields.put("deliveryTime", String.valueOf(jSpinner1.getValue()));
-        fields.put("itemPrice", String.valueOf(spItemPRice.getValue()));
-        fields.put("street", tfStreet.getText().trim());
-        fields.put("city", tfCity.getText().trim());
-        fields.put("state", (String) tfState.getSelectedItem());
-        fields.put("postalCode", tfPostalCode.getText().trim());
+        String itemName = tfSuppliedItem.getText().trim();
+        String name = tfSupplierName.getText().trim();
+        String contact = tfContact.getText().trim();
+
+        // Safely get spinner values
+        int deliveryTime;
+        double itemPrice;
+
+        try {
+            deliveryTime = (Integer) jSpinner1.getValue();
+            Number priceValue = (Number) spItemPRice.getValue();
+            itemPrice = priceValue.doubleValue();
+        } catch (ClassCastException e) {
+            showErrorDialog("Input Error", "Invalid numeric values entered");
+            return;
+        }
+
+        // Create address object
+        Address address = new Address(
+            tfStreet.getText().trim(),
+            tfCity.getText().trim(),
+            (String) tfState.getSelectedItem(),
+            tfPostalCode.getText().trim()
+        );
 
         // Validate inputs
-        if (fields.containsValue("") || fields.containsValue(null)) {
+        if (name.isEmpty() || itemName.isEmpty() || contact.isEmpty() || 
+            address.getStreet().isEmpty() || address.getCity().isEmpty() || 
+            address.getPostalCode().isEmpty()) {
             showErrorDialog("Input Error", "Please fill in all fields");
             return;
         }
 
-        // Add supplier
-        String supplierId = FileUtils.addToFile(SUPPLIERS_FILE, FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> {
-            try {
-                return FileUtils.generateSupplierId(SUPPLIERS_FILE);
-            } catch (IOException e) {
-                return null;
-            }
-        });
+        // Generate supplier ID
+        String supplierId = FileUtils.generateSupplierId(SUPPLIERS_FILE);
 
-        if (supplierId != null) {
+        // Create supplier object
+        Supplier supplier = new Supplier(
+            supplierId,
+            name,
+            itemName,
+            itemPrice,
+            contact,
+            deliveryTime,
+            address
+        );
+
+        // Add supplier to file
+        String savedId = FileUtils.addToFile(SUPPLIERS_FILE, supplier);
+
+        if (savedId != null) {
+            // Show success message
+            showSuccessMessage("Supplier Added Successfully", 
+                "<html><b>Supplier ID:</b> " + supplierId + "<br>" +
+                "<b>Name:</b> " + name + "<br>" +
+                "<b>Item:</b> " + itemName + "<br>" +
+                "<b>Price:</b> RM" + String.format("%.2f", itemPrice) + "</html>");
+
             loadSuppliersToTable();
             clearSupplierForm();
 
@@ -87,8 +119,15 @@ public class SupplierEntry extends javax.swing.JFrame {
             }
         }
     }
-    
-    
+
+    // Add this new method to show success messages
+    private void showSuccessMessage(String title, String message) {
+        JOptionPane.showMessageDialog(this, 
+            message, 
+            title, 
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void openItemEntryScreen(String itemName) {
         ItemEntry itemEntry = new ItemEntry();
         itemEntry.setItemName(itemName);
@@ -554,6 +593,8 @@ public class SupplierEntry extends javax.swing.JFrame {
             }
         });
     }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

@@ -7,3 +7,4 @@ S004,Timmy,chocalate,2,010331131,2,George Town|Pulao pinang|Penang|13123123
 S005,Polar,banana,12,009990213,5,Taman RInting|beringin|Malacca|12993
 S005,Polar,papaya,4.0,009990213,5,Taman RInting|beringin|Malacca|12993
 S006,Chiikawa,Socks,2.5,123123123,7,Uwawa|SomeWhere|Penang|78893
+S007,Adam,Cabbage(per kg),4.0,56788654,7,Street|City|Perlis|67568

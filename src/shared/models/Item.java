@@ -1,36 +1,40 @@
-
 package shared.models;
 
-/**
- *
- * @author User
- */
-public class Item {
-    private String itemCode;
+public class Item implements Recordable {
+    private String itemId;
     private String name;
     private String supplierId;
-    private int stock;
-    private String category;
     private double price;
+    private String category;
     
-    public Item(String itemCode, String name, String supplierId, int stock, double price) {
-        this.itemCode = itemCode;
+    public Item(String itemId, String name, String supplierId, double price, String category) {
+        this.itemId = itemId;
         this.name = name;
         this.supplierId = supplierId;
-        this.stock = stock;
         this.price = price;
+        this.category = category;
     }
-    
+
     // Getters
-    public String getItemCode() { return itemCode; }
+    public String getItemId() { return itemId; }
     public String getName() { return name; }
     public String getSupplierId() { return supplierId; }
-    public int getStock() { return stock; }
-    public String getCategory() { return category; }
     public double getPrice() { return price; }
-    
-    // Business logic
-    public void updateStock(int quantity) {
-        this.stock += quantity;
+    public String getCategory() { return category; }
+
+    @Override
+    public String getId() {
+        return itemId;
+    }
+
+    @Override
+    public String toCsvString() {
+        return String.join(",",
+            itemId,
+            name,
+            supplierId,
+            String.valueOf(price),
+            category
+        );
     }
 }

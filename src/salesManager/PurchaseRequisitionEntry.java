@@ -11,11 +11,13 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import shared.models.PurchaseRequisition;
+import shared.models.Recordable;
 import shared.utils.FileUtils;
 
 
 
-public class PurchaseRequisition extends javax.swing.JFrame {
+public class PurchaseRequisitionEntry extends javax.swing.JFrame {
 
     private static final String STOCK_FILE = "src/database/stocklist.txt";
     private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
@@ -27,7 +29,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     public static final String RECORD_TYPE_PURCHASE_REQUISITION = "PURCHASE_REQUISITION";
 
     
-    public PurchaseRequisition() {
+    public PurchaseRequisitionEntry() {
         initComponents();
         loadStockList();
         selectFromTable();
@@ -36,7 +38,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     private void loadStockList() {
         List<String[]> data = FileUtils.getLowStockItems(STOCK_FILE);
         DefaultTableModel model = (DefaultTableModel) tblStockList.getModel();
-        model.setRowCount(0); // Clear the table before adding rows
+        model.setRowCount(0); 
         for (String[] row : data) {
             model.addRow(row);
         }
@@ -83,8 +85,32 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         }
     }
 
+    private String getSupplierIdByName(String supplierName) throws IOException {
+        List<String> lines = FileUtils.findLinesWithValue(SUPPLIERS_FILE, supplierName);
+        if (lines != null && !lines.isEmpty()) {
+            String[] parts = lines.get(0).split(",");
+            if (parts.length > 0) {
+                return parts[0]; // First part is supplier ID
+            }
+        }
+        throw new IOException("Supplier not found");
+    }
     
+    private void showSuccessMessage(String title, String message) {
+        JOptionPane.showMessageDialog(this, 
+            message, 
+            title, 
+            JOptionPane.INFORMATION_MESSAGE);
+    }
     
+    private void clearForm() {
+        lblSHItemID.setText("");
+        lblSHItemNm.setText("");
+        lblSHStockAmt.setText("");
+        spQuantity.setValue(0);
+        txtDateRequired.setText("");
+        listSupplier.clearSelection();
+    }
 
     
     @SuppressWarnings("unchecked")
@@ -297,55 +323,76 @@ public class PurchaseRequisition extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-            // Prepare data fields
-        Map<String, String> fields = new HashMap<>();
-        String itemId = lblSHItemID.getText().trim();
+       String itemId = lblSHItemID.getText().trim();
         String itemName = lblSHItemNm.getText().trim();
+        String stockAmountStr = lblSHStockAmt.getText().trim();
         String dateRequired = txtDateRequired.getText().trim();
         int quantity = (Integer) spQuantity.getValue();
 
-        // Get ALL suppliers from the list model
-        ListModel<String> supplierModel = listSupplier.getModel();
-        List<String> allSuppliers = new ArrayList<>();
-        for (int i = 0; i < supplierModel.getSize(); i++) {
-            allSuppliers.add(supplierModel.getElementAt(i));
-        }
-        String supplierString = String.join("|", allSuppliers);
-
-        fields.put("itemId", itemId);
-        fields.put("itemName", itemName);
-        fields.put("quantity", String.valueOf(quantity));
-        fields.put("dateRequired", dateRequired);
-        fields.put("supplier", supplierString);
-        fields.put("salesManagerId", "null"); // hardcoded for now
-
-        // Validate input
-        if (fields.containsValue("") || fields.containsValue(null) || quantity <= 0 || allSuppliers.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all required fields and ensure suppliers are available.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        // Get selected supplier
+        String selectedSupplier = listSupplier.getSelectedValue();
+        if (selectedSupplier == null || selectedSupplier.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select a supplier",
+                "Input Error", 
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Attempt to add record
-        String prId = FileUtils.addToFile(PR_FILE, RECORD_TYPE_PURCHASE_REQUISITION, fields, f -> {
-            try {
-                return FileUtils.generatePurchaseRequisitionId(PR_FILE);
-            } catch (IOException e) {
-                return null;
+        // Validate inputs
+        if (itemId.isEmpty() || itemName.isEmpty() || stockAmountStr.isEmpty() || 
+            dateRequired.isEmpty() || quantity <= 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Please fill in all required fields",
+                "Input Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            int stockAmount = Integer.parseInt(stockAmountStr);
+
+            // Generate PR ID
+            String prId = FileUtils.generatePurchaseRequisitionId(PR_FILE);
+
+            // Create PurchaseRequisition object
+            PurchaseRequisition pr = new PurchaseRequisition(
+                prId,
+                itemId,
+                itemName,
+                stockAmount,
+                quantity,
+                dateRequired,
+                getSupplierIdByName(selectedSupplier), // Get supplier ID from name
+                "SM001" // Hardcoded user ID for now
+            );
+
+            // Add to file
+            String savedId = FileUtils.addToFile(PR_FILE, pr);
+
+            if (savedId != null) {
+                // Show success message
+                showSuccessMessage("Purchase Requisition Created", 
+                    "<html><b>PR ID:</b> " + prId + "<br>" +
+                    "<b>Item:</b> " + itemName + " (" + itemId + ")<br>" +
+                    "<b>Stock Amount:</b> " + stockAmount + "<br>" +
+                    "<b>Quantity:</b> " + quantity + "<br>" +
+                    "<b>Date Required:</b> " + dateRequired + "<br>" +
+                    "<b>Supplier:</b> " + selectedSupplier + "</html>");
+
+                // Clear form
+                clearForm();
             }
-        });
-
-        if (prId != null) {
-            JOptionPane.showMessageDialog(this, "Record added successfully with PR ID: " + prId, "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // Clear form
-            lblSHItemID.setText("");
-            lblSHItemNm.setText("");
-            lblSHStockAmt.setText("");
-            spQuantity.setValue(0);
-            txtDateRequired.setText("");
-            listSupplier.clearSelection();
-        } else {
-            JOptionPane.showMessageDialog(this, "Failed to add record.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid stock amount value",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error getting supplier ID: " + e.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
@@ -379,7 +426,7 @@ public class PurchaseRequisition extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PurchaseRequisition().setVisible(true);
+                new PurchaseRequisitionEntry().setVisible(true);
             }
         });
     }

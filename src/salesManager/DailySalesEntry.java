@@ -10,6 +10,7 @@
     import javax.swing.table.DefaultTableModel;
     import shared.models.Customer;
     import shared.models.Item;
+import shared.models.Recordable;
     import shared.models.SalesEntry;
     import shared.utils.FileUtils;
     import shared.utils.SwingUtils;
@@ -68,68 +69,115 @@
             }
         }
 
-        private void addSalesEntry() {
-            // Get input values
-            String customerName = tfCustomerName.getText().trim();
-            String customerContact = tfCustomerContact.getText().trim();
-            String itemId = (String) cbItemID.getSelectedItem();
-            String itemName = lbItemName.getText();
-            String quantity = String.valueOf(spQuantity.getValue()); // or jSpinner1 if that's still used
+    private void addSalesEntry() {
+        // Get input values
+        String customerName = tfCustomerName.getText().trim();
+        String customerContact = tfCustomerContact.getText().trim();
+        String itemId = (String) cbItemID.getSelectedItem();
+        String itemName = lbItemName.getText();
 
-            String date = String.format("%s/%s/%s", 
-                cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem());
-            String dateRequired = String.format("%s/%s/%s", 
-                cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem());
+        // Safely get quantity
+        int quantity;
+        try {
+            quantity = (Integer) spQuantity.getValue();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid quantity value",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            // Validate inputs
-            if (customerName.isEmpty() || customerContact.isEmpty() || 
-                itemId == null || itemId.trim().isEmpty() || 
-                itemName == null || itemName.trim().isEmpty()) {
+        String date = String.format("%s/%s/%s", 
+            cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem());
+        String dateRequired = String.format("%s/%s/%s", 
+            cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem());
 
+        // Validate inputs
+        if (customerName.isEmpty() || customerContact.isEmpty() || 
+            itemId == null || itemId.trim().isEmpty() || 
+            itemName == null || itemName.trim().isEmpty()) {
+
+            JOptionPane.showMessageDialog(this,
+                "Please fill in all required fields",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Get item details from database
+            String[] itemDetails = getItemDetails(itemId);
+            if (itemDetails == null) {
                 JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields",
-                    "Input Error",
+                    "Item not found in database",
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Prepare fields to save
-            Map<String, String> fields = new HashMap<>();
-            fields.put("customerName", customerName);
-            fields.put("customerContact", customerContact);
-            fields.put("itemId", itemId);
-            fields.put("itemName", itemName);
-            fields.put("quantity", quantity);
-            fields.put("date", date);
-            fields.put("dateRequired", dateRequired);
+            // Create objects with proper Item constructor
+            Customer customer = new Customer(customerName, customerContact);
+            Item item = new Item(
+                itemId,
+                itemName,
+                itemDetails[2], // supplierId
+                Double.parseDouble(itemDetails[3]), // price
+                itemDetails[4] // category
+            );
 
-            // Attempt to save
-            try {
-                String salesId = FileUtils.addToFile(SALES_FILE, FileUtils.RECORD_TYPE_SALES,fields, f -> {
-                        try {
-                            return FileUtils.generateSalesId(SALES_FILE);
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    }
-                );
+            // Generate sales ID
+            String salesId = FileUtils.generateSalesId(SALES_FILE);
 
-                if (salesId != null) {
-                    JOptionPane.showMessageDialog(this,
-                        "Sales entry added successfully!\nID: " + salesId,
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                    clearSalesForm();
-                    loadSalesToTable(); // If needed
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                    "Error adding sales entry: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            // Create sales entry
+            SalesEntry entry = new SalesEntry(
+                salesId,
+                date,
+                dateRequired,
+                customer,
+                item,
+                quantity
+            );
+
+            // Add to file
+            String savedId = FileUtils.addToFile(SALES_FILE, entry);
+
+            if (savedId != null) {
+                // Show success message with HTML formatting
+                showSuccessMessage("Sales Entry Added", 
+                    "<html><b>Sales ID:</b> " + salesId + "<br>" +
+                    "<b>Customer:</b> " + customerName + "<br>" +
+                    "<b>Item:</b> " + itemName + " (" + itemId + ")<br>" +
+                    "<b>Quantity:</b> " + quantity + "<br>" +
+                    "<b>Date:</b> " + date + "<br>" +
+                    "<b>Required By:</b> " + dateRequired + "</html>");
+
+                clearSalesForm();
+                loadSalesToTable();
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error creating sales entry: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
-
+    }
+    
+        private String[] getItemDetails(String itemId) throws IOException {
+            List<String> lines = FileUtils.findLinesWithValue(ITEMS_FILE, itemId);
+            if (lines != null && !lines.isEmpty()) {
+                return lines.get(0).split(",");
+            }
+            return null;
+        }
+        
+        private void showSuccessMessage(String title, String message) {
+            JOptionPane.showMessageDialog(this, 
+                message, 
+                title, 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+        
         private void editSelectedEntry() {
             int selectedRow = jTable3.getSelectedRow();
             if (selectedRow == -1) {
@@ -141,22 +189,34 @@
             }
 
             try {
-                // Recreate Customer
+                // Get the complete item details from database using the item ID
+                String itemId = (String) jTable3.getValueAt(selectedRow, 5);
+                String[] itemDetails = getItemDetails(itemId);
+
+                if (itemDetails == null || itemDetails.length < 5) {
+                    JOptionPane.showMessageDialog(this,
+                        "Could not find complete item details in database",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Recreate Customer with complete information
                 Customer customer = new Customer(
                     (String) jTable3.getValueAt(selectedRow, 3), // Customer Name
                     (String) jTable3.getValueAt(selectedRow, 4)  // Customer Contact
                 );
 
-                // Recreate Item
+                // Recreate Item with complete information from database
                 Item item = new Item(
-                    (String) jTable3.getValueAt(selectedRow, 5), // Item Code
-                    (String) jTable3.getValueAt(selectedRow, 6), // Item Name
-                    "", // supplierId unknown here (optional to fix)
-                    0,  // stock unknown here (optional to fix)
-                    0.0 // price unknown here (optional to fix)
+                    itemId,
+                    itemDetails[1], // Item Name from database
+                    itemDetails[2], // Supplier ID from database
+                    Double.parseDouble(itemDetails[3]), // Price from database
+                    itemDetails[4]  // Category from database
                 );
 
-                // Recreate SalesEntry
+                // Recreate SalesEntry with complete information
                 SalesEntry entry = new SalesEntry(
                     (String) jTable3.getValueAt(selectedRow, 0), // Sales ID
                     (String) jTable3.getValueAt(selectedRow, 1), // Date
@@ -171,7 +231,8 @@
                 editFrame.setVisible(true);
                 editFrame.setLocationRelativeTo(this);
 
-                loadSalesToTable(); // Refresh after editing
+                // Don't refresh immediately - wait for edit frame to close
+                // loadSalesToTable() should be called when edit frame closes
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                     "Error preparing edit: " + e.getMessage(),
@@ -179,7 +240,6 @@
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-
 
         private void deleteSelectedEntry() {
             int selectedRow = jTable3.getSelectedRow();

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import shared.models.Item;
 import shared.utils.FileUtils;
 import shared.utils.FileUtils.TableUtils;
 import static shared.utils.FileUtils.ensureFileExists;
@@ -64,17 +65,26 @@ public class ItemEntry extends javax.swing.JFrame {
         ));
     }
         
-    private void addNewItem() throws IOException {
+    private void addNewItem() {
         // Get input values
-        Map<String, String> fields = new HashMap<>();
-        fields.put("name", tfEnterItemName.getText().trim());
-        fields.put("price", tfEnterPrice.getText().trim());
-        fields.put("category", (String) cbCategory.getSelectedItem());
-        fields.put("supplierName", (String) cbSupplierName.getSelectedItem());
+        String name = tfEnterItemName.getText().trim();
+        String supplierName = (String) cbSupplierName.getSelectedItem();
+        String category = (String) cbCategory.getSelectedItem();
+
+        // Validate price
+        double price;
+        try {
+            price = Double.parseDouble(tfEnterPrice.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, 
+                "Please enter a valid price", 
+                "Input Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Validate inputs
-        if (fields.get("name").isEmpty() || fields.get("price").isEmpty() || 
-            fields.get("supplierName") == null) {
+        if (name.isEmpty() || supplierName == null || category == null) {
             JOptionPane.showMessageDialog(this, 
                 "Please fill in all fields", 
                 "Input Error", 
@@ -84,7 +94,7 @@ public class ItemEntry extends javax.swing.JFrame {
 
         try {
             // Get supplier ID
-            String supplierId = getSupplierIdByName(fields.get("supplierName"));
+            String supplierId = getSupplierIdByName(supplierName);
             if (supplierId == null) {
                 JOptionPane.showMessageDialog(this,
                     "Selected supplier not found in database",
@@ -92,48 +102,64 @@ public class ItemEntry extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            fields.put("supplierId", supplierId);
 
-            // Add to file using utility method
-            String itemId = FileUtils.addToFile(ITEMS_FILE, FileUtils.RECORD_TYPE_ITEM, fields, f -> {
-                try {
-                    return FileUtils.generateItemId(ITEMS_FILE, f.get("category"));
-                } catch (IOException e) {
-                    return null;
-                }
-            });
+            // Generate item ID
+            String itemId = FileUtils.generateItemId(ITEMS_FILE, category);
 
-            if (itemId != null) {
+            // Create item object
+            Item item = new Item(
+                itemId,
+                name,
+                supplierId,
+                price,
+                category
+            );
+
+            // Add to file
+            String savedId = FileUtils.addToFile(ITEMS_FILE, item);
+
+            if (savedId != null) {
+                // Show success message with HTML formatting
+                showSuccessMessage("Item Added Successfully", 
+                    "<html><b>Item ID:</b> " + itemId + "<br>" +
+                    "<b>Name:</b> " + name + "<br>" +
+                    "<b>Supplier:</b> " + supplierName + " (" + supplierId + ")<br>" +
+                    "<b>Price:</b> RM" + String.format("%.2f", price) + "<br>" +
+                    "<b>Category:</b> " + category + "</html>");
+
                 loadItemsToTable();
                 clearItemForm();
-                JOptionPane.showMessageDialog(this, 
-                    "Item added successfully!\nID: " + itemId,
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
             }
-        } catch (NumberFormatException e) {
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(this, 
-                "Please enter a valid price", 
-                "Input Error", 
+                "Error saving item: " + e.getMessage(),
+                "Database Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
-    }   
-    
-    private String getSupplierIdByName(String supplierName) throws IOException {
-         File supplierFile = new File("src/database/suppliers.txt");
-         if (!supplierFile.exists()) return null;
+    }
 
-         try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
-             String line;
-             while ((line = reader.readLine()) != null) {
-                 String[] parts = line.split(",");
-                 if (parts.length >= 2 && parts[1].equals(supplierName)) {
-                     return parts[0]; // Return supplier ID
+// Add this helper method
+        private void showSuccessMessage(String title, String message) {
+            JOptionPane.showMessageDialog(this, 
+                message, 
+                title, 
+                JOptionPane.INFORMATION_MESSAGE);
+        }    
+        private String getSupplierIdByName(String supplierName) throws IOException {
+             File supplierFile = new File("src/database/suppliers.txt");
+             if (!supplierFile.exists()) return null;
+
+             try (BufferedReader reader = new BufferedReader(new FileReader(supplierFile))) {
+                 String line;
+                 while ((line = reader.readLine()) != null) {
+                     String[] parts = line.split(",");
+                     if (parts.length >= 2 && parts[1].equals(supplierName)) {
+                         return parts[0]; // Return supplier ID
+                     }
                  }
              }
+             return null;
          }
-         return null;
-     }
 
         private void clearItemForm() {
             tfEnterItemName.setText("");
@@ -409,14 +435,7 @@ public class ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        try {
-                addNewItem();
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, 
-                    "Error saving item: " + ex.getMessage(),
-                    "Database Error", 
-                    JOptionPane.ERROR_MESSAGE);
-         }
+        addNewItem();
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed

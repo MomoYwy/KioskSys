@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
+import shared.models.Address;
+import shared.models.Supplier;
 import shared.utils.FileUtils;
 
 
@@ -106,21 +108,26 @@ public class EditSupplier extends javax.swing.JFrame {
         }
 
         try {
-            // Prepare fields for update
-            Map<String, String> fields = new HashMap<>();
-            fields.put("name", tfSupplierName.getText().trim());
-            fields.put("itemName", tfSuppliedItem.getText().trim());
-            fields.put("itemPrice", String.valueOf(itemPrice));
-            fields.put("contact", tfContact.getText().trim());
-            fields.put("deliveryTime", jSpinner1.getValue().toString());
-            fields.put("street", tfStreet.getText().trim());
-            fields.put("city", tfCity.getText().trim());
-            fields.put("state", tfState.getSelectedItem().toString());
-            fields.put("postalCode", tfPostalCode.getText().trim());
+            // Create Address object
+            Address address = new Address(
+                tfStreet.getText().trim(),
+                tfCity.getText().trim(),
+                tfState.getSelectedItem().toString(),
+                tfPostalCode.getText().trim()
+            );
 
+            // Create Supplier object with parameters in correct order
+            Supplier supplier = new Supplier(
+                supplierId,
+                tfSupplierName.getText().trim(), 
+                tfSuppliedItem.getText().trim(), 
+                itemPrice,                           
+                tfContact.getText().trim(),             
+                Integer.parseInt(jSpinner1.getValue().toString()), 
+                address                                 
+            );
             // Update the record
-            FileUtils.updateRecordInFile(SupplierEntry.SUPPLIERS_FILE, supplierId, 
-                FileUtils.addToFile(SupplierEntry.SUPPLIERS_FILE, FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> supplierId));
+            FileUtils.updateRecordInFile(SupplierEntry.SUPPLIERS_FILE, supplierId, supplier.toCsvString());
 
             JOptionPane.showMessageDialog(this,
                 "Supplier updated successfully!",
@@ -129,82 +136,88 @@ public class EditSupplier extends javax.swing.JFrame {
 
             this.dispose();
             new SupplierEntry().setVisible(true);
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
                 "Error saving supplier: " + e.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void saveNewItem() {
-       // Validate new item fields
-       if (tfNewItemName.getText().trim().isEmpty()) {
-           JOptionPane.showMessageDialog(this,
-               "Please enter a new item name",
-               "Validation Error",
-               JOptionPane.WARNING_MESSAGE);
-           return;
-       }
+        // Validate new item fields
+        if (tfNewItemName.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter a new item name",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-       double newItemPrice = ((Number) spNewItemPrice.getValue()).doubleValue();
-       if (newItemPrice <= 0) {
-           JOptionPane.showMessageDialog(this,
-               "New item price must be greater than 0",
-               "Validation Error",
-               JOptionPane.WARNING_MESSAGE);
-           return;
-       }
+        double newItemPrice = ((Number) spNewItemPrice.getValue()).doubleValue();
+        if (newItemPrice <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "New item price must be greater than 0",
+                "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-       String newItemName = tfNewItemName.getText().trim();
+        String newItemName = tfNewItemName.getText().trim();
 
-       try {
-           // Check if item exists in inventory
-           if (!FileUtils.itemExistsByName("src/database/items.txt", newItemName)) {
-               int choice = JOptionPane.showConfirmDialog(this,
-                   "Item '" + newItemName + "' doesn't exist in inventory.\n" +
-                   "Would you like to add it now?",
-                   "Add New Item",
-                   JOptionPane.YES_NO_OPTION);
+        try {
+            // Check if item exists in inventory
+            if (!FileUtils.itemExistsByName("src/database/items.txt", newItemName)) {
+                int choice = JOptionPane.showConfirmDialog(this,
+                    "Item '" + newItemName + "' doesn't exist in inventory.\n" +
+                    "Would you like to add it now?",
+                    "Add New Item",
+                    JOptionPane.YES_NO_OPTION);
 
-               if (choice == JOptionPane.YES_OPTION) {
-                   openItemEntryScreen(newItemName);
-                   return; // Exit saving process - user will need to save again after adding item
-               }
-           }
+                if (choice == JOptionPane.YES_OPTION) {
+                    openItemEntryScreen(newItemName);
+                    return; // Exit saving process
+                }
+            }
 
-           // Prepare fields for new record
-           Map<String, String> fields = new HashMap<>();
-           fields.put("name", tfSupplierName.getText().trim());
-           fields.put("itemName", newItemName);
-           fields.put("itemPrice", String.valueOf(newItemPrice));
-           fields.put("contact", tfContact.getText().trim());
-           fields.put("deliveryTime", jSpinner1.getValue().toString());
-           fields.put("street", tfStreet.getText().trim());
-           fields.put("city", tfCity.getText().trim());
-           fields.put("state", tfState.getSelectedItem().toString());
-           fields.put("postalCode", tfPostalCode.getText().trim());
+            // Create Address object
+            Address address = new Address(
+                tfStreet.getText().trim(),
+                tfCity.getText().trim(),
+                tfState.getSelectedItem().toString(),
+                tfPostalCode.getText().trim()
+            );
 
-           // Add as a new record (keeping the same supplier ID)
-           String newSupplierId = FileUtils.addToFile(SupplierEntry.SUPPLIERS_FILE, 
-               FileUtils.RECORD_TYPE_SUPPLIER, fields, f -> supplierId);
+            // Create Supplier object with parameters in correct order
+            Supplier supplier = new Supplier(
+                supplierId,
+                tfSupplierName.getText().trim(),     
+                newItemName,                        
+                newItemPrice,                   
+                tfContact.getText().trim(),   
+                Integer.parseInt(jSpinner1.getValue().toString()), 
+                address                          
+            );
 
-           if (newSupplierId != null) {
-               JOptionPane.showMessageDialog(this,
-                   "New supplier item added successfully!",
-                   "Success",
-                   JOptionPane.INFORMATION_MESSAGE);
+            // Add as a new record
+            String savedId = FileUtils.addToFile(SupplierEntry.SUPPLIERS_FILE, supplier);
 
-               this.dispose();
-               new SupplierEntry().setVisible(true);
-           }
-       } catch (Exception e) {
-           JOptionPane.showMessageDialog(this,
-               "Error saving new supplier item: " + e.getMessage(),
-               "Error",
-               JOptionPane.ERROR_MESSAGE);
-       }
-   }
+            if (savedId != null) {
+                JOptionPane.showMessageDialog(this,
+                    "New supplier item added successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                this.dispose();
+                new SupplierEntry().setVisible(true);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error saving new supplier item: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
    private void openItemEntryScreen(String itemName) {
        ItemEntry itemEntry = new ItemEntry();

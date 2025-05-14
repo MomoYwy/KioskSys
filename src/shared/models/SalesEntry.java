@@ -1,6 +1,6 @@
 package shared.models;
 
-public class SalesEntry {
+public class SalesEntry implements Recordable {
     private String salesId;
     private String date;
     private String dateRequired;
@@ -8,8 +8,9 @@ public class SalesEntry {
     private Item item;
     private int quantity;
 
-    // Constructor without salesId (for new entries)
-    public SalesEntry(String date, String dateRequired, Customer customer, Item item, int quantity) {
+    public SalesEntry(String salesId, String date, String dateRequired, 
+                    Customer customer, Item item, int quantity) {
+        this.salesId = salesId;
         this.date = date;
         this.dateRequired = dateRequired;
         this.customer = customer;
@@ -17,28 +18,30 @@ public class SalesEntry {
         this.quantity = quantity;
     }
 
-    // Constructor with salesId (for existing entries)
-    public SalesEntry(String salesId, String date, String dateRequired, Customer customer, Item item, int quantity) {
-        this(date, dateRequired, customer, item, quantity);
-        this.salesId = salesId;
+    // Getters
+    public String getSalesId() { return salesId; }
+    public String getDate() { return date; }
+    public String getDateRequired() { return dateRequired; }
+    public Customer getCustomer() { return customer; }
+    public Item getItem() { return item; }
+    public int getQuantity() { return quantity; }
+
+    @Override
+    public String getId() {
+        return salesId;
     }
 
-    // Getters and Setters
-    public String getSalesId() { return salesId; }
-    public void setSalesId(String salesId) { this.salesId = salesId; }
-
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-
-    public String getDateRequired() { return dateRequired; }
-    public void setDateRequired(String dateRequired) { this.dateRequired = dateRequired; }
-
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
-
-    public Item getItem() { return item; }
-    public void setItem(Item item) { this.item = item; }
-
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    @Override
+    public String toCsvString() {
+        return String.join(",",
+            salesId,
+            date,
+            dateRequired,
+            customer.getName(),
+            customer.getContact(),
+            item.getItemId(),
+            item.getName(),
+            String.valueOf(quantity)
+        );
+    }
 }

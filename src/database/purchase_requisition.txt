@@ -1,4 +1,3 @@
 PR_ID Item_ID Item_Name Stock_Amount Quantity Date_Required Supplier_ID User_ID Status
 
 
-PR0001,null,G004,Socks,10,20/10/2032,Alibaba|Chiikawa,pending

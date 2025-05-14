@@ -41,7 +41,7 @@ public class EditSales extends javax.swing.JFrame {
             cbYear.setSelectedItem(dateParts[2]);
         }
 
-        cbItemID.setSelectedItem(entry.getItem().getItemCode());
+        cbItemID.setSelectedItem(entry.getItem().getItemId());
         lbItemName.setText(entry.getItem().getName());
         spQuantity.setValue(entry.getQuantity());
     }
