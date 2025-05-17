@@ -189,4 +189,10 @@ public class PurchaseOrder {
                 ", status='" + status + '\'' +
                 '}';
     }
+    
+    public String getOrderDetails() {
+    return purchaseOrderId + "," + purchaseRequisitionId + "," + itemId + "," + itemName + ","
+        + quantity + "," + itemPrice + "," + totalPrice + "," + dateCreated + "," + dateRequired + ","
+        + supplierId + "," + salesManagerId + "," + purchaseManagerId + "," + status; 
+}
 }

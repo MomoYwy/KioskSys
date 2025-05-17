@@ -54,7 +54,7 @@ public class ViewPO extends javax.swing.JFrame {
                     jLabel4.setText(prId);
                     jLabel5.setText(itemId);
                     jLabel6.setText(itemName);
-                    jTextField1.setText(quantity);
+                    lblQuantity.setText(quantity);
                     jLabel13.setText(itemPrice);
                     jLabel14.setText(totalPrice);
                     jLabel7.setText(dateCreated);
@@ -111,9 +111,9 @@ public class ViewPO extends javax.swing.JFrame {
     private void saveChangesAction() {
     // Retrieve the selected PO ID and the new values entered by the user
     String poId = jLabel3.getText(); // PO ID from the selected row
-    String newStatus = (String) cmbStatus.getSelectedItem(); // New status from the combo box
-    String newSupplierId = (String) cmbSupplierID.getSelectedItem(); // New Supplier ID from the combo box
-    String newQuantity = jTextField1.getText(); // New quantity from the text field
+    String newStatus = (String) lblStatus.getText(); // New status from the combo box
+    String newSupplierId = (String) lblSupplierID.getText(); // New Supplier ID from the combo box
+    String newQuantity = lblQuantity.getText(); // New quantity from the text field
 
     // Validate input: Ensure the user entered a valid quantity
     try {
@@ -189,7 +189,7 @@ public class ViewPO extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        lblPOID = new javax.swing.JPanel();
+        lblPurchaseMid = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPO = new javax.swing.JTable();
         btnback = new javax.swing.JButton();
@@ -213,16 +213,16 @@ public class ViewPO extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        cmbSupplierID = new javax.swing.JComboBox<>();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        cmbStatus = new javax.swing.JComboBox<>();
         btnSaveChanges = new javax.swing.JButton();
+        lblSupplierID = new javax.swing.JLabel();
+        lblQuantity = new javax.swing.JLabel();
+        lblStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -250,7 +250,7 @@ public class ViewPO extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        lblPOID.setBackground(new java.awt.Color(255, 233, 217));
+        lblPurchaseMid.setBackground(new java.awt.Color(255, 233, 217));
 
         tblPO.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -319,8 +319,6 @@ public class ViewPO extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel12.setText("Supplier ID:");
 
-        cmbSupplierID.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "S001", "S002", "S003", "S004", "S005", "S006" }));
-
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel16.setText("Sales Manager ID:");
 
@@ -330,8 +328,6 @@ public class ViewPO extends javax.swing.JFrame {
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel18.setText("Status:");
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDING", "APPROVED", "REJECTED" }));
-
         btnSaveChanges.setText("Save Changes");
         btnSaveChanges.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -339,111 +335,117 @@ public class ViewPO extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout lblPOIDLayout = new javax.swing.GroupLayout(lblPOID);
-        lblPOID.setLayout(lblPOIDLayout);
-        lblPOIDLayout.setHorizontalGroup(
-            lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        lblSupplierID.setText("jLabel21");
+
+        lblQuantity.setText("jLabel22");
+
+        lblStatus.setText("jLabel23");
+
+        javax.swing.GroupLayout lblPurchaseMidLayout = new javax.swing.GroupLayout(lblPurchaseMid);
+        lblPurchaseMid.setLayout(lblPurchaseMidLayout);
+        lblPurchaseMidLayout.setHorizontalGroup(
+            lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(lblPOIDLayout.createSequentialGroup()
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(lblPOIDLayout.createSequentialGroup()
+            .addGroup(lblPurchaseMidLayout.createSequentialGroup()
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(lblPurchaseMidLayout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addComponent(jLabel2))
-                    .addGroup(lblPOIDLayout.createSequentialGroup()
+                    .addGroup(lblPurchaseMidLayout.createSequentialGroup()
                         .addGap(27, 27, 27)
-                        .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel27)
                             .addComponent(jLabel26)
                             .addComponent(jLabel28)
                             .addComponent(jLabel29)
                             .addComponent(jLabel30))
                         .addGap(18, 18, 18)
-                        .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                        .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblQuantity, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(86, 86, 86)
-                        .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                        .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(jLabel9)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(jLabel11)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(btnLoadPO)
                                 .addGap(40, 40, 40)
                                 .addComponent(btnApprove)
                                 .addGap(43, 43, 43)
                                 .addComponent(btnSaveChanges))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                 .addComponent(jLabel12)
-                                .addGap(18, 18, 18)
-                                .addComponent(cmbSupplierID, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(lblPOIDLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblSupplierID, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(lblPurchaseMidLayout.createSequentialGroup()
                                 .addGap(90, 90, 90)
-                                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                         .addComponent(jLabel17)
                                         .addGap(18, 18, 18)
                                         .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                         .addComponent(jLabel18)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPOIDLayout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblPurchaseMidLayout.createSequentialGroup()
                                         .addComponent(jLabel16)
                                         .addGap(18, 18, 18)
                                         .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(lblPOIDLayout.createSequentialGroup()
+                            .addGroup(lblPurchaseMidLayout.createSequentialGroup()
                                 .addGap(40, 40, 40)
                                 .addComponent(btnback)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
-        lblPOIDLayout.setVerticalGroup(
-            lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(lblPOIDLayout.createSequentialGroup()
+        lblPurchaseMidLayout.setVerticalGroup(
+            lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(lblPurchaseMidLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addGap(11, 11, 11)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
                     .addComponent(jLabel3)
                     .addComponent(jLabel8)
                     .addComponent(jLabel13))
                 .addGap(18, 18, 18)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel27)
-                    .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel4)
                         .addComponent(jLabel9)
                         .addComponent(jLabel14)))
                 .addGap(18, 18, 18)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel10)
-                    .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel28)
                         .addComponent(jLabel5)
                         .addComponent(jLabel16)
                         .addComponent(jLabel19)
                         .addComponent(jLabel7)))
                 .addGap(20, 20, 20)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel29)
                     .addComponent(jLabel6)
                     .addComponent(jLabel11)
@@ -451,15 +453,15 @@ public class ViewPO extends javax.swing.JFrame {
                     .addComponent(jLabel17)
                     .addComponent(jLabel20))
                 .addGap(18, 18, 18)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel30)
                     .addComponent(jLabel12)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbSupplierID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel18)
-                    .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addGroup(lblPOIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSupplierID)
+                    .addComponent(lblQuantity)
+                    .addComponent(lblStatus))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addGroup(lblPurchaseMidLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLoadPO)
                     .addComponent(btnApprove)
                     .addComponent(btnback)
@@ -472,14 +474,14 @@ public class ViewPO extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(lblPOID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblPurchaseMid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPOID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(lblPurchaseMid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -607,8 +609,6 @@ public class ViewPO extends javax.swing.JFrame {
     private javax.swing.JButton btnLoadPO;
     private javax.swing.JButton btnSaveChanges;
     private javax.swing.JButton btnback;
-    private javax.swing.JComboBox<String> cmbStatus;
-    private javax.swing.JComboBox<String> cmbSupplierID;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -636,8 +636,10 @@ public class ViewPO extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JPanel lblPOID;
+    private javax.swing.JPanel lblPurchaseMid;
+    private javax.swing.JLabel lblQuantity;
+    private javax.swing.JLabel lblStatus;
+    private javax.swing.JLabel lblSupplierID;
     private javax.swing.JTable tblPO;
     // End of variables declaration//GEN-END:variables
 }

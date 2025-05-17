@@ -1,4 +1,6 @@
 PO_ID,Item_Name,Quantity,Item_Price,Total_Price,Supplier_ID,Status,Payment_Method,Amount,Payment_Date
 PO004,Apple,35,6.50,227.50,S001,APPROVED,Bank Transfer,227.50,12/5/2025
 PO004,Apple,35,6.50,227.50,S001,APPROVED,Credit,227.50,12/05/2025
+PO006,Shampoo,50,14.80,740.00,S001,APPROVED,Bank Transfer,740.00,17/7/2024
+
 

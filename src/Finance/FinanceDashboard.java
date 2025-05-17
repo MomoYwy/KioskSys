@@ -2,13 +2,8 @@ package Finance;
 
 import javax.swing.*;
 import java.awt.event.*;
-import salesManager.PurchaseRequisition;
-import Finance.InventoryUpdates; 
 
-/**
- *
- * @author User
- */
+
 public class FinanceDashboard extends javax.swing.JFrame {
 
     /**
@@ -173,15 +168,17 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnApprovePOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApprovePOActionPerformed
-        btnApprovePO.addActionListener(new ActionListener() {
+    btnApprovePO.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
-        // Create and display the ViewPR frame when the button is clicked
-        ViewPO ViewPO = new ViewPO(); 
-        ViewPO.setVisible(true); 
-             
-        dispose();
-    }
-});
+            // Create and display the PO Management frame when the button is clicked
+            ManagementPO poFrame = new ManagementPO();
+            poFrame.setVisible(true); // Make the PO Management frame visible
+            poFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Optionally close PO frame on exit
+            
+            dispose();  // Optionally hide the current FinanceDashboard frame (if you don't want both open)
+        }
+    });
     }//GEN-LAST:event_btnApprovePOActionPerformed
 
     private void btnProcessPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessPaymentActionPerformed
@@ -198,15 +195,17 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProcessPaymentActionPerformed
 
     private void btnViewPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPOActionPerformed
-        btnViewPO.addActionListener(new ActionListener() {
+    btnViewPO.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
-        // Create and display the ViewPR frame when the button is clicked
-        ViewPO ViewPO = new ViewPO(); 
-        ViewPO.setVisible(true); 
-             
-        dispose();
-    }
-});
+            // Create and display the PO Management frame when the button is clicked
+            ManagementPO poFrame = new ManagementPO();
+            poFrame.setVisible(true); // Make the PO Management frame visible
+            poFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Optionally close PO frame on exit
+            
+            dispose();  // Optionally hide the current FinanceDashboard frame (if you don't want both open)
+        }
+    });
     }//GEN-LAST:event_btnViewPOActionPerformed
 
     private void btnViewPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPRActionPerformed

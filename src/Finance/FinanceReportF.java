@@ -6,24 +6,44 @@ import javax.swing.table.DefaultTableModel;
 import shared.models.PurchaseOrder;
 import java.util.List;
 import javax.swing.table.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.Set;
+import shared.models.OrderManager;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 
 
-/**
- *
- * @author User
- */
 public class FinanceReportF extends javax.swing.JFrame {
     
-
+    private OrderManager orderManager;
     private static final int STATUS_COLUMN_INDEX = 12;
 
+
     public FinanceReportF() {
-            initComponents();
-            
-                             
+        initComponents();
+        
+        // Initialize orderManager
+        orderManager = new OrderManager();
+        
+        // Load orders from file
+        orderManager.loadOrdersFromFile("src\\database\\purchase_orders.txt");
+        
+        // Populate the Purchase Manager ID combo box
+        populateManagerComboBox();
     }
+    
+        private void populateManagerComboBox() {
+        // Get unique Purchase Manager IDs from the orderManager
+            Set<String> uniqueManagerIds = orderManager.getUniquePurchaseManagerIds();
+            String[] managerIds = uniqueManagerIds.toArray(new String[0]);
+
+        // Populate the combo box with these IDs
+            cmbPMid.setModel(new DefaultComboBoxModel<>(managerIds));
+        }
     
     private void updateSummaryFields() {
         TableModel model = tblPO.getModel();
@@ -51,11 +71,9 @@ public class FinanceReportF extends javax.swing.JFrame {
         txtTotalPo.setText(String.valueOf(totalPOs));
         txtPending.setText(String.valueOf(pendingCount));
         txtPaid.setText(String.valueOf(paidCount));
-
     }
     
-
-
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -79,6 +97,12 @@ public class FinanceReportF extends javax.swing.JFrame {
         txtPending = new javax.swing.JTextField();
         txtPaid = new javax.swing.JTextField();
         btnBack = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        cmbStatus = new javax.swing.JComboBox<>();
+        cmbPMid = new javax.swing.JComboBox<>();
+        btnOK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -152,6 +176,24 @@ public class FinanceReportF extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("Filter by:");
+
+        jLabel3.setText("Purchase Manager ID:");
+
+        jLabel4.setText("Status:");
+
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDING", "APPROVED", "REJECTED", "RECEIVED_ITEMS" }));
+
+        cmbPMid.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnOK.setText("OK");
+        btnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOKActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -159,16 +201,22 @@ public class FinanceReportF extends javax.swing.JFrame {
             .addComponent(jScrollPane1)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbPMid, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(249, 249, 249)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
                         .addComponent(txtTotalPo, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(100, 100, 100)
-                        .addComponent(jLabel7))
-                    .addComponent(btnRefresh))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
                         .addGap(18, 18, 18)
                         .addComponent(txtPending, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(136, 136, 136)
@@ -176,7 +224,11 @@ public class FinanceReportF extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(txtPaid, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(123, 123, 123)
+                        .addGap(235, 235, 235)
+                        .addComponent(btnRefresh)
+                        .addGap(59, 59, 59)
+                        .addComponent(btnOK)
+                        .addGap(59, 59, 59)
                         .addComponent(btnBack)))
                 .addContainerGap(361, Short.MAX_VALUE))
         );
@@ -184,20 +236,32 @@ public class FinanceReportF extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRefresh)
-                    .addComponent(btnBack))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtTotalPo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtPending, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8)
-                    .addComponent(txtPaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbPMid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtTotalPo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)
+                            .addComponent(txtPending, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(txtPaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(39, 39, 39))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnRefresh)
+                            .addComponent(btnBack)
+                            .addComponent(btnOK))
+                        .addGap(101, 101, 101))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -265,6 +329,40 @@ public class FinanceReportF extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPaidActionPerformed
 
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+    // Get the selected Purchase Manager ID from the combo box
+    String selectedManagerId = (String) cmbPMid.getSelectedItem();
+
+    // Filter the orders based on the selected manager ID
+    List<PurchaseOrder> filteredOrders = orderManager.filterOrdersByPurchaseManager(selectedManagerId);
+
+    // Clear the table before populating it with filtered orders
+    DefaultTableModel model = (DefaultTableModel) tblPO.getModel();
+    model.setRowCount(0);  // Clear any existing rows
+
+    // Populate the table with the filtered orders
+    for (PurchaseOrder order : filteredOrders) {
+        model.addRow(new Object[] {
+            order.getPurchaseOrderId(),
+            order.getPurchaseRequisitionId(),
+            order.getItemId(),
+            order.getItemName(),
+            order.getQuantity(),
+            order.getItemPrice(),
+            order.getTotalPrice(),
+            order.getDateCreated(),
+            order.getDateRequired(),
+            order.getSupplierId(),
+            order.getSalesManagerId(),
+            order.getPurchaseManagerId(),
+            order.getStatus()
+        });
+    }
+
+    // Optionally, update summary fields after filtering
+    updateSummaryFields();
+    }//GEN-LAST:event_btnOKActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -303,8 +401,14 @@ public class FinanceReportF extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnOK;
     private javax.swing.JButton btnRefresh;
+    private javax.swing.JComboBox<String> cmbPMid;
+    private javax.swing.JComboBox<String> cmbStatus;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

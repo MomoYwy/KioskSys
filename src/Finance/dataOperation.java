@@ -19,7 +19,7 @@ import java.util.Date;
 public class dataOperation {
     public static <T> List<T> ReadFile(String fileName, Class<T> classs) {
         List<T> list = new ArrayList<>();
-        File file = new File("C:\\Users\\User\\Documents\\OODJ\\KioskSys\\src\\database\\" + fileName + ".txt");
+        File file = new File("src\\database\\" + fileName + ".txt");
 
         try (FileReader fr = new FileReader(file);
              BufferedReader br = new BufferedReader(fr)) {
