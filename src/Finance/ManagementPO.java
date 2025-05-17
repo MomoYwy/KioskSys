@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import shared.frames.EditPurchaseOrderDialog;
 import shared.models.PurchaseOrder;
 import shared.models.dataOperation;
 
@@ -283,6 +284,11 @@ public class ManagementPO extends javax.swing.JFrame {
         });
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -503,6 +509,67 @@ public class ManagementPO extends javax.swing.JFrame {
             });}
 
     }//GEN-LAST:event_btnLoadPOActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+            int selectedRow = tblPO.getSelectedRow();
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        // Convert to model index in case table is sorted/filtered
+        int modelRow = tblPO.convertRowIndexToModel(selectedRow);
+        
+        try {
+            // Get PO details from the table
+            String poId = tblPO.getModel().getValueAt(modelRow, 0).toString();
+            
+            // Open the EditPurchaseOrderDialog with these details
+            EditPurchaseOrderDialog dialog = new EditPurchaseOrderDialog(
+                    null, true);
+                    
+            // Set the PO data in the dialog
+            dialog.loadPurchaseOrderData(poId);
+            
+            // Position the dialog relative to this form
+            dialog.setLocationRelativeTo(this);
+            
+            // Show dialog
+            dialog.setVisible(true);
+            
+            // Refresh the PO list
+            //loadPurchaseOrders();
+                    dataOperation LD1 = new dataOperation();
+            List<PurchaseOrder> purchaseOrders = LD1.ReadFile("purchase_orders", PurchaseOrder.class); // Pass the PurchaseOrder class type
+
+            // Get the DefaultTableModel for your JTable
+            DefaultTableModel model = (DefaultTableModel) tblPO.getModel();
+            model.setRowCount(0);  // Clear any existing rows
+
+            // Loop through each PurchaseOrder and add it to the JTable
+            for (PurchaseOrder po : purchaseOrders) {
+                model.addRow(new Object[]{
+                    po.getPurchaseOrderId(),
+                    po.getPurchaseRequisitionId(),
+                    po.getItemId(),
+                    po.getItemName(),
+                    po.getQuantity(),
+                    po.getItemPrice(),
+                    po.getTotalPrice(),
+                    po.getDateCreated(),
+                    po.getDateRequired(),
+                    po.getSupplierId(),
+                    po.getSalesManagerId(),
+                    po.getPurchaseManagerId(),
+                    po.getStatus()
+                });}            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error editing Purchase Order: " + e.getMessage(),
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
 
     /**
      * @param args the command line arguments
