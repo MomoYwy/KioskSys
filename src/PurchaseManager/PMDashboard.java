@@ -203,7 +203,7 @@ public class PMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewItemsActionPerformed
 
     private void btnViewPurchaseRequisitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseRequisitionActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btnViewPurchaseRequisitionActionPerformed
 
     private void btnGeneratePurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeneratePurchaseOrdersActionPerformed
@@ -225,7 +225,17 @@ public class PMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnViewPurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseOrdersActionPerformed
-        // TODO add your handling code here:
+        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(this);
+
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        viewPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+
+        // Make dashboard invisible while working with ViewPO form
+        this.setVisible(false);
+
+        // Show the ViewPO form
+        viewPOForm.setVisible(true);
     }//GEN-LAST:event_btnViewPurchaseOrdersActionPerformed
 
     /**
