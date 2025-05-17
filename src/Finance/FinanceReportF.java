@@ -13,6 +13,7 @@ import java.util.Set;
 import shared.models.OrderManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import shared.models.dataOperation;
 
 
 
@@ -332,9 +333,12 @@ public class FinanceReportF extends javax.swing.JFrame {
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
     // Get the selected Purchase Manager ID from the combo box
     String selectedManagerId = (String) cmbPMid.getSelectedItem();
-
-    // Filter the orders based on the selected manager ID
-    List<PurchaseOrder> filteredOrders = orderManager.filterOrdersByPurchaseManager(selectedManagerId);
+    
+    // Get the selected Status from the combo box
+    String selectedStatus = cmbStatus.getSelectedItem().toString();
+    
+    // Filter the orders based on the selected Purchase Manager ID and Status
+    List<PurchaseOrder> filteredOrders = orderManager.filterOrdersByStatusAndPurchaseManager(selectedStatus, selectedManagerId);
 
     // Clear the table before populating it with filtered orders
     DefaultTableModel model = (DefaultTableModel) tblPO.getModel();
@@ -358,6 +362,7 @@ public class FinanceReportF extends javax.swing.JFrame {
             order.getStatus()
         });
     }
+    
 
     // Optionally, update summary fields after filtering
     updateSummaryFields();

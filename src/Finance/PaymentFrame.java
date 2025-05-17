@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableCellRenderer;
+import shared.models.dataOperation;
 
 
 

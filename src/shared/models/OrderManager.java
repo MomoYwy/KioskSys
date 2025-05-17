@@ -11,38 +11,38 @@ public class OrderManager {
         orders = new ArrayList<>();
     }
 
-public void loadOrdersFromFile(String filePath) {
-    // Change the date format to match the "dd/MM/yyyy" format in your data
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-        String line;
-        // Skip the header line
-        br.readLine();
+    public void loadOrdersFromFile(String filePath) {
+        // Change the date format to match the "dd/MM/yyyy" format in your data
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            // Skip the header line
+            br.readLine();
 
-        while ((line = br.readLine()) != null) {
-            String[] columns = line.split(",");
+            while ((line = br.readLine()) != null) {
+                String[] columns = line.split(",");
 
-            // Parse the dateCreated and dateRequired columns
-            Date dateCreated = dateFormat.parse(columns[7]);
-            Date dateRequired = dateFormat.parse(columns[8]);
+                // Parse the dateCreated and dateRequired columns
+                Date dateCreated = dateFormat.parse(columns[7]);
+                Date dateRequired = dateFormat.parse(columns[8]);
 
-            // Create a new PurchaseOrder object using the parsed Date objects
-            PurchaseOrder order = new PurchaseOrder(
-                columns[0], columns[1], columns[2], columns[3], Integer.parseInt(columns[4]),
-                Double.parseDouble(columns[5]), Double.parseDouble(columns[6]), dateCreated, dateRequired,
-                columns[9], columns[10], columns[11], columns[12]
-            );
+                // Create a new PurchaseOrder object using the parsed Date objects
+                PurchaseOrder order = new PurchaseOrder(
+                    columns[0], columns[1], columns[2], columns[3], Integer.parseInt(columns[4]),
+                    Double.parseDouble(columns[5]), Double.parseDouble(columns[6]), dateCreated, dateRequired,
+                    columns[9], columns[10], columns[11], columns[12]
+                );
 
-            // Add the order to the orders list
-            orders.add(order);
+                // Add the order to the orders list
+                orders.add(order);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
-    } catch (IOException | ParseException e) {
-        e.printStackTrace();
     }
-}
-    
-    
-       public Set<String> getUniquePurchaseManagerIds() {
+
+    // Method to get unique Purchase Manager IDs
+    public Set<String> getUniquePurchaseManagerIds() {
         Set<String> uniqueManagerIds = new HashSet<>();
         for (PurchaseOrder order : orders) {
             uniqueManagerIds.add(order.getPurchaseManagerId());
@@ -50,6 +50,7 @@ public void loadOrdersFromFile(String filePath) {
         return uniqueManagerIds;
     }
 
+    // Method to filter orders by Purchase Manager ID
     public List<PurchaseOrder> filterOrdersByPurchaseManager(String purchaseManagerId) {
         List<PurchaseOrder> filteredOrders = new ArrayList<>();
         for (PurchaseOrder order : orders) {
@@ -60,9 +61,30 @@ public void loadOrdersFromFile(String filePath) {
         return filteredOrders;
     }
 
+    // Method to filter orders by Status
+    public List<PurchaseOrder> filterOrdersByStatus(String status) {
+        List<PurchaseOrder> filteredOrders = new ArrayList<>();
+        for (PurchaseOrder order : orders) {
+            if (order.getStatus().equals(status)) {
+                filteredOrders.add(order);
+            }
+        }
+        return filteredOrders;
+    }
+
+    // Method to filter orders by both Status and Purchase Manager ID
+    public List<PurchaseOrder> filterOrdersByStatusAndPurchaseManager(String status, String purchaseManagerId) {
+        List<PurchaseOrder> filteredOrders = new ArrayList<>();
+        for (PurchaseOrder order : orders) {
+            if (order.getStatus().equals(status) && order.getPurchaseManagerId().equals(purchaseManagerId)) {
+                filteredOrders.add(order);
+            }
+        }
+        return filteredOrders;
+    }
+
+    // Method to get all orders
     public List<PurchaseOrder> getAllOrders() {
         return orders;
     }
-
 }
-
