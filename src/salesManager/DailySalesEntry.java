@@ -68,101 +68,112 @@ import shared.models.Recordable;
                     JOptionPane.ERROR_MESSAGE);
             }
         }
+        
+        // Add new Sales Entry
+        private void addSalesEntry() {
+            // Get input values
+            String customerName = tfCustomerName.getText().trim();
+            String customerContact = tfCustomerContact.getText().trim();
+            String itemId = (String) cbItemID.getSelectedItem();
+            String itemName = lbItemName.getText();
 
-    private void addSalesEntry() {
-        // Get input values
-        String customerName = tfCustomerName.getText().trim();
-        String customerContact = tfCustomerContact.getText().trim();
-        String itemId = (String) cbItemID.getSelectedItem();
-        String itemName = lbItemName.getText();
-
-        // Safely get quantity
-        int quantity;
-        try {
-            quantity = (Integer) spQuantity.getValue();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                "Invalid quantity value",
-                "Input Error",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String date = String.format("%s/%s/%s", 
-            cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem());
-        String dateRequired = String.format("%s/%s/%s", 
-            cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem());
-
-        // Validate inputs
-        if (customerName.isEmpty() || customerContact.isEmpty() || 
-            itemId == null || itemId.trim().isEmpty() || 
-            itemName == null || itemName.trim().isEmpty()) {
-
-            JOptionPane.showMessageDialog(this,
-                "Please fill in all required fields",
-                "Input Error",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            // Get item details from database
-            String[] itemDetails = getItemDetails(itemId);
-            if (itemDetails == null) {
+            // Safely get quantity
+            int quantity;
+            try {
+                quantity = (Integer) spQuantity.getValue();
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                    "Item not found in database",
-                    "Error",
+                    "Invalid quantity value",
+                    "Input Error",
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Create objects with proper Item constructor
-            Customer customer = new Customer(customerName, customerContact);
-            Item item = new Item(
-                itemId,
-                itemName,
-                itemDetails[2], // supplierId
-                Double.parseDouble(itemDetails[3]), // price
-                itemDetails[4] // category
-            );
-
-            // Generate sales ID
-            String salesId = FileUtils.generateSalesId(SALES_FILE);
-
-            // Create sales entry
-            SalesEntry entry = new SalesEntry(
-                salesId,
-                date,
-                dateRequired,
-                customer,
-                item,
-                quantity
-            );
-
-            // Add to file
-            String savedId = FileUtils.addToFile(SALES_FILE, entry);
-
-            if (savedId != null) {
-                // Show success message with HTML formatting
-                showSuccessMessage("Sales Entry Added", 
-                    "<html><b>Sales ID:</b> " + salesId + "<br>" +
-                    "<b>Customer:</b> " + customerName + "<br>" +
-                    "<b>Item:</b> " + itemName + " (" + itemId + ")<br>" +
-                    "<b>Quantity:</b> " + quantity + "<br>" +
-                    "<b>Date:</b> " + date + "<br>" +
-                    "<b>Required By:</b> " + dateRequired + "</html>");
-
-                clearSalesForm();
-                loadSalesToTable();
+            // Check stock availability before proceeding
+            if (!isStockAvailable(itemId, quantity)) {
+                JOptionPane.showMessageDialog(this,
+                    "Insufficient stock! Available quantity is less than requested.",
+                    "Stock Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                "Error creating sales entry: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
+
+            // Rest of your existing addSalesEntry() code...
+            String date = String.format("%s/%s/%s", 
+                cbDay.getSelectedItem(), cbMonth.getSelectedItem(), cbYear.getSelectedItem());
+            String dateRequired = String.format("%s/%s/%s", 
+                cbDayRequired.getSelectedItem(), cbMonthRequired.getSelectedItem(), cbYearRequired.getSelectedItem());
+
+            // Validate inputs
+            if (customerName.isEmpty() || customerContact.isEmpty() || 
+                itemId == null || itemId.trim().isEmpty() || 
+                itemName == null || itemName.trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                // Get item details from database
+                String[] itemDetails = getItemDetails(itemId);
+                if (itemDetails == null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Item not found in database",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Create objects with proper Item constructor
+                Customer customer = new Customer(customerName, customerContact);
+                Item item = new Item(
+                    itemId,
+                    itemName,
+                    itemDetails[2], // supplierId
+                    Double.parseDouble(itemDetails[3]), // price
+                    itemDetails[4] // category
+                );
+
+                // Generate sales ID
+                String salesId = FileUtils.generateSalesId(SALES_FILE);
+
+                // Create sales entry
+                SalesEntry entry = new SalesEntry(
+                    salesId,
+                    date,
+                    dateRequired,
+                    customer,
+                    item,
+                    quantity
+                );
+
+                // Add to file
+                String savedId = FileUtils.addToFile(SALES_FILE, entry);
+
+                if (savedId != null) {
+                    // Show success message with HTML formatting
+                    showSuccessMessage("Sales Entry Added", 
+                        "<html><b>Sales ID:</b> " + salesId + "<br>" +
+                        "<b>Customer:</b> " + customerName + "<br>" +
+                        "<b>Item:</b> " + itemName + " (" + itemId + ")<br>" +
+                        "<b>Quantity:</b> " + quantity + "<br>" +
+                        "<b>Date:</b> " + date + "<br>" +
+                        "<b>Required By:</b> " + dateRequired + "</html>");
+
+                    clearSalesForm();
+                    loadSalesToTable();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error creating sales entry: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }    
+        
         private String[] getItemDetails(String itemId) throws IOException {
             List<String> lines = FileUtils.findLinesWithValue(ITEMS_FILE, itemId);
             if (lines != null && !lines.isEmpty()) {
@@ -283,6 +294,31 @@ import shared.models.Recordable;
             // Reset dates to current date?
         }
 
+        private boolean isStockAvailable(String itemId, int requiredQuantity) {
+            try {
+                String[] itemDetails = getItemDetails(itemId);
+                if (itemDetails == null || itemDetails.length < 5) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Item details not found in database",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+
+                // The stock amount is the 4th field (index 3) in the items file
+                // Note: The stock is stored as a negative number (since it represents inventory)
+                int availableStock = Math.abs(Integer.parseInt(itemDetails[3]));
+
+                return availableStock >= requiredQuantity;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error checking stock: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+        
         private void ensureSalesFileExists() {
             if (!FileUtils.ensureFileExists(SALES_FILE)) {
                 JOptionPane.showMessageDialog(this,

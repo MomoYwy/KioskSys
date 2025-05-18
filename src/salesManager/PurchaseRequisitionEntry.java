@@ -1,6 +1,9 @@
 
 package salesManager;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -350,6 +353,15 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         }
 
         try {
+            // Check for duplicate PR
+            if (isDuplicatePR(itemName)) {
+                JOptionPane.showMessageDialog(this,
+                    "pending purchase requisition already exists\n",
+                    "Duplicate Requisition",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             int stockAmount = Integer.parseInt(stockAmountStr);
 
             // Generate PR ID
@@ -363,15 +375,14 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 stockAmount,
                 quantity,
                 dateRequired,
-                getSupplierIdByName(selectedSupplier), // Get supplier ID from name
-                "SM001" // Hardcoded user ID for now
+                getSupplierIdByName(selectedSupplier),
+                "SM001"
             );
 
             // Add to file
             String savedId = FileUtils.addToFile(PR_FILE, pr);
 
             if (savedId != null) {
-                // Show success message
                 showSuccessMessage("Purchase Requisition Created", 
                     "<html><b>PR ID:</b> " + prId + "<br>" +
                     "<b>Item:</b> " + itemName + " (" + itemId + ")<br>" +
@@ -380,7 +391,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                     "<b>Date Required:</b> " + dateRequired + "<br>" +
                     "<b>Supplier:</b> " + selectedSupplier + "</html>");
 
-                // Clear form
                 clearForm();
             }
         } catch (NumberFormatException e) {
@@ -390,12 +400,32 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
-                "Error getting supplier ID: " + e.getMessage(),
+                "Error: " + e.getMessage(),
                 "Database Error",
                 JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private boolean isDuplicatePR(String itemName) throws IOException {
+        File prFile = new File(PR_FILE);
+        if (!prFile.exists()) {
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(prFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Check if we have enough fields and status is "Pending"
+                // Now checking index 2 for itemName and index 9 for status (since we added dateCreated)
+                if (parts.length >= 10 && parts[2].equals(itemName) && parts[9].equals("Pending")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /**
      * @param args the command line arguments
      */

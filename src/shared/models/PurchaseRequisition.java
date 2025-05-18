@@ -1,5 +1,8 @@
 package shared.models;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class PurchaseRequisition implements Recordable {
     private String prId;
     private String itemId;
@@ -9,6 +12,7 @@ public class PurchaseRequisition implements Recordable {
     private String dateRequired;
     private String supplierId;
     private String userId;
+    private String dateCreated; // New field
     private String status; // "Pending", "Approved", "Rejected"
 
     public PurchaseRequisition(String prId, String itemId, String itemName, 
@@ -22,6 +26,7 @@ public class PurchaseRequisition implements Recordable {
         this.dateRequired = dateRequired;
         this.supplierId = supplierId;
         this.userId = userId;
+        this.dateCreated = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")); // Set current date
         this.status = "Pending"; // Default status
     }
 
@@ -34,6 +39,7 @@ public class PurchaseRequisition implements Recordable {
     public String getDateRequired() { return dateRequired; }
     public String getSupplierId() { return supplierId; }
     public String getUserId() { return userId; }
+    public String getDateCreated() { return dateCreated; } // New getter
     public String getStatus() { return status; }
 
     // Business methods
@@ -61,6 +67,7 @@ public class PurchaseRequisition implements Recordable {
             dateRequired,
             supplierId,
             userId,
+            dateCreated, // Added to CSV string
             status
         );
     }
