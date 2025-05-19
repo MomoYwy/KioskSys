@@ -119,26 +119,26 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "PR ID", "Item ID", "Quantity", "Date Required", "Status", "Requested By(Sales Manager Id)"
+                "PR ID", "Item ID", "Item Name", "Quantity", "Date Required", "Status", "Requested By(Sales Manager Id)"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -202,6 +202,9 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
         ButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
 
+        generatePOButton.setBackground(new java.awt.Color(0, 204, 102));
+        generatePOButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        generatePOButton.setForeground(new java.awt.Color(255, 255, 255));
         generatePOButton.setText("Generate Purchase Order");
         generatePOButton.setEnabled(false);
         generatePOButton.addActionListener(new java.awt.event.ActionListener() {
@@ -211,6 +214,9 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         });
         ButtonPanel.add(generatePOButton);
 
+        refreshButton.setBackground(new java.awt.Color(33, 150, 243));
+        refreshButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        refreshButton.setForeground(new java.awt.Color(255, 255, 255));
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -219,6 +225,9 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         });
         ButtonPanel.add(refreshButton);
 
+        backButton.setBackground(new java.awt.Color(102, 102, 102));
+        backButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        backButton.setForeground(new java.awt.Color(255, 255, 255));
         backButton.setText("Back");
         backButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -283,41 +292,32 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         if (selectedRow < 0) {
             return; // No row selected
         }
-        
+
         try {
-            // Get PR details from the table
+            // Get PR details from the table - adjust indexes to match your table model
             String prId = jTable2.getValueAt(selectedRow, 0).toString();
             String itemId = jTable2.getValueAt(selectedRow, 1).toString();
-            int quantity = Integer.parseInt(jTable2.getValueAt(selectedRow, 2).toString());
-            String dateRequired = jTable2.getValueAt(selectedRow, 3).toString();
-            String salesManagerId = jTable2.getValueAt(selectedRow, 5).toString();
-            
-            // Get item name from the itemId
-            String itemName = getItemName(itemId);
-            if (itemName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                        "Error: Could not find item name for item ID: " + itemId,
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
+            String itemName = jTable2.getValueAt(selectedRow, 2).toString(); // Get item name directly from table
+            int quantity = Integer.parseInt(jTable2.getValueAt(selectedRow, 3).toString());
+            String dateRequired = jTable2.getValueAt(selectedRow, 4).toString();
+            String salesManagerId = jTable2.getValueAt(selectedRow, 6).toString();
+
             // Open the AddPurchaseOrderDialog with these details
             AddPurchaseOrderDialog dialog = new AddPurchaseOrderDialog(
                     this, true, prId, itemId, itemName, quantity, dateRequired, salesManagerId);
-            
+
             // Position the dialog relative to this form
             dialog.setLocationRelativeTo(this);
-            
+
             // Show dialog
             dialog.setVisible(true);
-            
+
             // If confirmed, refresh the tables
             if (dialog.isConfirmed()) {
                 loadPendingPurchaseRequisitions();
                 loadPurchaseOrders();
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
                     "Error generating Purchase Order: " + e.getMessage(),

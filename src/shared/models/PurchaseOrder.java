@@ -19,7 +19,7 @@ public class PurchaseOrder {
     private String supplierId;
     private String salesManagerId;
     private String purchaseManagerId;
-    private String status; // "PENDING", "APPROVED", "REJECTED", "RECEIVED_ITEMS"
+    private String status; // "PENDING", "APPROVED", "REJECTED", "PAID", "RECEIVED_ITEMS"
 
     /**
      * Constructor for creating a new Purchase Order

@@ -15,7 +15,7 @@ import shared.frames.EditPurchaseOrderDialog;
 
 public class ViewPurchaseOrder extends javax.swing.JFrame {
 
-     private PMDashboard previousForm;
+    private PMDashboard previousForm;
     private TableRowSorter<DefaultTableModel> sorter;
     
     public ViewPurchaseOrder() {
@@ -30,7 +30,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
 
 //add a constructor field to track if the edit was confirmed
     private boolean editConfirmed = false;
-
+    
 
     private void setupTableListeners() {
         poTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -38,7 +38,18 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     int selectedRow = poTable.getSelectedRow();
-                    EditPOButton.setEnabled(selectedRow >= 0);
+                    boolean rowSelected = selectedRow >= 0;
+                    EditPOButton.setEnabled(rowSelected);
+                    
+                    // Enable delete button only if a row is selected
+                    if (rowSelected) {
+                        int modelRow = poTable.convertRowIndexToModel(selectedRow);
+                        String status = poTable.getModel().getValueAt(modelRow, 12).toString();
+                        // Only enable delete for PENDING status
+                        deleteButton.setEnabled(status.equals("PENDING"));                        
+                    } else {
+                        deleteButton.setEnabled(false);
+                    }
                 }
             }
         });
@@ -94,6 +105,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         ButtonPanel = new javax.swing.JPanel();
         EditPOButton = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
 
@@ -166,7 +178,8 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         txtPurchaseOrders.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtPurchaseOrders.setText("Purchase Orders");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "PENDING", "APPROVED", "REJECTED", "RECEIVED_ITEMS" }));
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "PENDING", "APPROVED", "REJECTED", "PAID", "RECEIVED_ITEMS" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -209,6 +222,9 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
 
         ButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
 
+        EditPOButton.setBackground(new java.awt.Color(0, 204, 102));
+        EditPOButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        EditPOButton.setForeground(new java.awt.Color(255, 255, 255));
         EditPOButton.setText("Edit Purchase Order");
         EditPOButton.setEnabled(false);
         EditPOButton.addActionListener(new java.awt.event.ActionListener() {
@@ -218,6 +234,20 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         });
         ButtonPanel.add(EditPOButton);
 
+        deleteButton.setBackground(new java.awt.Color(255, 102, 102));
+        deleteButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
+        deleteButton.setText("Delete");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
+        ButtonPanel.add(deleteButton);
+
+        refreshButton.setBackground(new java.awt.Color(33, 150, 243));
+        refreshButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        refreshButton.setForeground(new java.awt.Color(255, 255, 255));
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -226,6 +256,9 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         });
         ButtonPanel.add(refreshButton);
 
+        backButton.setBackground(new java.awt.Color(102, 102, 102));
+        backButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        backButton.setForeground(new java.awt.Color(255, 255, 255));
         backButton.setText("Back");
         backButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,7 +283,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         FrameBGLayout.setVerticalGroup(
             FrameBGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, FrameBGLayout.createSequentialGroup()
-                .addContainerGap(73, Short.MAX_VALUE)
+                .addContainerGap(71, Short.MAX_VALUE)
                 .addComponent(bottomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -294,6 +327,16 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         try {
             // Get PO details from the table
             String poId = poTable.getModel().getValueAt(modelRow, 0).toString();
+            String status = poTable.getModel().getValueAt(modelRow, 12).toString();
+            
+            // Check if status is PAID or RECEIVED_ITEMS
+            if (status.equals("PAID") || status.equals("RECEIVED_ITEMS")) {
+                JOptionPane.showMessageDialog(this,
+                    "Purchase orders with status '" + status + "' cannot be edited.",
+                    "Edit Not Allowed",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             
             // Open the EditPurchaseOrderDialog with these details
             EditPurchaseOrderDialog dialog = new EditPurchaseOrderDialog(
@@ -327,6 +370,67 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
        applyStatusFilter();
     }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int selectedRow = poTable.getSelectedRow();
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        // Convert to model index in case table is sorted/filtered
+        int modelRow = poTable.convertRowIndexToModel(selectedRow);
+        
+        try {
+            // Get PO details from the table
+            String poId = poTable.getModel().getValueAt(modelRow, 0).toString();
+            String prId = poTable.getModel().getValueAt(modelRow, 1).toString();
+            String status = poTable.getModel().getValueAt(modelRow, 12).toString();
+            
+            // Check if status is PENDING
+            if (!status.equals("PENDING")) {
+                JOptionPane.showMessageDialog(this,
+                    "Only purchase orders with PENDING status can be deleted.",
+                    "Delete Not Allowed",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete Purchase Order " + poId + "?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Delete the purchase order
+                boolean deleted = PurchaseOrderUtils.deletePurchaseOrder(poId);
+                
+                if (deleted) {
+                    // Also update the PR status back to PENDING
+                    PurchaseOrderUtils.updatePRStatus(prId, "Pending");
+                    
+                    JOptionPane.showMessageDialog(this,
+                            "Purchase Order " + poId + " has been deleted successfully.",
+                            "Delete Successful",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // Refresh the table
+                    loadPurchaseOrders();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Failed to delete Purchase Order.",
+                            "Delete Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Error deleting Purchase Order: " + e.getMessage(),
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -369,22 +473,6 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ViewPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ViewPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ViewPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ViewPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -399,6 +487,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     private javax.swing.JPanel FrameBG;
     private javax.swing.JButton backButton;
     private javax.swing.JPanel bottomPanel;
+    private javax.swing.JButton deleteButton;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;

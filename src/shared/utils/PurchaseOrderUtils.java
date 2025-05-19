@@ -48,6 +48,7 @@ public class PurchaseOrderUtils {
                             model.addRow(new Object[]{
                                 parts[0].trim(), // PR ID
                                 parts[1].trim(), // Item ID
+                                parts[2].trim(), // ItemName
                                 Integer.parseInt(parts[4].trim()), // Quantity
                                 parts[5].trim(), // Date Required
                                 parts[8].trim(), // Status
@@ -117,7 +118,53 @@ public class PurchaseOrderUtils {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    public static void loadPurchaseRequistionToTable(DefaultTableModel model) {
+        model.setRowCount(0);
+
+        try {
+            File file = new File(PR_FILE);
+            if (!file.exists()) {
+                FileUtils.ensureFileExists(PR_FILE);
+                return;
+            }
+
+            // Skip header lines
+            boolean headerSkipped = false;
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Skip header and empty lines
+                    if (line.trim().isEmpty() || !headerSkipped) {
+                        headerSkipped = true;
+                        continue;
+                    }
+
+                    String[] parts = line.split(",");
+                    if (parts.length >= 10) { // We need all 13 fields
+                        model.addRow(new Object[]{
+                                parts[0].trim(), // PR ID
+                                parts[1].trim(), // Item ID
+                                parts[2].trim(), // ItemName
+                                Integer.parseInt(parts[3].trim()), // stock amount
+                                Integer.parseInt(parts[4].trim()), // Quantity
+                                parts[5].trim(), // Date Required
+                                parts[6].trim(),  // Supplier ID (Sales Manager ID)
+                                parts[7].trim(),  // User ID (Sales Manager ID)
+                                parts[8].trim(),  //Date Created
+                                parts[9].trim(), // Status
+                        });
+                    }
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, 
+                    "Error loading purchase requistion: " + e.getMessage(),
+                    "Database Error", 
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }    
     /**
      * Load purchase orders filtered by status
      */
@@ -366,5 +413,56 @@ public class PurchaseOrderUtils {
      */
     public static String formatDate(Date date) {
         return DATE_FORMAT.format(date);
+    }
+    
+    public static boolean deletePurchaseOrder(String poId) {
+    try {
+        File originalFile = new File(PO_FILE);
+        File tempFile = new File(PO_FILE + ".tmp");
+        
+        boolean deleted = false;
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            
+            String line;
+            boolean headerWritten = false;
+            
+            while ((line = reader.readLine()) != null) {
+                // Write header or empty lines as-is
+                if (line.trim().isEmpty() || !headerWritten) {
+                    writer.write(line);
+                    writer.newLine();
+                    headerWritten = true;
+                    continue;
+                }
+                
+                String[] parts = line.split(",");
+                if (parts.length > 0 && parts[0].equals(poId)) {
+                    // Skip this line (delete)
+                    deleted = true;
+                } else {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        }
+        
+        // Replace original file with updated file
+        if (!originalFile.delete()) {
+            throw new IOException("Could not delete original file");
+        }
+        if (!tempFile.renameTo(originalFile)) {
+            throw new IOException("Could not rename temp file");
+        }
+        
+        return deleted;
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, 
+                "Error deleting Purchase Order: " + e.getMessage(),
+                "Database Error", 
+                JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
     }
 }

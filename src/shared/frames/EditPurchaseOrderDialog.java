@@ -127,6 +127,9 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                             case "REJECTED":
                                 jRadioButtonREJECTED.setSelected(true);
                                 break;
+                            case "PAID":
+                                jRadioButtonRECEIVED_ITEMS.setSelected(true);
+                                break;                                
                             case "RECEIVED_ITEMS":
                                 jRadioButtonRECEIVED_ITEMS.setSelected(true);
                                 break;
@@ -324,6 +327,8 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                 newStatus = "APPROVED";
             } else if (jRadioButtonREJECTED.isSelected()) {
                 newStatus = "REJECTED";
+            } else if (jRadioButtonREJECTED.isSelected()) {
+                newStatus = "PAID";                
             } else if (jRadioButtonRECEIVED_ITEMS.isSelected()) {
                 newStatus = "RECEIVED_ITEMS";
             } else {
@@ -527,6 +532,9 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
             case "REJECTED":
                 jRadioButtonREJECTED.setSelected(true);
                 break;
+            case "PAID":
+                jRadioButtonREJECTED.setSelected(true);
+                break;                
             case "RECEIVED_ITEMS":
                 jRadioButtonRECEIVED_ITEMS.setSelected(true);
                 break;
@@ -588,6 +596,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
         ItemName = new javax.swing.JLabel();
         jLabelItemID = new javax.swing.JLabel();
         jLabelItemName = new javax.swing.JLabel();
+        jRadioButtonRECEIVED_ITEMS1 = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -726,8 +735,13 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
         });
 
         buttonGroup1.add(jRadioButtonRECEIVED_ITEMS);
-        jRadioButtonRECEIVED_ITEMS.setText("RECEIVED_ITEMS");
+        jRadioButtonRECEIVED_ITEMS.setText("PAID");
         jRadioButtonRECEIVED_ITEMS.setEnabled(false);
+        jRadioButtonRECEIVED_ITEMS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonRECEIVED_ITEMSActionPerformed(evt);
+            }
+        });
 
         WholesalePrice.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         WholesalePrice.setText("Wholesale Price (RM) :");
@@ -754,43 +768,60 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
         jLabelItemName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabelItemName.setText("--------");
 
+        buttonGroup1.add(jRadioButtonRECEIVED_ITEMS1);
+        jRadioButtonRECEIVED_ITEMS1.setText("RECEIVED_ITEMS");
+        jRadioButtonRECEIVED_ITEMS1.setEnabled(false);
+        jRadioButtonRECEIVED_ITEMS1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonRECEIVED_ITEMS1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout itemIformationPanelLayout = new javax.swing.GroupLayout(itemIformationPanel);
         itemIformationPanel.setLayout(itemIformationPanelLayout);
         itemIformationPanelLayout.setHorizontalGroup(
             itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(itemIformationPanelLayout.createSequentialGroup()
-                .addGap(109, 109, 109)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabelquantity, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jRadioButtonAPPROVED, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .addComponent(jRadioButtonRECEIVED_ITEMS, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .addComponent(jRadioButtonREJECTED, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jRadioButtonPENDING, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabelItemID, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 178, Short.MAX_VALUE)
-                .addComponent(jLabelItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(itemIformationPanelLayout.createSequentialGroup()
+                        .addComponent(jLabelItemID, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(itemIformationPanelLayout.createSequentialGroup()
+                        .addComponent(jTextFieldquantity, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(51, 51, 51)
+                        .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(WholesalePrice)
+                            .addComponent(PleaseSelectSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBoxSupplierID_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Price, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
+            .addGroup(itemIformationPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jRadioButtonAPPROVED, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jRadioButtonPENDING, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jRadioButtonREJECTED, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButtonRECEIVED_ITEMS)
+                    .addComponent(jRadioButtonRECEIVED_ITEMS1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(itemIformationPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(ItemID1, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
-                        .addComponent(jLabelquantity, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
-                        .addComponent(jLabelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jTextFieldquantity, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(18, 18, 18)
-                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(ItemName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, itemIformationPanelLayout.createSequentialGroup()
-                                .addComponent(PleaseSelectSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxSupplierID_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, itemIformationPanelLayout.createSequentialGroup()
-                            .addComponent(WholesalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(Price, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(ItemID1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(490, Short.MAX_VALUE)))
         );
         itemIformationPanelLayout.setVerticalGroup(
             itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -798,34 +829,35 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                 .addGap(7, 7, 7)
                 .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelItemID)
-                    .addComponent(jLabelItemName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                .addComponent(jRadioButtonPENDING)
+                    .addComponent(jLabelItemName)
+                    .addComponent(ItemName))
+                .addGap(18, 18, 18)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxSupplierID_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PleaseSelectSupplier)
+                    .addComponent(jLabelquantity)
+                    .addComponent(jTextFieldquantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(WholesalePrice)
+                    .addComponent(Price))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonAPPROVED)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButtonPENDING)
+                    .addComponent(jRadioButtonRECEIVED_ITEMS)
+                    .addComponent(jLabelStatus))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButtonAPPROVED)
+                    .addComponent(jRadioButtonRECEIVED_ITEMS1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButtonREJECTED)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonRECEIVED_ITEMS)
-                .addGap(23, 23, 23))
+                .addContainerGap(48, Short.MAX_VALUE))
             .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(itemIformationPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(ItemID1)
-                        .addComponent(ItemName))
-                    .addGap(24, 24, 24)
-                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabelquantity)
-                        .addComponent(jTextFieldquantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(PleaseSelectSupplier)
-                        .addComponent(jComboBoxSupplierID_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(18, 18, 18)
-                    .addGroup(itemIformationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabelStatus)
-                        .addComponent(WholesalePrice)
-                        .addComponent(Price))
-                    .addContainerGap(106, Short.MAX_VALUE)))
+                    .addComponent(ItemID1)
+                    .addContainerGap(209, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -857,21 +889,22 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabelsalesManagerId, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(itemIformationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(182, 182, 182)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(75, 75, 75)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(182, 182, 182)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(75, 75, 75)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(itemIformationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                    .addGap(17, 17, 17)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 585, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 12, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 585, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -896,9 +929,9 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                     .addComponent(jLabelDateCreated))
                 .addGap(18, 18, 18)
                 .addComponent(itemIformationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addGap(69, 69, 69)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -959,6 +992,14 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
     private void jTextFieldquantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldquantityActionPerformed
 
     }//GEN-LAST:event_jTextFieldquantityActionPerformed
+
+    private void jRadioButtonRECEIVED_ITEMS1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonRECEIVED_ITEMS1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButtonRECEIVED_ITEMS1ActionPerformed
+
+    private void jRadioButtonRECEIVED_ITEMSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonRECEIVED_ITEMSActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButtonRECEIVED_ITEMSActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1044,6 +1085,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
     private javax.swing.JRadioButton jRadioButtonAPPROVED;
     private javax.swing.JRadioButton jRadioButtonPENDING;
     private javax.swing.JRadioButton jRadioButtonRECEIVED_ITEMS;
+    private javax.swing.JRadioButton jRadioButtonRECEIVED_ITEMS1;
     private javax.swing.JRadioButton jRadioButtonREJECTED;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;

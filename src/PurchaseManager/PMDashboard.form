@@ -51,16 +51,16 @@
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="55" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="btnViewItems" alignment="0" min="-2" pref="226" max="-2" attributes="0"/>
-                      <Component id="btnViewPurchaseRequisition" alignment="0" min="-2" pref="226" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="btnViewItems" max="32767" attributes="0"/>
+                      <Component id="btnViewSuppliers" pref="247" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="btnViewSuppliers" max="32767" attributes="0"/>
-                      <Component id="btnViewPurchaseOrders" pref="226" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="btnViewPurchaseRequisition" min="-2" pref="283" max="-2" attributes="0"/>
+                      <Component id="btnViewPurchaseOrders" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="76" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -84,17 +84,17 @@
                   <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnViewItems" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
-                      <Component id="btnViewSuppliers" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="btnViewPurchaseRequisition" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnViewPurchaseRequisition" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
                       <Component id="btnViewPurchaseOrders" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="btnViewSuppliers" alignment="3" min="-2" pref="70" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                  <Component id="btnGeneratePurchaseOrders" pref="70" max="32767" attributes="0"/>
+                  <Component id="btnGeneratePurchaseOrders" pref="67" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                  <Component id="btnLogout" pref="30" max="32767" attributes="0"/>
+                  <Component id="btnLogout" pref="33" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -213,7 +213,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="15" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="View Purchase Orders"/>
+            <Property name="text" type="java.lang.String" value="View Purchase Orders (Edit&amp;Delete)"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnViewPurchaseOrdersActionPerformed"/>

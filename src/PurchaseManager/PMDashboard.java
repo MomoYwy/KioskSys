@@ -102,7 +102,7 @@ public class PMDashboard extends javax.swing.JFrame {
         });
 
         btnViewPurchaseOrders.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        btnViewPurchaseOrders.setText("View Purchase Orders");
+        btnViewPurchaseOrders.setText("View Purchase Orders (Edit&Delete)");
         btnViewPurchaseOrders.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnViewPurchaseOrdersActionPerformed(evt);
@@ -118,14 +118,14 @@ public class PMDashboard extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(BGFrameLayout.createSequentialGroup()
                 .addGap(55, 55, 55)
-                .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnViewItems, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnViewPurchaseRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnViewSuppliers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnViewPurchaseOrders, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE))
-                .addGap(76, 76, 76))
+                    .addComponent(btnViewItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnViewSuppliers, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnViewPurchaseRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnViewPurchaseOrders))
+                .addGap(46, 46, 46))
             .addGroup(BGFrameLayout.createSequentialGroup()
                 .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(BGFrameLayout.createSequentialGroup()
@@ -143,15 +143,15 @@ public class PMDashboard extends javax.swing.JFrame {
                 .addGap(65, 65, 65)
                 .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnViewItems, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnViewSuppliers, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnViewPurchaseRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(41, 41, 41)
                 .addGroup(BGFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnViewPurchaseRequisition, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnViewPurchaseOrders, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnViewPurchaseOrders, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnViewSuppliers, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(32, 32, 32)
-                .addComponent(btnGeneratePurchaseOrders, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                .addComponent(btnGeneratePurchaseOrders, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                 .addGap(28, 28, 28)
-                .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addGap(21, 21, 21))
         );
 
@@ -199,11 +199,31 @@ public class PMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewSuppliersActionPerformed
 
     private void btnViewItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewItemsActionPerformed
-        // TODO add your handling code here:
+        ViewItem itemForm = new ViewItem(this);
+        
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        itemForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        // Make dashboard invisible while working with PO form
+        this.setVisible(false);
+        
+        // Show the PO form
+        itemForm.setVisible(true);
     }//GEN-LAST:event_btnViewItemsActionPerformed
 
     private void btnViewPurchaseRequisitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseRequisitionActionPerformed
-
+        ViewPR PRForm = new ViewPR(this);
+        
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        PRForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        // Make dashboard invisible while working with PO form
+        this.setVisible(false);
+        
+        // Show the PO form
+        PRForm.setVisible(true);
     }//GEN-LAST:event_btnViewPurchaseRequisitionActionPerformed
 
     private void btnGeneratePurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeneratePurchaseOrdersActionPerformed
