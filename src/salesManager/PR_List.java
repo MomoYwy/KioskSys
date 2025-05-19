@@ -4,6 +4,7 @@
  */
 package salesManager;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
 
@@ -143,7 +144,26 @@ public class PR_List extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = tblPRList.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a PR to edit.",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get data from selected row
+        String prId = tblPRList.getValueAt(selectedRow, 0).toString();
+        String itemId = tblPRList.getValueAt(selectedRow, 1).toString();
+        String itemName = tblPRList.getValueAt(selectedRow, 2).toString();
+        int quantity = Integer.parseInt(tblPRList.getValueAt(selectedRow, 4).toString());
+        String dateRequired = tblPRList.getValueAt(selectedRow, 5).toString();
+
+        // Open EditPR frame with selected data
+        EditPR editFrame = new EditPR(prId, itemId, itemName, quantity, dateRequired);
+        editFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed

@@ -4,6 +4,14 @@
  */
 package salesManager;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author User
@@ -17,6 +25,100 @@ public class EditPR extends javax.swing.JFrame {
         initComponents();
     }
     
+    private String originalPRId;
+    
+    public EditPR(String prId, String itemId, String itemName, int quantity, String dateRequired) {
+        initComponents();
+        this.originalPRId = prId;
+
+        // Display original values
+        lbShowPRID.setText(prId);
+        lbShowItemID.setText(itemId);
+        lbShowItemName.setText(itemName);
+        spQuantity.setValue(quantity);
+        txtDateRequired.setText(dateRequired);
+
+        // Setup button actions
+        setupSaveButton();
+        setupCancelButton();
+    }
+
+    private void setupSaveButton() {
+        btnSave.addActionListener(e -> {
+            try {
+                // Get updated values
+                int newQuantity = (Integer) spQuantity.getValue();
+                String newDateRequired = txtDateRequired.getText().trim();
+
+                // Validate inputs
+                if (newDateRequired.isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                        "Please enter a date required",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Update the PR in the file
+                updatePRInFile(newQuantity, newDateRequired);
+
+                // Return to PR_List
+                returnToPRList();
+
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error updating PR: " + ex.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+    
+    private void updatePRInFile(int newQuantity, String newDateRequired) throws IOException {
+        File prFile = new File("purchase_requisitions.txt");
+        File tempFile = new File("purchase_requisitions_temp.txt");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(prFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 10 && parts[0].equals(originalPRId)) {
+                    // Write the updated PR (keeping all original values except quantity and date required)
+                    writer.write(String.join(",",
+                        parts[0], // PR_ID
+                        parts[1], // Item_ID
+                        parts[2], // Item_Name
+                        parts[3], // Stock_Amount
+                        String.valueOf(newQuantity), // Quantity (updated)
+                        newDateRequired, // Date_Required (updated)
+                        parts[6], // Supplier_ID
+                        parts[7], // SalesManager_ID
+                        parts[8], // Date_Created
+                        parts[9]  // Status
+                    ));
+                } else {
+                    // Write other PRs unchanged
+                    writer.write(line);
+                }
+                writer.newLine();
+            }
+        }
+
+        // Replace original file with updated file
+        prFile.delete();
+        tempFile.renameTo(prFile);
+    }
+
+    private void setupCancelButton() {
+        btnCancel.addActionListener(e -> returnToPRList());
+    }
+
+    private void returnToPRList() {
+        new PR_List().setVisible(true);
+        this.dispose();
+    }
     
 
     
