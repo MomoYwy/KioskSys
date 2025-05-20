@@ -91,6 +91,11 @@ public class SMdashboard extends javax.swing.JFrame {
         btnSalesEntry.setText("Sales Entry");
 
         btnPR.setText("PR");
+        btnPR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPRActionPerformed(evt);
+            }
+        });
 
         btnRequisition.setText("Requisition");
 
@@ -171,6 +176,12 @@ public class SMdashboard extends javax.swing.JFrame {
     private void btnItemEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemEntryActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnItemEntryActionPerformed
+
+    private void btnPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPRActionPerformed
+        PurchaseRequisitionEntry prEntry = new PurchaseRequisitionEntry(userId, username);
+        prEntry.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnPRActionPerformed
 
     /**
      * @param args the command line arguments

@@ -21,6 +21,9 @@ import shared.utils.FileUtils;
 
 
 public class PurchaseRequisitionEntry extends javax.swing.JFrame {
+    
+    private String userId;
+    private String username;
 
     private static final String STOCK_FILE = "src/database/stocklist.txt";
     private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
@@ -32,8 +35,10 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
     public static final String RECORD_TYPE_PURCHASE_REQUISITION = "PURCHASE_REQUISITION";
 
     
-    public PurchaseRequisitionEntry() {
+    public PurchaseRequisitionEntry(String userId, String username) {
         initComponents();
+        this.userId = userId;
+        this.username = username;
         loadStockList();
         selectFromTable();
     }
@@ -367,6 +372,20 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             // Generate PR ID
             String prId = FileUtils.generatePurchaseRequisitionId(PR_FILE);
 
+            // Get all supplier names from the list
+            ListModel<String> supplierModel = listSupplier.getModel();
+            StringBuilder allSuppliers = new StringBuilder();
+            for (int i = 0; i < supplierModel.getSize(); i++) {
+                if (i > 0) {
+                    allSuppliers.append("|");
+                }
+                allSuppliers.append(supplierModel.getElementAt(i));
+            }
+            String suppliersString = allSuppliers.toString();
+
+            // Get the selected supplier ID
+            String selectedSupplierId = getSupplierIdByName(selectedSupplier);
+
             // Create PurchaseRequisition object
             PurchaseRequisition pr = new PurchaseRequisition(
                 prId,
@@ -375,8 +394,9 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 stockAmount,
                 quantity,
                 dateRequired,
-                getSupplierIdByName(selectedSupplier),
-                "SM001"
+                selectedSupplierId,
+                userId, // Use the stored user ID
+                suppliersString // Pass all suppliers as a pipe-separated string
             );
 
             // Add to file
@@ -389,7 +409,9 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                     "<b>Stock Amount:</b> " + stockAmount + "<br>" +
                     "<b>Quantity:</b> " + quantity + "<br>" +
                     "<b>Date Required:</b> " + dateRequired + "<br>" +
-                    "<b>Supplier:</b> " + selectedSupplier + "</html>");
+                    "<b>Selected Supplier:</b> " + selectedSupplier + "<br>" +
+                    "<b>All Suppliers:</b> " + suppliersString.replace("|", ", ") + "<br>" +
+                    "<b>Created by:</b> " + username + "</html>");
 
                 clearForm();
             }
@@ -416,8 +438,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                // Check if we have enough fields and status is "Pending"
-                // Now checking index 2 for itemName and index 9 for status (since we added dateCreated)
+                // Check if we have enough fields and status is 'pending"
                 if (parts.length >= 10 && parts[2].equals(itemName) && parts[9].equals("Pending")) {
                     return true;
                 }
@@ -456,7 +477,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PurchaseRequisitionEntry().setVisible(true);
             }
         });
     }
