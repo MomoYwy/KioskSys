@@ -175,10 +175,16 @@ import shared.models.Recordable;
         }    
         
         private String[] getItemDetails(String itemId) throws IOException {
-            List<String> lines = FileUtils.findLinesWithValue(ITEMS_FILE, itemId);
-            if (lines != null && !lines.isEmpty()) {
-                return lines.get(0).split(",");
+            List<String> stockLines = FileUtils.findLinesWithValue("src/database/stocklist.txt", itemId);
+            if (stockLines != null && !stockLines.isEmpty()) {
+                return stockLines.get(0).split(",");
             }
+
+            List<String> itemLines = FileUtils.findLinesWithValue(ITEMS_FILE, itemId);
+            if (itemLines != null && !itemLines.isEmpty()) {
+                return itemLines.get(0).split(",");
+            }
+
             return null;
         }
         
@@ -296,20 +302,45 @@ import shared.models.Recordable;
 
         private boolean isStockAvailable(String itemId, int requiredQuantity) {
             try {
-                String[] itemDetails = getItemDetails(itemId);
-                if (itemDetails == null || itemDetails.length < 5) {
+                // Read from stocklist.txt instead of items.txt
+                List<String> lines = FileUtils.findLinesWithValue("src/database/stocklist.txt", itemId);
+                if (lines == null || lines.isEmpty()) {
                     JOptionPane.showMessageDialog(this, 
-                        "Item details not found in database",
+                        "Item not found in stock database",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
 
-                // The stock amount is the 4th field (index 3) in the items file
-                // Note: The stock is stored as a negative number (since it represents inventory)
-                int availableStock = Math.abs(Integer.parseInt(itemDetails[3]));
+                // Assuming format: ItemID,ItemName,Category,Stock,Status
+                String[] stockDetails = lines.get(0).split(",");
+                if (stockDetails.length < 4) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Invalid stock data format",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
 
-                return availableStock >= requiredQuantity;
+                // Stock is stored as negative number (4th field, index 3)
+                int availableStock = Math.abs(Integer.parseInt(stockDetails[3].trim()));
+
+                if (availableStock < requiredQuantity) {
+                    JOptionPane.showMessageDialog(this,
+                        String.format("Insufficient stock! Available: %d, Requested: %d", 
+                            availableStock, requiredQuantity),
+                        "Stock Error",
+                        JOptionPane.WARNING_MESSAGE);
+                    return false;
+                }
+
+                return true;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error parsing stock quantity: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                     "Error checking stock: " + e.getMessage(),
@@ -497,17 +528,17 @@ import shared.models.Recordable;
 
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "SalesID", "Date", "Date_Required", "Customer_Name", "Customer_Contact", "ItemID", "Item_Name", "Quantity"
+                "SalesID", "Date", "Date_Required", "Customer_Name", "Customer_Contact", "ItemID", "Item_Name", "Quantity", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {

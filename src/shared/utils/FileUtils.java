@@ -314,7 +314,7 @@ public class FileUtils {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             String[] parts = line.split(",");
-                            if (parts.length == 8) {
+                            if (parts.length == 9) {
                                 model.addRow(new Object[]{
                                     parts[0], // Sales ID
                                     parts[1], // Date
@@ -323,7 +323,8 @@ public class FileUtils {
                                     parts[4], // Customer Contact
                                     parts[5], // Item ID
                                     parts[6], // Item Name
-                                    Integer.parseInt(parts[7]) // Quantity
+                                    Integer.parseInt(parts[7]), // Quantity
+                                    parts[8]
                                 });
                             }
                         }

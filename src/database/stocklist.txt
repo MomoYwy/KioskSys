@@ -1,6 +1,6 @@
 Item 4,Socks,N/A,-50,low stock
 G004,Socks,GROCERIES,-20,low stock
-E001,Scissors,ESSENTIAL GOODS,-30,low stock
+E001,Scissors,ESSENTIAL GOODS,300,low stock
 G003,Cabbage(per kg),GROCERIES,-45,low stock
 G006,banana,GROCERIES,-100,normal
 G005,chocalate,GROCERIES,-5,low stock
