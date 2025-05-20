@@ -50,38 +50,21 @@ public class OrderManager {
         return uniqueManagerIds;
     }
 
-    // Method to filter orders by Purchase Manager ID
-    public List<PurchaseOrder> filterOrdersByPurchaseManager(String purchaseManagerId) {
-        List<PurchaseOrder> filteredOrders = new ArrayList<>();
-        for (PurchaseOrder order : orders) {
-            if (order.getPurchaseManagerId().equals(purchaseManagerId)) {
-                filteredOrders.add(order);
-            }
-        }
-        return filteredOrders;
-    }
-
-    // Method to filter orders by Status
-    public List<PurchaseOrder> filterOrdersByStatus(String status) {
-        List<PurchaseOrder> filteredOrders = new ArrayList<>();
-        for (PurchaseOrder order : orders) {
-            if (order.getStatus().equals(status)) {
-                filteredOrders.add(order);
-            }
-        }
-        return filteredOrders;
-    }
 
     // Method to filter orders by both Status and Purchase Manager ID
     public List<PurchaseOrder> filterOrdersByStatusAndPurchaseManager(String status, String purchaseManagerId) {
         List<PurchaseOrder> filteredOrders = new ArrayList<>();
+    
         for (PurchaseOrder order : orders) {
-            if (order.getStatus().equals(status) && order.getPurchaseManagerId().equals(purchaseManagerId)) {
+            // If status is "ALL", it means we want to show all statuses
+            if ((status.equals("ALL") || order.getStatus().equals(status)) && 
+                order.getPurchaseManagerId().equals(purchaseManagerId)) {
                 filteredOrders.add(order);
             }
         }
-        return filteredOrders;
-    }
+    
+    return filteredOrders;
+}
 
     // Method to get all orders
     public List<PurchaseOrder> getAllOrders() {

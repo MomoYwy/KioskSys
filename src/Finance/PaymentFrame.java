@@ -20,11 +20,13 @@ import java.util.Set;
 
 public class PaymentFrame extends javax.swing.JFrame {
     
-      private Set<String> paidPOs = new HashSet<>(); 
+    private Set<String> paidPOs = new HashSet<>();
+
 
     public PaymentFrame() {
         initComponents();
-        initializeTableListener();
+        initializeTableListener();      
+
     }
     
     // Function to read the "APPROVED" PO details from the "purchase_orders.txt" file and display selected fields in the JTable
@@ -73,7 +75,7 @@ public class PaymentFrame extends javax.swing.JFrame {
 }
     
     private void updatePOStatus(String poId, String newStatus) {
-    try {
+        try {
         // Read the current file
         File file = new File("src/database/purchase_orders.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -91,7 +93,7 @@ public class PaymentFrame extends javax.swing.JFrame {
                 line = String.join(",", poDetails);  // Rebuild the line with updated status
             }
 
-            fileContents.append(line).append("\n");
+           fileContents.append(line).append("\n");
         }
 
         reader.close();
@@ -120,7 +122,7 @@ public class PaymentFrame extends javax.swing.JFrame {
                 if (selectedRow >= 0) {
                     // Get the total price from the selected row (assuming it's in column 6, index 6)
                     String totalAmount = tblPO.getValueAt(selectedRow, 4).toString();
-                    
+                  
                     // Set the total amount in the payment amount field (txtPAmount)
                     txtPAmount.setText(totalAmount);
                 }
@@ -129,6 +131,8 @@ public class PaymentFrame extends javax.swing.JFrame {
     });
 }
     
+
+
 
     
     /**
@@ -352,64 +356,67 @@ public class PaymentFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
-                                          
-    // Retrieve input data from the text fields and combo box
+       // Retrieve input data from the text fields and combo box
     String paymentAmount = txtPAmount.getText().trim(); // Get the payment amount
     String paymentDate = txtPDate.getText().trim(); // Get the payment date
     String paymentMethod = cmbPMethod.getSelectedItem() != null ? cmbPMethod.getSelectedItem().toString() : ""; // Get the payment method
 
     // Get the PO ID from the selected row
     int selectedRow = tblPO.getSelectedRow();
-    String poId = tblPO.getValueAt(selectedRow, 0).toString();  // Retrieve PO ID from the selected row
+    if (selectedRow >= 0) {
+        String poId = tblPO.getValueAt(selectedRow, 0).toString();  // Retrieve PO ID from the selected row
 
-    // Check if this PO has already been paid
-    if (paidPOs.contains(poId)) {
-        JOptionPane.showMessageDialog(this, "This PO has already been paid.", "Payment Status", JOptionPane.WARNING_MESSAGE);
-        return;  // Prevent further processing
-    }
-
-    // Check if any required field is empty
-    if (paymentAmount.isEmpty() || paymentDate.isEmpty() || paymentMethod.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please fill in all the fields!", "Missing Information", JOptionPane.WARNING_MESSAGE);
-    } else {
-        // Proceed if all fields are filled
-        JOptionPane.showMessageDialog(this, "Paid Successfully!", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
-
-        // Store payment data into payment.txt file using BufferedWriter
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/payment.txt", true))) {
-            // Prepare the payment details string to write to the file
-            String recordLine = poId + "," + tblPO.getValueAt(selectedRow, 1).toString() + "," + tblPO.getValueAt(selectedRow, 2).toString() + "," 
-                                + tblPO.getValueAt(selectedRow, 3).toString() + "," + tblPO.getValueAt(selectedRow, 4).toString() + "," 
-                                + tblPO.getValueAt(selectedRow, 5).toString() + "," + tblPO.getValueAt(selectedRow, 6).toString() + "," 
-                                + paymentMethod + "," + paymentAmount + "," + paymentDate + "\n";
-            writer.write(recordLine);
-            writer.newLine();  // Blank line between entries for readability
-            System.out.println("Payment details saved to file.");
-
-            // Add the PO ID to the paidPOs set to prevent re-payment
-            paidPOs.add(poId);
-
-            // Update the PO status in the purchase_orders.txt file
-            updatePOStatus(poId, "PAID");
-
-            // Reload the table data to reflect the updated state
-            loadApprovedPOs();
-
-            // Optionally, show a confirmation dialog or log the success
-            JOptionPane.showMessageDialog(this, "Payment details saved successfully.", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (IOException ex) {
-            // Catch exceptions and display the error
-            JOptionPane.showMessageDialog(this, "Error saving payment information.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error: " + ex.getMessage());
+        // Check if this PO has already been paid
+        if (paidPOs.contains(poId)) {
+            JOptionPane.showMessageDialog(this, "This PO has already been paid.", "Payment Status", JOptionPane.WARNING_MESSAGE);
+            return;  // Prevent further processing
         }
 
-        // Optional: Clear fields after success
-        txtPAmount.setText("");
-        txtPDate.setText("");
-        cmbPMethod.setSelectedIndex(0); // Reset to first option
+        // Check if any required field is empty
+        if (paymentAmount.isEmpty() || paymentDate.isEmpty() || paymentMethod.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all the fields!", "Missing Information", JOptionPane.WARNING_MESSAGE);
+        } else {
+            // Proceed if all fields are filled
+            JOptionPane.showMessageDialog(this, "Paid Successfully!", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
+
+            // Store payment data into payment.txt file using BufferedWriter
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/payment.txt", true))) {
+                // Prepare the payment details string to write to the file
+                String recordLine = poId + "," + tblPO.getValueAt(selectedRow, 1).toString() + "," + tblPO.getValueAt(selectedRow, 2).toString() + "," 
+                                    + tblPO.getValueAt(selectedRow, 3).toString() + "," + tblPO.getValueAt(selectedRow, 4).toString() + "," 
+                                    + tblPO.getValueAt(selectedRow, 5).toString() + "," + tblPO.getValueAt(selectedRow, 6).toString() + "," 
+                                    + paymentMethod + "," + paymentAmount + "," + paymentDate + "\n";
+                writer.write(recordLine);
+                writer.newLine();  // Blank line between entries for readability
+                System.out.println("Payment details saved to file.");
+
+                // Add the PO ID to the paidPOs set to prevent re-payment
+                paidPOs.add(poId);
+
+                // Update the PO status in the purchase_orders.txt file
+                updatePOStatus(poId, "PAID");
+
+                // Reload the table data to reflect the updated state
+                loadApprovedPOs();
+
+                // Optionally, show a confirmation dialog or log the success
+                JOptionPane.showMessageDialog(this, "Payment details saved successfully.", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (IOException ex) {
+                // Catch exceptions and display the error
+                JOptionPane.showMessageDialog(this, "Error saving payment information.", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("Error: " + ex.getMessage());
+            }
+
+            // Optional: Clear fields after success
+            txtPAmount.setText("");
+            txtPDate.setText("");
+            cmbPMethod.setSelectedIndex(0); // Reset to first option
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Please select a PO to process payment.", "Error", JOptionPane.ERROR_MESSAGE);
     }
-   
+
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
@@ -429,7 +436,7 @@ public class PaymentFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnLoadPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadPOActionPerformed
-         loadApprovedPOs();
+        loadApprovedPOs();
     }//GEN-LAST:event_btnLoadPOActionPerformed
 
     /**

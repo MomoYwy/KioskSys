@@ -2,6 +2,8 @@ package Finance;
 
 import javax.swing.*;
 import java.awt.event.*;
+import shared.frames.LoginScreen;
+
 
 
 public class FinanceDashboard extends javax.swing.JFrame {
@@ -107,6 +109,11 @@ public class FinanceDashboard extends javax.swing.JFrame {
         });
 
         btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -244,6 +251,16 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }
         });
     }//GEN-LAST:event_btnInventoryUpdateActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+            // Dispose the current FinanceDashboard frame
+    dispose();  // Close the current dashboard frame
+    
+    // Create and display the Login frame
+    LoginScreen loginFrame = new LoginScreen();  // Assuming LoginScreen is the class for the login screen
+    loginFrame.setVisible(true);  // Make the Login screen visible
+    loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
      * @param args the command line arguments

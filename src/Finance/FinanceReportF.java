@@ -26,14 +26,8 @@ public class FinanceReportF extends javax.swing.JFrame {
 
     public FinanceReportF() {
         initComponents();
-        
-        // Initialize orderManager
         orderManager = new OrderManager();
-        
-        // Load orders from file
         orderManager.loadOrdersFromFile("src\\database\\purchase_orders.txt");
-        
-        // Populate the Purchase Manager ID combo box
         populateManagerComboBox();
     }
     
@@ -69,9 +63,9 @@ public class FinanceReportF extends javax.swing.JFrame {
         }
         
         // Update the summary fields
-        txtTotalPo.setText(String.valueOf(totalPOs));
-        txtPending.setText(String.valueOf(pendingCount));
-        txtPaid.setText(String.valueOf(paidCount));
+        lblTotalPOs.setText(String.valueOf(totalPOs));
+        lblPending.setText(String.valueOf(pendingCount));
+        lblPaid.setText(String.valueOf(paidCount));
     }
     
     
@@ -94,9 +88,6 @@ public class FinanceReportF extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        txtTotalPo = new javax.swing.JTextField();
-        txtPending = new javax.swing.JTextField();
-        txtPaid = new javax.swing.JTextField();
         btnBack = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -104,6 +95,9 @@ public class FinanceReportF extends javax.swing.JFrame {
         cmbStatus = new javax.swing.JComboBox<>();
         cmbPMid = new javax.swing.JComboBox<>();
         btnOK = new javax.swing.JButton();
+        lblTotalPOs = new javax.swing.JLabel();
+        lblPending = new javax.swing.JLabel();
+        lblPaid = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -158,18 +152,6 @@ public class FinanceReportF extends javax.swing.JFrame {
 
         jLabel8.setText("Paid:");
 
-        txtPending.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPendingActionPerformed(evt);
-            }
-        });
-
-        txtPaid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPaidActionPerformed(evt);
-            }
-        });
-
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -184,7 +166,12 @@ public class FinanceReportF extends javax.swing.JFrame {
 
         jLabel4.setText("Status:");
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDING", "APPROVED", "REJECTED", "RECEIVED_ITEMS" }));
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "PENDING", "APROVED", "REJECTED", "RECEIVED_ITEMS" }));
+        cmbStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbStatusActionPerformed(evt);
+            }
+        });
 
         cmbPMid.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -194,6 +181,12 @@ public class FinanceReportF extends javax.swing.JFrame {
                 btnOKActionPerformed(evt);
             }
         });
+
+        lblTotalPOs.setText("jLabel5");
+
+        lblPending.setText("jLabel5");
+
+        lblPaid.setText("jLabel9");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -213,25 +206,25 @@ public class FinanceReportF extends javax.swing.JFrame {
                         .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtTotalPo, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(100, 100, 100)
-                        .addComponent(jLabel7)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtPending, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(136, 136, 136)
-                        .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtPaid, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(235, 235, 235)
                         .addComponent(btnRefresh)
                         .addGap(59, 59, 59)
                         .addComponent(btnOK)
                         .addGap(59, 59, 59)
-                        .addComponent(btnBack)))
-                .addContainerGap(361, Short.MAX_VALUE))
+                        .addComponent(btnBack))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTotalPOs, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(104, 104, 104)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblPending, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(133, 133, 133)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblPaid, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(365, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,12 +244,12 @@ public class FinanceReportF extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(txtTotalPo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel7)
-                            .addComponent(txtPending, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8)
-                            .addComponent(txtPaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(39, 39, 39))
+                            .addComponent(lblTotalPOs)
+                            .addComponent(lblPending)
+                            .addComponent(lblPaid))
+                        .addGap(42, 42, 42))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnRefresh)
@@ -312,10 +305,6 @@ public class FinanceReportF extends javax.swing.JFrame {
     updateSummaryFields();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
-    private void txtPendingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPendingActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPendingActionPerformed
-
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         btnBack.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -325,10 +314,6 @@ public class FinanceReportF extends javax.swing.JFrame {
         dispose();
         }});
     }//GEN-LAST:event_btnBackActionPerformed
-
-    private void txtPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPaidActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPaidActionPerformed
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
     // Get the selected Purchase Manager ID from the combo box
@@ -367,6 +352,10 @@ public class FinanceReportF extends javax.swing.JFrame {
     // Optionally, update summary fields after filtering
     updateSummaryFields();
     }//GEN-LAST:event_btnOKActionPerformed
+
+    private void cmbStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStatusActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStatusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -420,9 +409,9 @@ public class FinanceReportF extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblPaid;
+    private javax.swing.JLabel lblPending;
+    private javax.swing.JLabel lblTotalPOs;
     private javax.swing.JTable tblPO;
-    private javax.swing.JTextField txtPaid;
-    private javax.swing.JTextField txtPending;
-    private javax.swing.JTextField txtTotalPo;
     // End of variables declaration//GEN-END:variables
 }

@@ -32,10 +32,10 @@ public class ManagementPO extends javax.swing.JFrame {
     }
     
             private void initializeTableListener() {
-        tblPO.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-        
+                tblPO.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                
+            public void valueChanged(ListSelectionEvent e) {        
                 // Check if a valid row is selected
                 if (!e.getValueIsAdjusting() && tblPO.getSelectedRow() != -1) {
                     int selectedRow = tblPO.getSelectedRow();

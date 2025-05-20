@@ -1,46 +1,59 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package shared.models;
 
-/**
- *
- * @author User
- */
+
+import java.util.Date;
+
+
 public class Payment {
-        private double amount;
-        private String method;
-        private String date;
+    private String poId;
+    private double paymentAmount;
+    private Date paymentDate;
+    private String paymentMethod;
 
-    public Payment(double amount, String method, String date) {
-        this.amount = amount;
-        this.method = method;
-        this.date = date;
+    // Constructor
+    public Payment(String poId, double paymentAmount, Date paymentDate, String paymentMethod) {
+        this.poId = poId;
+        this.paymentAmount = paymentAmount;
+        this.paymentDate = paymentDate;
+        this.paymentMethod = paymentMethod;
     }
 
-    public double getAmount() {
-        return amount;
+    // Getters and setters
+    public String getPoId() {
+        return poId;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setPoId(String poId) {
+        this.poId = poId;
     }
 
-    public String getMethod() {
-        return method;
+    public double getPaymentAmount() {
+        return paymentAmount;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setPaymentAmount(double paymentAmount) {
+        this.paymentAmount = paymentAmount;
     }
 
-    public String getDate() {
-        return date;
+    public Date getPaymentDate() {
+        return paymentDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
     }
-        
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+    
+    private poManagement poManage = new poManagement();
+    
+    
+
 }
+
