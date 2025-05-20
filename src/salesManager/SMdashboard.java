@@ -10,11 +10,15 @@ package salesManager;
  */
 public class SMdashboard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form SMdashboard
-     */
-    public SMdashboard() {
+    private String userId;
+    private String username;
+
+    public SMdashboard(String userId, String username) {
         initComponents();
+        this.userId = userId;
+        this.username = username;
+        txtUsername.setText(username); // Set the username label
+        setTitle("Sales Manager Dashboard - " + username + " (" + userId + ")");
     }
 
     /**
@@ -199,7 +203,6 @@ public class SMdashboard extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new SMdashboard().setVisible(true);
             }
         });
     }

@@ -10,13 +10,15 @@ package inventoryManager;
  */
 public class IMDashboard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form IMDashboard
-     */
-    public IMDashboard() {
-        initComponents();
-    }
+    private String userId;
+    private String username;
 
+    public IMDashboard(String userId, String username) {
+        initComponents();
+        this.userId = userId;
+        this.username = username;
+        setTitle("Inventory Dashboard - " + username + " (" + userId + ")");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -165,7 +167,6 @@ public class IMDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new IMDashboard().setVisible(true);
             }
         });
     }

@@ -8,9 +8,14 @@ import shared.frames.ViewSupplierEntry;
 
 public class PMDashboard extends javax.swing.JFrame {
 
+    private String userId;
+    private String username;
 
-    public PMDashboard() {
+    public PMDashboard(String userId, String username) {
         initComponents();
+        this.userId = userId;
+        this.username = username;
+        setTitle("Purchase Manager Dashboard - " + username + " (" + userId + ")");
     }
     private void loadSuppliersData(String filepath) {
         System.out.println("Loading supplier data from: " + filepath);
@@ -289,7 +294,6 @@ public class PMDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PMDashboard().setVisible(true);
             }
         });
     }

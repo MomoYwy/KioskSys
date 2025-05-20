@@ -4,11 +4,18 @@
  */
 package shared.frames;
 
+import Finance.FinanceDashboard;
+import PurchaseManager.PMDashboard;
+import admin.AdminDashboard;
+import inventoryManager.IMDashboard;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import javax.swing.JOptionPane;
+import salesManager.SMdashboard;
 import shared.models.User;
 
 /**
@@ -27,81 +34,113 @@ public class LoginScreen extends javax.swing.JFrame {
     }
     
     private void Login() {
-    String username = tfUsername.getText().trim();
-    String password = new String(pfPassword.getPassword());
-    
-    // Basic validation
-    if (username.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "Username and password cannot be empty", 
-            "Login Error", 
-            JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    try {
-        // Authenticate user (replace with your actual authentication logic)
-        User authenticatedUser = authenticateUser(username, password);
-        
-        if (authenticatedUser != null) {
-            // Close login screen
-            this.dispose();
-            
-            // Redirect based on role
-//            redirectToDashboard(authenticatedUser);
-        } else {
+        String username = tfUsername.getText().trim();
+        String password = new String(pfPassword.getPassword());
+
+        // Basic validation
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Invalid username or password", 
-                "Login Failed", 
+                "Username and password cannot be empty", 
+                "Login Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Authenticate user
+            User authenticatedUser = authenticateUser(username, password);
+
+            if (authenticatedUser != null) {
+                // Close login screen
+                this.dispose();
+
+                // Redirect based on role
+                redirectToDashboard(authenticatedUser);
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Invalid username or password", 
+                    "Login Failed", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error accessing user database: " + ex.getMessage(),
+                "System Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
-    } catch (IOException ex) {
-        JOptionPane.showMessageDialog(this, 
-            "Error accessing user database: " + ex.getMessage(),
-            "System Error", 
-            JOptionPane.ERROR_MESSAGE);
     }
-}
-    
+
     private User authenticateUser(String username, String password) throws IOException {
-    File usersFile = new File("src/database/users.txt");
-    
-    if (!usersFile.exists()) {
-        return null;
-    }
-    
-    try (BufferedReader reader = new BufferedReader(new FileReader(usersFile))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",");
-            if (parts.length >= 4 && parts[1].equals(username)) {
-                // In production, you should compare hashed passwords
-                if (parts[2].equals(password)) { 
-                    return new User(parts[0], parts[1], parts[2], parts[3]);
+        File usersFile = new File("src/database/users.txt");
+
+        if (!usersFile.exists()) {
+            return null;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(usersFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4 && parts[1].equals(username)) {
+                    // Compare hashed passwords
+                    String hashedInputPassword = encryptPassword(password);
+                    if (parts[2].equals(hashedInputPassword)) { 
+                        return new User(parts[0], parts[1], parts[2], parts[3]);
+                    }
                 }
             }
         }
+        return null;
     }
-    return null;
-}
 
-//private void redirectToDashboard(User user) {
-//    switch (user.getRole()) {
-//        case "ADMIN" -> new admin.AdminDashboard().setVisible(true);
-//        case "SALES_MANAGER" -> new sales.SalesDashboard().setVisible(true);
-//        case "PURCHASE_MANAGER" -> new purchase.PurchaseDashboard().setVisible(true);
-//        case "INVENTORY_MANAGER" -> new inventory.InventoryDashboard().setVisible(true);
-//        case "FINANCE_MANAGER" -> new finance.FinanceDashboard().setVisible(true);
-//        default -> {
-//            JOptionPane.showMessageDialog(null,
-//                    "Unknown user role",
-//                    "System Error",
-//                    JOptionPane.ERROR_MESSAGE);
-//            System.exit(1);
-//            }
-//    }
-//}
-    
+    private String encryptPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = md.digest(password.getBytes());
+
+            // Convert byte array to a hexadecimal string
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : hashedBytes) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void redirectToDashboard(User user) {
+        switch (user.getRole()) {
+            case "ADMIN":
+                AdminDashboard adminDashboard = new AdminDashboard(user.getUserId(), user.getUsername());
+                adminDashboard.setVisible(true);
+                break;
+            case "SALES_MANAGER":
+                SMdashboard salesDashboard = new SMdashboard(user.getUserId(), user.getUsername());
+                salesDashboard.setVisible(true);
+                break;
+            case "PURCHASE_MANAGER":
+                PMDashboard purchaseDashboard = new PMDashboard(user.getUserId(), user.getUsername());
+                purchaseDashboard.setVisible(true);
+                break;
+            case "INVENTORY_MANAGER":
+                IMDashboard inventoryDashboard = new IMDashboard(user.getUserId(), user.getUsername());
+                inventoryDashboard.setVisible(true);
+                break;
+            case "FINANCE_MANAGER":
+                FinanceDashboard financeDashboard = new FinanceDashboard();
+                financeDashboard.setVisible(true);
+                break;
+            default:
+                JOptionPane.showMessageDialog(null,
+                        "Unknown user role",
+                        "System Error",
+                        JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+        }
+    }
+
     
 
     /**

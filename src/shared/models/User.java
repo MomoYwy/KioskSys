@@ -1,16 +1,11 @@
-
 package shared.models;
 
-/**
- *
- * @author User
- */
 public class User {
     private String userId;
     private String username;
     private String password;
-    private String role; // "ADMIN", "SALES", "PURCHASE", "INVENTORY", "FINANCE"
-    
+    private String role;
+
     public User(String userId, String username, String password, String role) {
         this.userId = userId;
         this.username = username;
@@ -19,12 +14,19 @@ public class User {
     }
 
     // Getters
-    public String getUserId() { return userId; }
-    public String getUsername() { return username; }
-    public String getRole() { return role; }
-    
-    // Setters
-    public void setPassword(String newPassword) { 
-        this.password = newPassword; 
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 }
