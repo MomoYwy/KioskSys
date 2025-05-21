@@ -1,7 +1,7 @@
 
 package PurchaseManager;
 
-
+import admin.AdminDashboard;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -11,7 +11,9 @@ import shared.utils.PurchaseOrderUtils;
 
 public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
-     private PMDashboard previousForm;
+    private PMDashboard previousPMForm;
+    private AdminDashboard previousAdminForm;
+    private String purchaseManagerId; // this field to store the PM ID     
      
     public GeneratePurchaseOrderForm() {
         initComponents();
@@ -21,8 +23,16 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
     }
     public GeneratePurchaseOrderForm(PMDashboard previousForm) {
         this();
-        this.previousForm = previousForm;
+        this.previousPMForm = previousForm;
+        this.purchaseManagerId = previousForm.getUserId(); // Get the PM ID from the dashboard        
     }
+    
+    // Add a new constructor for AdminDashboard
+    public GeneratePurchaseOrderForm(AdminDashboard previousForm) {
+        this();
+        this.previousAdminForm = previousForm;
+        this.purchaseManagerId = previousForm.getUserId(); // Get the Admin ID from the dashboard
+    }    
 
     private void setupTableListeners() {
         // Add selection listener to the pending PR table
@@ -131,7 +141,7 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "PR ID", "Item ID", "Item Name", "Quantity", "Date Required", "Status", "Requested By(Sales Manager Id)"
+                "PR ID", "Item ID", "Item Name", "Quantity", "Date Required", "Status", "Requested By(SM ID)"
             }
         ) {
             Class[] types = new Class [] {
@@ -281,8 +291,11 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        if (previousForm != null) {
-            previousForm.setVisible(true);
+        // Modified to handle both types of previous forms
+        if (previousPMForm != null) {
+            previousPMForm.setVisible(true);
+        } else if (previousAdminForm != null) {
+            previousAdminForm.setVisible(true);
         }
         this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
@@ -294,17 +307,18 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         }
 
         try {
-            // Get PR details from the table - adjust indexes to match your table model
+            // Get PR details from the table
             String prId = jTable2.getValueAt(selectedRow, 0).toString();
             String itemId = jTable2.getValueAt(selectedRow, 1).toString();
-            String itemName = jTable2.getValueAt(selectedRow, 2).toString(); // Get item name directly from table
+            String itemName = jTable2.getValueAt(selectedRow, 2).toString();
             int quantity = Integer.parseInt(jTable2.getValueAt(selectedRow, 3).toString());
             String dateRequired = jTable2.getValueAt(selectedRow, 4).toString();
             String salesManagerId = jTable2.getValueAt(selectedRow, 6).toString();
 
-            // Open the AddPurchaseOrderDialog with these details
+            // Pass the purchaseManagerId to the dialog
             AddPurchaseOrderDialog dialog = new AddPurchaseOrderDialog(
-                    this, true, prId, itemId, itemName, quantity, dateRequired, salesManagerId);
+                    this, true, prId, itemId, itemName, quantity, dateRequired, 
+                    salesManagerId, purchaseManagerId); // Add purchaseManagerId here
 
             // Position the dialog relative to this form
             dialog.setLocationRelativeTo(this);
@@ -317,7 +331,6 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
                 loadPendingPurchaseRequisitions();
                 loadPurchaseOrders();
             }
-
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
                     "Error generating Purchase Order: " + e.getMessage(),

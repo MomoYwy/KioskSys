@@ -4,6 +4,10 @@
  */
 package admin;
 
+import PurchaseManager.GeneratePurchaseOrderForm;
+import PurchaseManager.ViewPR;
+import PurchaseManager.ViewPurchaseOrder;
+
 /**
  *
  * @author User
@@ -20,6 +24,10 @@ public class AdminDashboard extends javax.swing.JFrame {
         setTitle("Admin Dashboard - " + username + " (" + userId + ")");
     }
 
+        // Add this method to allow access to userId
+    public String getUserId() {
+        return userId;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,6 +52,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnApprovePO = new javax.swing.JButton();
         btnProcessPayments = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
+        btnviewPO = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -91,7 +100,12 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         btnStockReport.setText("Stock Report");
 
-        btnPO.setText("PO");
+        btnPO.setText("Generate PO");
+        btnPO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPOActionPerformed(evt);
+            }
+        });
 
         btnApprovePO.setText("Approve PO");
 
@@ -99,37 +113,39 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         btnLogout.setText("Logout");
 
+        btnviewPO.setText("View PO(Edit & delete)");
+        btnviewPO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnviewPOActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(47, 47, 47)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnUserList, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)
-                        .addComponent(btnUserRegistration))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnSupplierList)
-                            .addComponent(btnPO, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(37, 37, 37)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnDailySales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnApprovePO, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSupplierList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(36, 36, 36)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnDailySales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnviewPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnUserRegistration, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(41, 41, 41)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnItemList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnStockList, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
-                        .addGap(50, 50, 50)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnStockReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(btnProcessPayments))
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnStockList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnApprovePO, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                    .addComponent(btnItemList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(48, 48, 48)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnProcessPayments, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnStockReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnPR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -154,7 +170,8 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPO)
                     .addComponent(btnApprovePO)
-                    .addComponent(btnProcessPayments))
+                    .addComponent(btnProcessPayments)
+                    .addComponent(btnviewPO))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                 .addComponent(btnLogout)
                 .addGap(25, 25, 25))
@@ -185,6 +202,34 @@ public class AdminDashboard extends javax.swing.JFrame {
     private void btnUserListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserListActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnUserListActionPerformed
+
+    private void btnPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPOActionPerformed
+        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(this);
+        
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        poForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        // Make dashboard invisible while working with PO form
+        this.setVisible(false);
+        
+        // Show the PO form
+        poForm.setVisible(true);
+    }//GEN-LAST:event_btnPOActionPerformed
+
+    private void btnviewPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnviewPOActionPerformed
+        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(this);
+
+        // Position it relative to the dashboard
+        java.awt.Point dashboardLocation = this.getLocation();
+        viewPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+
+        // Make dashboard invisible while working with ViewPO form
+        this.setVisible(false);
+
+        // Show the ViewPO form
+        viewPOForm.setVisible(true);
+    }//GEN-LAST:event_btnviewPOActionPerformed
 
     /**
      * @param args the command line arguments
@@ -233,6 +278,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnSupplierList;
     private javax.swing.JButton btnUserList;
     private javax.swing.JButton btnUserRegistration;
+    private javax.swing.JButton btnviewPO;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

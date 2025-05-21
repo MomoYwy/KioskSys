@@ -89,40 +89,30 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="btnUserList" min="-2" pref="95" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                          <Component id="btnUserRegistration" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="btnSupplierList" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnPO" alignment="0" min="-2" pref="95" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="btnDailySales" max="32767" attributes="0"/>
-                              <Component id="btnApprovePO" pref="121" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="btnUserList" max="32767" attributes="0"/>
+                      <Component id="btnPO" max="32767" attributes="0"/>
+                      <Component id="btnSupplierList" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="36" pref="36" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="btnDailySales" alignment="0" max="32767" attributes="0"/>
+                      <Component id="btnviewPO" max="32767" attributes="0"/>
+                      <Component id="btnUserRegistration" alignment="1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="btnItemList" max="32767" attributes="0"/>
-                              <Component id="btnStockList" pref="125" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="btnStockReport" max="32767" attributes="0"/>
-                              <Component id="btnPR" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <Component id="btnProcessPayments" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="btnStockList" alignment="0" max="32767" attributes="0"/>
+                      <Component id="btnApprovePO" alignment="0" pref="114" max="32767" attributes="0"/>
+                      <Component id="btnItemList" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="74" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="btnProcessPayments" max="32767" attributes="0"/>
+                      <Component id="btnStockReport" alignment="0" max="32767" attributes="0"/>
+                      <Component id="btnPR" alignment="0" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="30" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="32767" attributes="0"/>
@@ -153,6 +143,7 @@
                       <Component id="btnPO" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnApprovePO" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnProcessPayments" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnviewPO" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="60" max="32767" attributes="0"/>
                   <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
@@ -207,8 +198,11 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnPO">
           <Properties>
-            <Property name="text" type="java.lang.String" value="PO"/>
+            <Property name="text" type="java.lang.String" value="Generate PO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPOActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnApprovePO">
           <Properties>
@@ -224,6 +218,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Logout"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnviewPO">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="View PO(Edit &amp; delete)"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnviewPOActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
