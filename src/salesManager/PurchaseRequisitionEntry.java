@@ -139,7 +139,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         lblSupplier = new javax.swing.JLabel();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
         btnViewList = new javax.swing.JButton();
         lblSHItemID = new javax.swing.JLabel();
         lblSHItemNm = new javax.swing.JLabel();
@@ -227,8 +226,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             }
         });
 
-        btnDelete.setText("Delete");
-
         btnViewList.setText("View List");
 
         lblSHItemID.setText("jLabel8");
@@ -277,11 +274,9 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(73, 73, 73)
                 .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(92, 92, 92)
                 .addComponent(btnViewList, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(99, 99, 99))
         );
@@ -318,7 +313,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnEdit)
-                    .addComponent(btnDelete)
                     .addComponent(btnViewList))
                 .addGap(39, 39, 39))
         );
@@ -423,6 +417,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
+    
     private boolean isDuplicatePR(String itemName) throws IOException {
         File prFile = new File(PR_FILE);
         if (!prFile.exists()) {
@@ -478,7 +473,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnViewList;
     private javax.swing.JPanel jPanel1;

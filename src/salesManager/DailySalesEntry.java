@@ -299,6 +299,42 @@ import shared.models.Recordable;
             spQuantity.setValue(1);
             // Reset dates to current date?
         }
+        
+        private void searchAndDisplayItems() {
+            String query = txtSearch.getText().trim();
+            if (query.isEmpty()) {
+                loadSalesToTable(); // Reload all data if search is empty
+                return;
+            }
+
+            DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+            model.setRowCount(0); // Clear existing data
+
+            try {
+                List<String> results = FileUtils.findLinesWithValue(SALES_FILE, query);
+                for (String line : results) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 9) { // Ensure we have all required columns
+                        model.addRow(new Object[]{
+                            parts[0], // Sales ID
+                            parts[1], // Date
+                            parts[2], // Date Required
+                            parts[3], // Customer Name
+                            parts[4], // Customer Contact
+                            parts[5], // Item ID
+                            parts[6], // Item Name
+                            Integer.parseInt(parts[7]), // Quantity
+                            parts[8]  // Total
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error searching sales data: " + e.getMessage(),
+                    "Search Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
         private boolean isStockAvailable(String itemId, int requiredQuantity) {
             try {
@@ -402,6 +438,10 @@ import shared.models.Recordable;
         btnEdit = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
+        btnSearch = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtSearch = new javax.swing.JTextPane();
+        btnBack = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -547,6 +587,22 @@ import shared.models.Recordable;
         });
         jScrollPane3.setViewportView(jTable3);
 
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jScrollPane4.setViewportView(txtSearch);
+
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -554,9 +610,6 @@ import shared.models.Recordable;
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(38, 38, 38)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(39, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -610,14 +663,24 @@ import shared.models.Recordable;
                                                 .addComponent(cbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jLabel11)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(btnSave)
                                             .addComponent(btnAdd)
                                             .addComponent(btnEdit)
                                             .addComponent(btnDelete))
                                         .addGap(34, 34, 34)))))
-                        .addGap(29, 29, 29))))
+                        .addGap(29, 29, 29))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnBack)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jScrollPane4)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(btnSearch))
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -676,8 +739,14 @@ import shared.models.Recordable;
                     .addComponent(jLabel9)
                     .addComponent(spQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnBack)
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -713,6 +782,14 @@ import shared.models.Recordable;
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         editSelectedEntry();
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        searchAndDisplayItems();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBackActionPerformed
 
     
     /**
@@ -752,9 +829,11 @@ import shared.models.Recordable;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbDay;
     private javax.swing.JComboBox<String> cbDayRequired;
     private javax.swing.JComboBox<String> cbItemID;
@@ -781,6 +860,7 @@ import shared.models.Recordable;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
@@ -788,5 +868,6 @@ import shared.models.Recordable;
     private javax.swing.JSpinner spQuantity;
     private javax.swing.JTextField tfCustomerContact;
     private javax.swing.JTextField tfCustomerName;
+    private javax.swing.JTextPane txtSearch;
     // End of variables declaration//GEN-END:variables
 }

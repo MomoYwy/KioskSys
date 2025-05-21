@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -119,7 +120,7 @@ public class ItemEntry extends javax.swing.JFrame {
             String savedId = FileUtils.addToFile(ITEMS_FILE, item);
 
             if (savedId != null) {
-                // Show success message with HTML formatting
+
                 showSuccessMessage("Item Added Successfully", 
                     "<html><b>Item ID:</b> " + itemId + "<br>" +
                     "<b>Name:</b> " + name + "<br>" +
@@ -138,7 +139,6 @@ public class ItemEntry extends javax.swing.JFrame {
         }
     }
 
-// Add this helper method
         private void showSuccessMessage(String title, String message) {
             JOptionPane.showMessageDialog(this, 
                 message, 
@@ -179,6 +179,38 @@ public class ItemEntry extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
             }
         }
+        
+        private void searchAndDisplayItems() {
+            String query = txtSearch.getText().trim();
+            if (query.isEmpty()) {
+                loadItemsToTable(); // Reload all data if search is empty
+                return;
+            }
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0); // Clear existing data
+
+            try {
+                List<String> results = FileUtils.findLinesWithValue(ITEMS_FILE, query);
+                for (String line : results) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 5) { // Ensure we have all required columns
+                        model.addRow(new Object[]{
+                            parts[0], // ID
+                            parts[1], // Name
+                            parts[2], // Supplier ID
+                            Double.parseDouble(parts[3]), // Price
+                            parts[4]  // Category
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error searching items: " + e.getMessage(),
+                    "Search Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
         
 
@@ -206,6 +238,9 @@ public class ItemEntry extends javax.swing.JFrame {
         cbCategory = new javax.swing.JComboBox<>();
         btnBack = new javax.swing.JButton();
         cbSupplierName = new javax.swing.JComboBox<>();
+        btnSearch = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtSearch = new javax.swing.JTextPane();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -311,22 +346,40 @@ public class ItemEntry extends javax.swing.JFrame {
 
         cbSupplierName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jScrollPane4.setViewportView(txtSearch);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBack)
-                .addGap(36, 36, 36))
-            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnBack)
+                        .addGap(30, 30, 30))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(82, 82, 82)
+                        .addGap(190, 190, 190)
+                        .addComponent(btnSave)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEdit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSearch))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(19, 19, 19)
@@ -349,20 +402,14 @@ public class ItemEntry extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cbSupplierName, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(46, 46, 46)))
-                                .addComponent(btnAdd))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(196, 196, 196)
-                        .addComponent(btnSave)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnEdit)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(btnAdd)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
+                .addGap(20, 20, 20)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(tfEnterItemName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -383,7 +430,11 @@ public class ItemEntry extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -392,7 +443,7 @@ public class ItemEntry extends javax.swing.JFrame {
                     .addComponent(btnEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnBack)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -408,7 +459,7 @@ public class ItemEntry extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(16, Short.MAX_VALUE)
+                .addContainerGap(25, Short.MAX_VALUE)
                 .addComponent(txtItemEntry)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -507,6 +558,10 @@ public class ItemEntry extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tfEnterItemNameActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        searchAndDisplayItems();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -543,6 +598,7 @@ public class ItemEntry extends javax.swing.JFrame {
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbCategory;
     private javax.swing.JComboBox<String> cbSupplierName;
     private javax.swing.JLabel jLabel1;
@@ -554,10 +610,12 @@ public class ItemEntry extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField tfEnterItemName;
     private javax.swing.JTextField tfEnterPrice;
     private javax.swing.JLabel txtItemEntry;
+    private javax.swing.JTextPane txtSearch;
     // End of variables declaration//GEN-END:variables
 
 

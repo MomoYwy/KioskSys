@@ -4,6 +4,7 @@
  */
 package salesManager;
 
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
@@ -26,7 +27,77 @@ public class PR_List extends javax.swing.JFrame {
         FileUtils.TableUtils.loadPurchaseRequisitionsToTable(PR_FILE, model);
     }
     
+    private void searchAndDisplayItems() {
+        String query = txtSearch.getText().trim();
+        if (query.isEmpty()) {
+            loadPRData(); // Reload all data if search is empty
+            return;
+        }
+
+        DefaultTableModel model = (DefaultTableModel) tblPRList.getModel();
+        model.setRowCount(0); // Clear existing data
+
+        try {
+            List<String> results = FileUtils.findLinesWithValue(PR_FILE, query);
+            for (String line : results) {
+                String[] parts = line.split(",");
+                if (parts.length >= 10) { // Ensure we have all required columns
+                    model.addRow(new Object[]{
+                        parts[0], // PR_ID
+                        parts[1], // Item_ID
+                        parts[2], // Item_Name
+                        Integer.parseInt(parts[3]), // Stock_Amount
+                        Integer.parseInt(parts[4]), // Quantity
+                        parts[5], // Date_Required
+                        parts[6], // Supplier_ID(s)
+                        parts[7], // User_ID
+                        parts[8], // Date_Created
+                        parts[9]  // Status
+                    });
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error searching PR data: " + e.getMessage(),
+                "Search Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
+    
+    private void deleteSelectedPurchaseRequisition() {
+            int selectedRow = tblPRList.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this,
+                    "Please select a sales entry to delete",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                String salesId = (String) tblPRList.getValueAt(selectedRow, 0);
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this sales entry?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    FileUtils.deleteFromFileByField(PR_FILE, 0, salesId);
+                    JOptionPane.showMessageDialog(this,
+                        "Sales entry deleted successfully!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    loadPRData();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error deleting sales entry: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,6 +115,10 @@ public class PR_List extends javax.swing.JFrame {
         tblPRList = new javax.swing.JTable();
         btnEdit = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtSearch = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -69,6 +144,8 @@ public class PR_List extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(27, 27, 27))
         );
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
         tblPRList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -97,29 +174,59 @@ public class PR_List extends javax.swing.JFrame {
             }
         });
 
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jScrollPane4.setViewportView(txtSearch);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1177, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(415, 415, 415)
                 .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(77, 77, 77)
+                .addGap(18, 18, 18)
+                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSearch)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(26, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addGap(42, 42, 42)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit)
-                    .addComponent(btnBack))
-                .addGap(26, 26, 26))
+                    .addComponent(btnBack)
+                    .addComponent(btnDelete))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -167,6 +274,14 @@ public class PR_List extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnBackActionPerformed
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        deleteSelectedPurchaseRequisition();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        searchAndDisplayItems();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -204,11 +319,15 @@ public class PR_List extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable tblPRList;
+    private javax.swing.JTextPane txtSearch;
     // End of variables declaration//GEN-END:variables
 }

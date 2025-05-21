@@ -224,118 +224,10 @@ public class FileUtils {
     
     // This will display the items in form of table
     // Add  <<private static final String ITEMS_FILE = "src/database/items.txt";>> in the frame to use it
-    
-    /*-- USAGE EXAMPLE-- (Can copy paste if want)
-        private static final String ITEMS_FILE = "src/database/items.txt";
 
-            private void loadItems() {
-                try {
-                    TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) itemsTable.getModel());
-                } catch (RuntimeException e) {
-                    JOptionPane.showMessageDialog(this, 
-                        e.getMessage(),
-                        "Database Error", 
-                        JOptionPane.ERROR_MESSAGE);
-                }
-            }
-    */
     public class TableUtils {
-    
-        public static void loadItemsToTable(String filePath, DefaultTableModel model) {
-            model.setRowCount(0); 
 
-            try {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            String[] parts = line.split(",");
-                            if (parts.length == 5) {
-                                model.addRow(new Object[]{
-                                    parts[0], // ID
-                                    parts[1], // Name
-                                    parts[2], // Supplier ID
-                                    Double.parseDouble(parts[3]), // Price
-                                    parts[4]  // Category
-                                });
-                            }
-                        }
-                    }
-                }
-            } catch (IOException | NumberFormatException e) {
-                throw new RuntimeException("Error loading items to table: " + e.getMessage(), e);
-            }
-        }
-        
-        public static void loadSuppliersToTable(String filePath, DefaultTableModel model) {
-            model.setRowCount(0); 
-
-            try {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            String[] parts = line.split(",");
-                            if (parts.length == 7) {
-                                // Format the items list for display
-                                String formattedItems = parts[2].replace("|", ", ");
-
-                                // Parse address components
-                                String[] addressParts = parts[6].split("\\|");
-                                String formattedAddress = String.join(", ", addressParts);
-
-                                model.addRow(new Object[]{
-                                    parts[0], // Supplier ID
-                                    parts[1], // Name
-                                    formattedItems, // Formatted Items
-                                    parts[3], // Item Price
-                                    parts[4], // Contact
-                                    Integer.parseInt(parts[5]), // Delivery Time
-                                    formattedAddress // Formatted Address
-                                });
-                            }
-                        }
-                    }
-                }
-            } catch (IOException | NumberFormatException e) {
-                throw new RuntimeException("Error loading suppliers to table: " + e.getMessage(), e);
-            }
-        }
-        
-        public static void loadSalesToTable(String filePath, DefaultTableModel model) {
-            model.setRowCount(0); 
-
-            try {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            String[] parts = line.split(",");
-                            if (parts.length == 9) {
-                                model.addRow(new Object[]{
-                                    parts[0], // Sales ID
-                                    parts[1], // Date
-                                    parts[2], // Date Required
-                                    parts[3], // Customer Name
-                                    parts[4], // Customer Contact
-                                    parts[5], // Item ID
-                                    parts[6], // Item Name
-                                    Integer.parseInt(parts[7]), // Quantity
-                                    parts[8]
-                                });
-                            }
-                        }
-                    }
-                }
-            } catch (IOException | NumberFormatException e) {
-                throw new RuntimeException("Error loading sales to table: " + e.getMessage(), e);
-            }
-        }
-        
-        public static void loadPurchaseRequisitionsToTable(String filePath, DefaultTableModel model) {
+        private static void loadDataToTable(String filePath, DefaultTableModel model, Function<String[], Object[]> rowMapper, int expectedColumns) {
             model.setRowCount(0);
 
             try {
@@ -345,27 +237,82 @@ public class FileUtils {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             String[] parts = line.split(",");
-                            if (parts.length >= 10) { // Check for all required fields
-                                model.addRow(new Object[]{
-                                    parts[0], // PR_ID
-                                    parts[1], // Item_ID
-                                    parts[2], // Item_Name
-                                    Integer.parseInt(parts[3]), // Stock_Amount
-                                    Integer.parseInt(parts[4]), // Quantity
-                                    parts[5], // Date_Required
-                                    parts[6], // Supplier_ID(s) - pipe separated
-                                    parts[7], // User_ID
-                                    parts[8], // Date_Created
-                                    parts[9]  // Status
-                                });
+                            if (parts.length >= expectedColumns) {
+                                model.addRow(rowMapper.apply(parts));
                             }
                         }
                     }
                 }
             } catch (IOException | NumberFormatException e) {
-                throw new RuntimeException("Error loading purchase requisitions to table: " + e.getMessage(), e);
+                throw new RuntimeException("Error loading data to table: " + e.getMessage(), e);
             }
         }
+
+        public static void loadItemsToTable(String filePath, DefaultTableModel model) {
+            loadDataToTable(filePath, model, parts -> new Object[]{
+                parts[0], // ID
+                parts[1], // Name
+                parts[2], // Supplier ID
+                Double.parseDouble(parts[3]), // Price
+                parts[4]  // Category
+            }, 5);
+        }
+
+        public static void loadSuppliersToTable(String filePath, DefaultTableModel model) {
+            loadDataToTable(filePath, model, parts -> {
+                String formattedItems = parts[2].replace("|", ", ");
+                String[] addressParts = parts[6].split("\\|");
+                String formattedAddress = String.join(", ", addressParts);
+
+                return new Object[]{
+                    parts[0], // Supplier ID
+                    parts[1], // Name
+                    formattedItems, // Formatted Items
+                    parts[3], // Item Price
+                    parts[4], // Contact
+                    Integer.parseInt(parts[5]), // Delivery Time
+                    formattedAddress // Formatted Address
+                };
+            }, 7);
+        }
+
+        public static void loadSalesToTable(String filePath, DefaultTableModel model) {
+            loadDataToTable(filePath, model, parts -> new Object[]{
+                parts[0], // Sales ID
+                parts[1], // Date
+                parts[2], // Date Required
+                parts[3], // Customer Name
+                parts[4], // Customer Contact
+                parts[5], // Item ID
+                parts[6], // Item Name
+                Integer.parseInt(parts[7]), // Quantity
+                parts[8]  // Total
+            }, 9);
+        }
+
+        public static void loadPurchaseRequisitionsToTable(String filePath, DefaultTableModel model) {
+            loadDataToTable(filePath, model, parts -> new Object[]{
+                parts[0], // PR_ID
+                parts[1], // Item_ID
+                parts[2], // Item_Name
+                Integer.parseInt(parts[3]), // Stock_Amount
+                Integer.parseInt(parts[4]), // Quantity
+                parts[5], // Date_Required
+                parts[6], // Supplier_ID(s)
+                parts[7], // User_ID
+                parts[8], // Date_Created
+                parts[9]  // Status
+            }, 10);
+        }
+        
+        public static void loadUsersToTable(String filePath, DefaultTableModel model) {
+            loadDataToTable(filePath, model, parts -> new Object[]{
+                parts[0], // User ID
+                parts[1], // Username
+                parts[3]  // Role
+            }, 4); 
+        }
+
     }
     
     
@@ -401,17 +348,25 @@ public class FileUtils {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.contains(valueToFind)) {
-                    matchingLines.add(line); 
+                    matchingLines.add(line);
                 }
-            }
-            if (matchingLines.isEmpty()) {
-                return null;
             }
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
-            return null;
         }
-        return matchingLines; 
+        return matchingLines;
+    }
+
+    public void searchAndDisplayItems(String filePath, String query, DefaultTableModel tableModel) {
+        List<String> results = findLinesWithValue(filePath, query);
+
+        tableModel.setRowCount(0);
+
+        for (String line : results) {
+            String[] data = line.split(","); 
+
+            tableModel.addRow(data);
+        }
     }
     
 }
