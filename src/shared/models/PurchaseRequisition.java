@@ -10,15 +10,14 @@ public class PurchaseRequisition implements Recordable {
     private int stockAmount;
     private int quantity;
     private String dateRequired;
-    private String supplierId;
+    private String supplierId; // This will now store pipe-separated supplier IDs
     private String userId;
     private String dateCreated;
     private String status;
-    private String allSuppliers; // New field for all suppliers
 
     public PurchaseRequisition(String prId, String itemId, String itemName, 
                              int stockAmount, int quantity, String dateRequired,
-                             String supplierId, String userId, String allSuppliers) {
+                             String supplierId, String userId) {
         this.prId = prId;
         this.itemId = itemId;
         this.itemName = itemName;
@@ -27,7 +26,6 @@ public class PurchaseRequisition implements Recordable {
         this.dateRequired = dateRequired;
         this.supplierId = supplierId;
         this.userId = userId;
-        this.allSuppliers = allSuppliers;
         this.dateCreated = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         this.status = "Pending";
     }
@@ -43,7 +41,6 @@ public class PurchaseRequisition implements Recordable {
     public String getUserId() { return userId; }
     public String getDateCreated() { return dateCreated; }
     public String getStatus() { return status; }
-    public String getAllSuppliers() { return allSuppliers; }
 
     // Business methods
     public void approve() {
@@ -71,8 +68,7 @@ public class PurchaseRequisition implements Recordable {
             supplierId,
             userId,
             dateCreated,
-            status,
-            allSuppliers 
+            status
         );
     }
 }

@@ -337,16 +337,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         String dateRequired = txtDateRequired.getText().trim();
         int quantity = (Integer) spQuantity.getValue();
 
-        // Get selected supplier
-        String selectedSupplier = listSupplier.getSelectedValue();
-        if (selectedSupplier == null || selectedSupplier.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Please select a supplier",
-                "Input Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         // Validate inputs
         if (itemId.isEmpty() || itemName.isEmpty() || stockAmountStr.isEmpty() || 
             dateRequired.isEmpty() || quantity <= 0) {
@@ -372,19 +362,26 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             // Generate PR ID
             String prId = FileUtils.generatePurchaseRequisitionId(PR_FILE);
 
-            // Get all supplier names from the list
+            // Get all supplier IDs from the list
             ListModel<String> supplierModel = listSupplier.getModel();
-            StringBuilder allSuppliers = new StringBuilder();
-            for (int i = 0; i < supplierModel.getSize(); i++) {
-                if (i > 0) {
-                    allSuppliers.append("|");
-                }
-                allSuppliers.append(supplierModel.getElementAt(i));
-            }
-            String suppliersString = allSuppliers.toString();
+            StringBuilder allSupplierIds = new StringBuilder();
 
-            // Get the selected supplier ID
-            String selectedSupplierId = getSupplierIdByName(selectedSupplier);
+            for (int i = 0; i < supplierModel.getSize(); i++) {
+                String supplierName = supplierModel.getElementAt(i);
+                try {
+                    String supplierId = getSupplierIdByName(supplierName);
+                    if (i > 0) {
+                        allSupplierIds.append("|");
+                    }
+                    allSupplierIds.append(supplierId);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this,
+                        "Error getting ID for supplier: " + supplierName,
+                        "Database Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
 
             // Create PurchaseRequisition object
             PurchaseRequisition pr = new PurchaseRequisition(
@@ -394,9 +391,8 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 stockAmount,
                 quantity,
                 dateRequired,
-                selectedSupplierId,
-                userId, // Use the stored user ID
-                suppliersString // Pass all suppliers as a pipe-separated string
+                allSupplierIds.toString(), // Pass all supplier IDs as pipe-separated string
+                userId
             );
 
             // Add to file
@@ -409,8 +405,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                     "<b>Stock Amount:</b> " + stockAmount + "<br>" +
                     "<b>Quantity:</b> " + quantity + "<br>" +
                     "<b>Date Required:</b> " + dateRequired + "<br>" +
-                    "<b>Selected Supplier:</b> " + selectedSupplier + "<br>" +
-                    "<b>All Suppliers:</b> " + suppliersString.replace("|", ", ") + "<br>" +
+                    "<b>Supplier IDs:</b> " + allSupplierIds.toString().replace("|", ", ") + "<br>" +
                     "<b>Created by:</b> " + username + "</html>");
 
                 clearForm();
