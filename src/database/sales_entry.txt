@@ -8,4 +8,4 @@ SE0005,23/4/2025,23/4/2025,wei,0143325645,E001,Scissors,30,unprocessed
 SE0006,30/4/2025,27/7/2025,test,034535,G006,banana,100,unprocessed
 SE0007,14/5/2025,16/8/2027,DrZus,1323124,G005,chocalate,5,unprocessed
 SE0008,20/5/2025,22/8/2025,Try,123124155,E001,Scissors,10,unprocessed
-SE0009,20/5/2025,23/11/2025,Try2,ok,E001,Scissors,10,unprocessed
+SE0010,21/5/2025,28/5/2025,Leong Zi Ning,0198765432,G005,chocalate,5,unprocessed
