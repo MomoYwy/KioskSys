@@ -171,7 +171,7 @@
                         <Column editable="false" title="Quantity" type="java.lang.Integer"/>
                         <Column editable="false" title="Date Required" type="java.lang.String"/>
                         <Column editable="false" title="Status" type="java.lang.String"/>
-                        <Column editable="false" title="Requested By(Sales Manager Id)" type="java.lang.String"/>
+                        <Column editable="false" title="Requested By(SM ID)" type="java.lang.String"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

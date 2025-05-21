@@ -42,16 +42,16 @@ public class PurchaseOrderUtils {
                     }
                     
                     String[] parts = line.split(",");
-                    if (parts.length >= 9) {
+                    if (parts.length >= 10) {
                         // Only show pending PRs
-                        if (parts[8].trim().equalsIgnoreCase("Pending")) {
+                        if (parts[9].trim().equalsIgnoreCase("Pending")) {
                             model.addRow(new Object[]{
                                 parts[0].trim(), // PR ID
                                 parts[1].trim(), // Item ID
                                 parts[2].trim(), // ItemName
                                 Integer.parseInt(parts[4].trim()), // Quantity
                                 parts[5].trim(), // Date Required
-                                parts[8].trim(), // Status
+                                parts[9].trim(), // Status
                                 parts[7].trim()  // User ID (Sales Manager ID)
                             });
                         }
@@ -361,9 +361,9 @@ public class PurchaseOrderUtils {
                     }
                     
                     String[] parts = line.split(",");
-                    if (parts.length >= 9 && parts[0].trim().equals(prId)) {
+                    if (parts.length >= 10 && parts[0].trim().equals(prId)) {
                         // Update the status (parts[8])
-                        parts[8] = newStatus;
+                        parts[9] = newStatus;
                         
                         // Reconstruct the line
                         writer.write(String.join(",", parts));

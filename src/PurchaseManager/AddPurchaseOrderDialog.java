@@ -21,6 +21,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
     private int quantity;
     private String dateRequired;
     private String salesManagerId;
+    private String purchaseManagerId;   
     
     // File paths
     private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
@@ -35,7 +36,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
      */
     public AddPurchaseOrderDialog(java.awt.Frame parent, boolean modal,
             String prId, String itemId, String itemName, int quantity, 
-            String dateRequired, String salesManagerId) {
+            String dateRequired, String salesManagerId, String purchaseManagerId) {
         super(parent, modal);
         initComponents();
         
@@ -45,6 +46,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         this.quantity = quantity;
         this.dateRequired = dateRequired;
         this.salesManagerId = salesManagerId;
+        this.purchaseManagerId = purchaseManagerId; 
         
         // Initialize the dialog with PR data
         initializePRData();
@@ -253,8 +255,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
             String poRecord = String.format("%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s,%s",
                     poId, prId, itemId, itemName, quantity, itemPrice, totalPrice,
                     currentDate, dateRequired, currentSupplierId, salesManagerId, 
-                    "PM998", // Purchase Manager ID (hardcoded for now)
-                    status);
+                    purchaseManagerId,status);
             
             // Ensure file exists
             File file = new File(PO_FILE);
@@ -726,9 +727,10 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
                         "Bread",       // Sample Item Name
                         10,            // Sample Quantity
                         "15/06/2025",  // Sample Date Required
-                        "S001"         // Sample Sales Manager ID
+                        "S001",        // Sample Sales Manager ID
+                        "PM336"        // Sample Purchase Manager ID (use a real PM ID for testing)
                 );
-                
+
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

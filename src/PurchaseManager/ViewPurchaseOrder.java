@@ -1,5 +1,6 @@
 package PurchaseManager;
 
+import admin.AdminDashboard;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,7 +16,8 @@ import shared.frames.EditPurchaseOrderDialog;
 
 public class ViewPurchaseOrder extends javax.swing.JFrame {
 
-    private PMDashboard previousForm;
+    private PMDashboard previousPMForm;
+    private AdminDashboard previousAdminForm;    
     private TableRowSorter<DefaultTableModel> sorter;
     
     public ViewPurchaseOrder() {
@@ -25,9 +27,14 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     }
     public ViewPurchaseOrder(PMDashboard previousForm) {
         this();
-        this.previousForm = previousForm;
+        this.previousPMForm = previousForm;
     }
 
+    public ViewPurchaseOrder(AdminDashboard previousForm) {
+        this();
+        this.previousAdminForm = previousForm;
+    }    
+    
 //add a constructor field to track if the edit was confirmed
     private boolean editConfirmed = false;
     
@@ -83,7 +90,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
             // Filter by status (status is at index 12)
             sorter.setRowFilter(RowFilter.regexFilter("^" + selectedStatus + "$", 12));
         }
-    }    
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -309,8 +316,11 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        if (previousForm != null) {
-            previousForm.setVisible(true);
+        // Modified to handle both types of previous forms
+        if (previousPMForm != null) {
+            previousPMForm.setVisible(true);
+        } else if (previousAdminForm != null) {
+            previousAdminForm.setVisible(true);
         }
         this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed

@@ -2,6 +2,7 @@
 package PurchaseManager;
 
 import java.awt.Point;
+import javax.swing.JOptionPane;
 import shared.frames.ViewSalesEntry;
 import shared.frames.ViewSupplierEntry;
 
@@ -10,7 +11,11 @@ public class PMDashboard extends javax.swing.JFrame {
 
     private String userId;
     private String username;
-
+    
+    public String getUserId() {
+    return userId;
+    }
+    
     public PMDashboard(String userId, String username) {
         initComponents();
         this.userId = userId;
@@ -154,7 +159,7 @@ public class PMDashboard extends javax.swing.JFrame {
                     .addComponent(btnViewPurchaseOrders, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnViewSuppliers, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(32, 32, 32)
-                .addComponent(btnGeneratePurchaseOrders, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                .addComponent(btnGeneratePurchaseOrders, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
                 .addGap(28, 28, 28)
                 .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addGap(21, 21, 21))
@@ -246,7 +251,24 @@ public class PMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGeneratePurchaseOrdersActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        // TODO add your handling code here:
+        // Confirm logout
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to logout?",
+            "Confirm Logout",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Close the current dashboard
+            this.dispose();
+
+            // Open the login screen
+            shared.frames.LoginScreen loginScreen = new shared.frames.LoginScreen();
+            loginScreen.setVisible(true);
+
+            // Center the login screen on the display
+            loginScreen.setLocationRelativeTo(null);
+        }
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnViewPurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseOrdersActionPerformed
@@ -294,6 +316,13 @@ public class PMDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+            // Use test values for userId and username
+            String testUserId = "PM336";
+            String testUsername = "PurchaseManager";
+            
+            // Create and display the dashboard
+            PMDashboard dashboard = new PMDashboard(testUserId, testUsername);
+            dashboard.setVisible(true);
             }
         });
     }
