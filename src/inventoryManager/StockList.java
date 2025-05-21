@@ -1,4 +1,3 @@
-
 package inventoryManager;
 
 import java.io.BufferedReader;
@@ -15,77 +14,182 @@ import javax.swing.table.*;
 import java.util.Map;
 import java.util.HashMap;
 import shared.frames.ViewSalesEntry;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StockList extends javax.swing.JFrame {
     private final java.util.Set<Integer> markedRows = new java.util.HashSet<>();
     
     public StockList() {
         initComponents();  
-        loadStockListToTable("src/database/stocklist.txt"); 
-        loadSalesData("src/database/sales_entry.txt");
+        applySalesEntryToStock();
+        loadStockListToTable("src/database/stocklist.txt");       
     }
+    
+   private void backToDashboard() {
+        this.dispose();  
+        IMDashboard dash = new IMDashboard("guangwei", "1234");
+        dash.setVisible(true);
+    }
+   
+   //Fetch status from sales_entry.txt
+   private void applySalesEntryToStock() {
+    try {
+        File salesFile = new File("src/database/sales_entry.txt");
+        List<String> allSalesLines = new ArrayList<>();
+        Map<String, Integer> salesMap = new HashMap<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(salesFile))) {
+            String line;
+            boolean isFirstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (isFirstLine) {
+                    allSalesLines.add(line); 
+                    isFirstLine = false;
+                    continue;
+                }
+
+                String[] parts = line.trim().split("\\s+"); 
+
+                if (parts.length < 9) {
+                    line = line + " unprocessed";
+                    parts = line.trim().split("\\s+");
+                }
+
+                if (parts.length < 9) continue; 
+
+                String status = parts[8].toLowerCase();
+                if ("unprocessed".equals(status)) {
+                    String itemId = parts[5].trim();
+                    String qtyStr = parts[7].trim();
+                    if (!itemId.isEmpty() && !qtyStr.isEmpty()) {
+                        try {
+                            int qty = Integer.parseInt(qtyStr);
+                            salesMap.put(itemId, salesMap.getOrDefault(itemId, 0) + qty);
+                            parts[8] = "processed";
+                            line = String.join(" ", parts);
+                        } catch (NumberFormatException e) {
+                  
+                        }
+                    }
+                }
+
+                allSalesLines.add(line);
+            }
+        }
+
+        if (salesMap.isEmpty()) {
+            
+            return;
+        }
+
+        File stockFile = new File("src/database/stocklist.txt");
+        List<String> updatedStockLines = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(stockFile))) {
+            String line;
+            int lineIndex = 0;
+
+            while ((line = reader.readLine()) != null) {
+                if (lineIndex == 0) {
+                    updatedStockLines.add(line); 
+                } else {
+                    String[] parts = line.trim().split(",", -1);
+                    if (parts.length >= 5) {
+                        String itemId = parts[0].trim();
+                        String itemName = parts[1].trim();
+                        String category = parts[2].trim();
+                        int quantity = Integer.parseInt(parts[3].trim());
+
+                        if (salesMap.containsKey(itemId)) {
+                            int soldQty = salesMap.get(itemId);
+                            quantity -= soldQty;
+                            if (quantity < 0) quantity = 0;
+                        }
+
+                        String status = (quantity < 10) ? "low stock" : "normal";
+                        updatedStockLines.add(itemId + "," + itemName + "," + category + "," + quantity + "," + status);
+                    } else {
+                        updatedStockLines.add(line); 
+                    }
+                }
+                lineIndex++;
+            }
+        }
+
+ 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(stockFile))) {
+            for (String updatedLine : updatedStockLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(salesFile))) {
+            for (String updatedLine : allSalesLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        }
+
+        markedRows.clear();
+        loadStockListToTable("src/database/stocklist.txt");
+
+        JOptionPane.showMessageDialog(this, "Stock updated successfully based on new sales.");
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Failed to update stock: " + e.getMessage());
+    }
+}
+
    
     private void loadSalesData(String filePath) {
     try {
-        //Load existing status from stocklist.txt
-        Map<String, String> oldStatusMap = new HashMap<>();
-        try (BufferedReader oldStockReader = new BufferedReader(new FileReader("src/database/stocklist.txt"))) {
-            String oldLine;
-            while ((oldLine = oldStockReader.readLine()) != null) {
-                String[] parts = oldLine.split(",");
-                if (parts.length >= 5) {
-                    String itemId = parts[0].trim();
-                    String status = parts[4].trim();
-                    oldStatusMap.put(itemId, status);
+
+        Map<String, String[]> oldDataMap = new HashMap<>();
+        File oldStockFile = new File("src/database/stocklist.txt");
+        if (oldStockFile.exists()) {
+            try (BufferedReader oldReader = new BufferedReader(new FileReader(oldStockFile))) {
+                oldReader.readLine(); 
+                String line;
+                while ((line = oldReader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 5) {
+                        String itemId = parts[0].trim();
+                        String[] rest = {parts[1].trim(), parts[2].trim(), parts[3].trim(), parts[4].trim()};
+                        oldDataMap.put(itemId, rest);
+                    }
                 }
             }
         }
 
-        //Loadcategory from items.txt
-        Map<String, String> categoryMap = new HashMap<>();
+        List<String[]> itemList = new ArrayList<>();
         try (BufferedReader itemReader = new BufferedReader(new FileReader("src/database/items.txt"))) {
             String line;
             while ((line = itemReader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String itemId = parts[0].trim();
-                    String category = parts[parts.length - 1].trim();
-                    categoryMap.put(itemId, category);
+                if (parts.length >= 5) {
+                    itemList.add(parts);
                 }
             }
         }
 
-        //Load item from sales_entry.txt
-        BufferedReader br = new BufferedReader(new FileReader(filePath));
-        Map<String, Integer> stockMap = new HashMap<>();
-        Map<String, String> itemNameMap = new HashMap<>();
-
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] data = line.split(",");
-            if (data.length >= 8) {
-                String itemId = data[5].trim();
-                String itemName = data[6].trim();
-                int soldQty = Integer.parseInt(data[7].trim());
-
-                stockMap.put(itemId, stockMap.getOrDefault(itemId, 0) - soldQty);
-                itemNameMap.put(itemId, itemName);
-            }
-        }
-        br.close();
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/stocklist.txt"))) {
-            for (Map.Entry<String, Integer> entry : stockMap.entrySet()) {
-                String itemId = entry.getKey();
-                int quantity = entry.getValue();
-                String itemName = itemNameMap.get(itemId);
-                String category = categoryMap.getOrDefault(itemId, "N/A");
+            writer.write("Item ID,Item Name,Category,Quantity,Status");
+            writer.newLine();
 
-                String status;
-                if (oldStatusMap.containsKey(itemId)) {
-                    status = oldStatusMap.get(itemId);
-                } else {
-                    status = quantity < 10 ? "low stock" : "normal";
+            for (String[] item : itemList) {
+                String itemId = item[0].trim();
+                String itemName = item[1].trim();
+                String category = item[4].trim();
+
+                String quantity = "0";
+                String status = "low stock";
+
+                if (oldDataMap.containsKey(itemId)) {
+         
+                    quantity = oldDataMap.get(itemId)[2];
+                    status = oldDataMap.get(itemId)[3];
                 }
 
                 writer.write(itemId + "," + itemName + "," + category + "," + quantity + "," + status);
@@ -98,12 +202,75 @@ public class StockList extends javax.swing.JFrame {
     }
 }
 
+        private void loadStockFromItems() {
+        try {
+
+            Map<String, String[]> oldStockMap = new HashMap<>();
+            File oldStockFile = new File("src/database/stocklist.txt");
+            if (oldStockFile.exists()) {
+                try (BufferedReader oldReader = new BufferedReader(new FileReader(oldStockFile))) {
+                    oldReader.readLine(); 
+                    String line;
+                    while ((line = oldReader.readLine()) != null) {
+                        String[] parts = line.split(",");
+                        if (parts.length >= 5) {
+                            String itemId = parts[0].trim();
+                            String quantity = parts[3].trim();
+                            String status = parts[4].trim();
+                            oldStockMap.put(itemId, new String[] {quantity, status});
+                        }
+                    }
+                }
+            }
+
+        List<String[]> itemList = new ArrayList<>();
+        try (BufferedReader itemReader = new BufferedReader(new FileReader("src/database/items.txt"))) {
+            String line;
+            while ((line = itemReader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    itemList.add(parts);
+                }
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/stocklist.txt"))) {
+            writer.write("Item ID,Item Name,Category,Quantity,Status");
+            writer.newLine();
+
+            for (String[] item : itemList) {
+                String itemId = item[0].trim();
+                String itemName = item[1].trim();
+                String category = item[4].trim();
+
+                String quantity = "0";
+                String status = "low stock";
+
+                if (oldStockMap.containsKey(itemId)) {
+                    quantity = oldStockMap.get(itemId)[0];
+                    status = oldStockMap.get(itemId)[1];
+                }
+
+                writer.write(itemId + "," + itemName + "," + category + "," + quantity + "," + status);
+                writer.newLine();
+            }
+        }
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Failed to load stock from items.txt: " + e.getMessage());
+    }
+}
+        
         private void loadStockListToTable(String filePath) {
             DefaultTableModel model = (DefaultTableModel) StockTable.getModel();
             model.setRowCount(0); 
+            
+            model.setColumnIdentifiers(new String[]{"Item ID", "Item Name", "Category", "Quantity"});
+
 
             try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
                 String line;
+                br.readLine();
                 while ((line = br.readLine()) != null) {
                     String[] data = line.split(",");
 
@@ -135,21 +302,20 @@ public class StockList extends javax.swing.JFrame {
         //Automation highlight 
         StockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            public Component getTableCellRendererComponent(JTable table, Object value, 
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); 
+                comp.setBackground(Color.WHITE);
 
-                int quantity = Integer.parseInt(table.getValueAt(row, 3).toString());
-                
-                comp.setBackground(Color.WHITE); 
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                try {
+                    int quantity = Integer.parseInt(model.getValueAt(row, 3).toString());
 
-                if (quantity < 10) {
-                    comp.setBackground(Color.PINK);
-                    
-                    markedRows.add(row);
-                }
+                    if (quantity < 10 || markedRows.contains(row)) {
+                        comp.setBackground(Color.PINK);
+                    }
+                } catch (NumberFormatException e) {
 
-                if (markedRows.contains(row)) {
-                    comp.setBackground(Color.PINK);
                 }
 
                 if (isSelected) {
@@ -159,7 +325,9 @@ public class StockList extends javax.swing.JFrame {
                 return comp;
             }
         });
-    }
+
+
+        }
     
         // Saved highlight to file
         private void saveStockListToFile() {
@@ -219,6 +387,8 @@ public class StockList extends javax.swing.JFrame {
             saveStockListToFile(); 
         }
     }
+
+
   
     /**
      * This method is called from within the constructor to initialize the form.
@@ -235,7 +405,9 @@ public class StockList extends javax.swing.JFrame {
         StockTable = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         btnViewSalesEntry = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -293,10 +465,24 @@ public class StockList extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Low stock");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jButton2.setText("View Purchase Order");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("Low Stock");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Back");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
             }
         });
 
@@ -310,13 +496,18 @@ public class StockList extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnViewSalesEntry)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnViewSalesEntry))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -327,10 +518,14 @@ public class StockList extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
                     .addComponent(btnViewSalesEntry)
-                    .addComponent(jButton3))
-                .addGap(0, 68, Short.MAX_VALUE))
+                    .addComponent(jButton5)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton4))
+                .addGap(0, 39, Short.MAX_VALUE))
         );
 
         pack();
@@ -341,7 +536,7 @@ public class StockList extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        loadSalesData("src/database/sales_entry.txt");
+        loadStockFromItems();
         loadStockListToTable("src/database/stocklist.txt");
         JOptionPane.showMessageDialog(null, "Stocks updated");
     
@@ -372,8 +567,22 @@ public class StockList extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewSalesEntryActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-       toggleMarkSelectedRows();
+      
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        ViewPO viewPOWindow = new ViewPO(); 
+        viewPOWindow.setVisible(true);      
+        viewPOWindow.setLocationRelativeTo(null);// TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        toggleMarkSelectedRows();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        backToDashboard();// TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -416,7 +625,9 @@ public class StockList extends javax.swing.JFrame {
     private javax.swing.JTable StockTable;
     private javax.swing.JButton btnViewSalesEntry;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
