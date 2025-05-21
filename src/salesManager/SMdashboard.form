@@ -191,11 +191,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Supplier Entry"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSupplierEntryActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnSalesEntry">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sales Entry"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSalesEntryActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnPR">
           <Properties>
@@ -209,11 +215,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Requisition"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRequisitionActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnPO">
           <Properties>
             <Property name="text" type="java.lang.String" value="PO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPOActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnLogout">
           <Properties>

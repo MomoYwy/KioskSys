@@ -336,7 +336,7 @@ public class FileUtils {
         }
         
         public static void loadPurchaseRequisitionsToTable(String filePath, DefaultTableModel model) {
-            model.setRowCount(0); // Clear existing data
+            model.setRowCount(0);
 
             try {
                 File file = new File(filePath);
@@ -345,7 +345,7 @@ public class FileUtils {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             String[] parts = line.split(",");
-                            if (parts.length == 9) { // Check for all 9 fields
+                            if (parts.length >= 10) { // Check for all required fields
                                 model.addRow(new Object[]{
                                     parts[0], // PR_ID
                                     parts[1], // Item_ID
@@ -353,10 +353,10 @@ public class FileUtils {
                                     Integer.parseInt(parts[3]), // Stock_Amount
                                     Integer.parseInt(parts[4]), // Quantity
                                     parts[5], // Date_Required
-                                    parts[6], // Supplier_ID
+                                    parts[6], // Supplier_ID(s) - pipe separated
                                     parts[7], // User_ID
                                     parts[8], // Date_Created
-                                    parts[9] // Status
+                                    parts[9]  // Status
                                 });
                             }
                         }
@@ -401,7 +401,7 @@ public class FileUtils {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.contains(valueToFind)) {
-                    matchingLines.add(line); // Add the line to the list
+                    matchingLines.add(line); 
                 }
             }
             if (matchingLines.isEmpty()) {
@@ -409,9 +409,9 @@ public class FileUtils {
             }
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
-            return null; // Return null in case of error
+            return null;
         }
-        return matchingLines; // Return the list of matching lines
+        return matchingLines; 
     }
     
 }

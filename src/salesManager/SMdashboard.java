@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package salesManager;
 
 /**
@@ -95,8 +91,18 @@ public class SMdashboard extends javax.swing.JFrame {
         });
 
         btnSupplierEntry.setText("Supplier Entry");
+        btnSupplierEntry.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSupplierEntryActionPerformed(evt);
+            }
+        });
 
         btnSalesEntry.setText("Sales Entry");
+        btnSalesEntry.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalesEntryActionPerformed(evt);
+            }
+        });
 
         btnPR.setText("PR");
         btnPR.addActionListener(new java.awt.event.ActionListener() {
@@ -106,8 +112,18 @@ public class SMdashboard extends javax.swing.JFrame {
         });
 
         btnRequisition.setText("Requisition");
+        btnRequisition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRequisitionActionPerformed(evt);
+            }
+        });
 
         btnPO.setText("PO");
+        btnPO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPOActionPerformed(evt);
+            }
+        });
 
         btnLogout.setText("Logout");
 
@@ -190,6 +206,22 @@ public class SMdashboard extends javax.swing.JFrame {
         prEntry.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnPRActionPerformed
+
+    private void btnSupplierEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSupplierEntryActionPerformed
+        
+    }//GEN-LAST:event_btnSupplierEntryActionPerformed
+
+    private void btnSalesEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalesEntryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSalesEntryActionPerformed
+
+    private void btnRequisitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRequisitionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRequisitionActionPerformed
+
+    private void btnPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPOActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnPOActionPerformed
 
     /**
      * @param args the command line arguments

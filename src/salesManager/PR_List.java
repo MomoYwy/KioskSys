@@ -8,15 +8,12 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
 
-/**
- *
- * @author user
- */
+
 public class PR_List extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PR_List
-     */
+    private static final String PR_FILE = "src/database/purchase_requisition.txt";
+    
+    
     public PR_List() {
         initComponents();
         loadPRData();
@@ -26,7 +23,7 @@ public class PR_List extends javax.swing.JFrame {
     private void loadPRData() {
         DefaultTableModel model = (DefaultTableModel) tblPRList.getModel();
         // Replace "purchase_requisitions.txt" with your actual file path
-        FileUtils.TableUtils.loadPurchaseRequisitionsToTable("purchase_requisitions.txt", model);
+        FileUtils.TableUtils.loadPurchaseRequisitionsToTable(PR_FILE, model);
     }
     
     
