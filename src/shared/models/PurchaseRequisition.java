@@ -43,7 +43,7 @@ public class PurchaseRequisition implements Recordable {
     public String getUserId() { return userId; }
     public String getDateCreated() { return dateCreated; }
     public String getStatus() { return status; }
-    public String getAllSuppliers() { return allSuppliers; } // New getter
+    public String getAllSuppliers() { return allSuppliers; }
 
     // Business methods
     public void approve() {
@@ -72,7 +72,7 @@ public class PurchaseRequisition implements Recordable {
             userId,
             dateCreated,
             status,
-            allSuppliers // Added to CSV string
+            allSuppliers 
         );
     }
 }

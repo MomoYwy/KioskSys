@@ -70,7 +70,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblStockList.getModel();
         String itemID = (String) model.getValueAt(selectedRow, 0);
         String itemName = (String) model.getValueAt(selectedRow, 1);
-        String stockAmount = (String) model.getValueAt(selectedRow, 2);
+        String stockAmount = (String) model.getValueAt(selectedRow, 3);
 
         lblSHItemID.setText(itemID);
         lblSHItemNm.setText(itemName);
@@ -193,7 +193,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Item_ID", "Item_Name", "Stock_Amount", "Category"
+                "Item_ID", "Item_Name", "Category", "Stock_Amount"
             }
         ));
         jScrollPane1.setViewportView(tblStockList);
