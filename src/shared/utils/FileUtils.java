@@ -369,6 +369,19 @@ public class FileUtils {
         }
     }
     
+    public static List<String[]> readAllLines(String filePath) {
+        List<String[]> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line.split(","));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lines;
+    }
+    
 }
 
 

@@ -8,27 +8,62 @@ import shared.utils.SwingUtils;
 import javax.swing.JOptionPane;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 
 public class EditSales extends javax.swing.JFrame {
     private String salesId; // Store the ID of the sales entry being edited
     private String originalDate; // Store the original date (not shown but preserved)
     private String originalCustomerContact; // Store the original contact (not shown but preserved)
     private static final String SALES_FILE = "src/database/sales_entry.txt";
+    private static final String ITEMS_FILE = "src/database/items.txt";
+    private List<String[]> itemsList; // Store all items data
+
 
     public EditSales(SalesEntry entry) {
         initComponents();
         initializeDateComponents();
+        loadItems();
         loadSalesEntryData(entry);
+        setupItemComboBoxListener();
     }
     
     private void initializeDateComponents() {
         SwingUtils.initializeDateComboBoxes(cbDay, cbMonth, cbYear);
     }
+    
+    private void setupItemComboBoxListener() {
+        cbItemID.addActionListener(e -> updateItemName());
+    }
+    
+    private void updateItemName() {
+        String selectedItemId = (String) cbItemID.getSelectedItem();
+        if (selectedItemId != null) {
+            for (String[] item : itemsList) {
+                if (item.length >= 2 && item[0].equals(selectedItemId)) {
+                    lbItemName.setText(item[1]); // Set the corresponding item name
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void loadItems() {
+        itemsList = FileUtils.readAllLines(ITEMS_FILE);
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        
+        for (String[] item : itemsList) {
+            if (item.length >= 2) { // Ensure we have at least ID and Name
+                model.addElement(item[0]); // Add item ID
+            }
+        }
+        cbItemID.setModel(model);
+    }
 
     private void loadSalesEntryData(SalesEntry entry) {
         this.salesId = entry.getSalesId();
-        this.originalDate = entry.getDate(); // Preserve original date
-        this.originalCustomerContact = entry.getCustomer().getContact(); // Preserve contact
+        this.originalDate = entry.getDate();
+        this.originalCustomerContact = entry.getCustomer().getContact();
         
         // Set fields based on new model
         lbCustomerName.setText(entry.getCustomer().getName());
@@ -41,8 +76,11 @@ public class EditSales extends javax.swing.JFrame {
             cbYear.setSelectedItem(dateParts[2]);
         }
 
-        cbItemID.setSelectedItem(entry.getItem().getItemId());
+        // Set item ID and name
+        String currentItemId = entry.getItem().getItemId();
+        cbItemID.setSelectedItem(currentItemId);
         lbItemName.setText(entry.getItem().getName());
+        
         spQuantity.setValue(entry.getQuantity());
     }
 
