@@ -1,9 +1,11 @@
 package admin;
 
+import java.io.IOException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils.TableUtils;
+import static shared.utils.FileUtils.deleteFromFileByField;
 import static shared.utils.FileUtils.findLinesWithValue;
 
 /**
@@ -56,11 +58,8 @@ public class Users extends javax.swing.JFrame {
                 tableModel.addRow(new Object[]{userData[0], userData[1], userData[3]});
             }
         }
-    }
+    }   
 
-
-    
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -197,7 +196,47 @@ public class Users extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        
+        int selectedRow = tblUsers.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select a user to delete",
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Confirm deletion
+        int confirm = JOptionPane.showConfirmDialog(
+            this, 
+            "Are you sure you want to delete this user?",
+            "Confirm Deletion",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // Get the user ID from the selected row (assuming it's in column 0)
+        String userId = tblUsers.getValueAt(selectedRow, 0).toString();
+
+        try {
+            // Delete from file (using userId as the identifier in field index 0)
+            deleteFromFileByField(USERS_FILE, 0, userId);
+
+            // Refresh the table
+            loadUsersToTable();
+
+            JOptionPane.showMessageDialog(this, 
+                "User deleted successfully",
+                "Success", 
+                JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error deleting user: " + ex.getMessage(),
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
