@@ -168,7 +168,7 @@ public class StockList extends javax.swing.JFrame {
             String line;
             while ((line = itemReader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5) {
+                if (parts.length >= 4) {
                     itemList.add(parts);
                 }
             }
@@ -228,7 +228,7 @@ public class StockList extends javax.swing.JFrame {
             String line;
             while ((line = itemReader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5) {
+                if (parts.length >= 4) {
                     itemList.add(parts);
                 }
             }
@@ -241,7 +241,7 @@ public class StockList extends javax.swing.JFrame {
             for (String[] item : itemList) {
                 String itemId = item[0].trim();
                 String itemName = item[1].trim();
-                String category = item[4].trim();
+                String category = item[3].trim();
 
                 String quantity = "0";
                 String status = "low stock";
