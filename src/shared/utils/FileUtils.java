@@ -253,9 +253,8 @@ public class FileUtils {
                 parts[0], // ID
                 parts[1], // Name
                 parts[2], // Supplier ID
-                Double.parseDouble(parts[3]), // Price
-                parts[4]  // Category
-            }, 5);
+                parts[3]  // Category
+            }, 4);
         }
 
         public static void loadSuppliersToTable(String filePath, DefaultTableModel model) {

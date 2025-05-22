@@ -133,8 +133,7 @@ import shared.models.Recordable;
                     itemId,
                     itemName,
                     itemDetails[2], // supplierId
-                    Double.parseDouble(itemDetails[3]), // price
-                    itemDetails[4] // category
+                    itemDetails[3] // category
                 );
 
                 // Generate sales ID
@@ -229,8 +228,7 @@ import shared.models.Recordable;
                     itemId,
                     itemDetails[1], // Item Name from database
                     itemDetails[2], // Supplier ID from database
-                    Double.parseDouble(itemDetails[3]), // Price from database
-                    itemDetails[4]  // Category from database
+                    itemDetails[3]  // Category from database
                 );
 
                 // Recreate SalesEntry with complete information

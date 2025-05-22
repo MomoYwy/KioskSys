@@ -20,13 +20,12 @@ public class EditItem extends javax.swing.JFrame {
     
     private String originalItemId;
 
-    public EditItem(String itemId, String itemName, String supplierId, double price, String category) {
+    public EditItem(String itemId, String itemName, String supplierId, String category) {
         initComponents();
         this.originalItemId = itemId;
 
         // Display original values
         tfItemName.setText(itemName);
-        tfPrice.setText(String.valueOf(price));
         labelSupplierID.setText(supplierId);
 
         // Set category in combobox
@@ -44,32 +43,11 @@ public class EditItem extends javax.swing.JFrame {
         jButton1.addActionListener(e -> {
             try {
                 String newName = tfItemName.getText().trim();
-                String newPriceText = tfPrice.getText().trim();
                 String newCategory = (String) cbCategory.getSelectedItem();
                 String supplierId = labelSupplierID.getText();
 
-                // Validate inputs
-                if (newName.isEmpty() || newPriceText.isEmpty()) {
-                    JOptionPane.showMessageDialog(this,
-                        "Please fill in all fields",
-                        "Input Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                double newPrice;
-                try {
-                    newPrice = Double.parseDouble(newPriceText);
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this,
-                        "Please enter a valid price",
-                        "Input Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
                 // Update the item in the file
-                updateItemInFile(newName, supplierId, newPrice, newCategory);
+                updateItemInFile(newName, supplierId, newCategory);
 
                 // Return to ItemEntry
                 returnToItemEntry();
@@ -83,7 +61,7 @@ public class EditItem extends javax.swing.JFrame {
         });
     }
 
-    private void updateItemInFile(String newName, String supplierId, double newPrice, String newCategory) 
+    private void updateItemInFile(String newName, String supplierId, String newCategory) 
             throws IOException {
         File itemsFile = new File("src/database/items.txt");
         File tempFile = new File("src/database/items_temp.txt");
@@ -94,13 +72,12 @@ public class EditItem extends javax.swing.JFrame {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5 && parts[0].equals(originalItemId)) {
+                if (parts.length >= 4 && parts[0].equals(originalItemId)) {
                     // Write the updated item
                     writer.write(String.join(",",
                         originalItemId, // Keep same ID
                         newName,
                         supplierId,
-                        String.valueOf(newPrice),
                         newCategory
                     ));
                 } else {
@@ -134,10 +111,8 @@ public class EditItem extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         tfItemName = new javax.swing.JTextField();
-        tfPrice = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         cbCategory = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
@@ -151,8 +126,6 @@ public class EditItem extends javax.swing.JFrame {
         jLabel2.setText("Item Name:");
 
         jLabel3.setText("Supplier ID:");
-
-        jLabel4.setText("Price");
 
         jLabel5.setText("Category");
 
@@ -186,14 +159,12 @@ public class EditItem extends javax.swing.JFrame {
                 .addGap(0, 77, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel4)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(tfItemName)
-                        .addComponent(tfPrice)
                         .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(labelSupplierID))
                 .addGap(68, 68, 68))
@@ -211,11 +182,7 @@ public class EditItem extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(labelSupplierID))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(58, 58, 58)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -282,11 +249,9 @@ public class EditItem extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelSupplierID;
     private javax.swing.JTextField tfItemName;
-    private javax.swing.JTextField tfPrice;
     // End of variables declaration//GEN-END:variables
 }
