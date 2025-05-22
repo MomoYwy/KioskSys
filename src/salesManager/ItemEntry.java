@@ -25,15 +25,20 @@ import static shared.utils.FileUtils.ensureFileExists;
 
 public class ItemEntry extends javax.swing.JFrame {
 
+    private String userId;
+    private String username;
+    
 
     private static final String ITEMS_FILE = "src/database/items.txt";
 
     
-    public ItemEntry() {
+    public ItemEntry(String userId, String username) {
         initComponents();
         initializeCategoryCombobox();
         initializeSupplierList();
         loadItemsToTable();
+        this.userId = userId;
+        this.username = username;
     }
 
     
@@ -216,7 +221,6 @@ public class ItemEntry extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
@@ -303,8 +307,6 @@ public class ItemEntry extends javax.swing.JFrame {
             }
         });
 
-        btnSave.setText("Save");
-
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -365,9 +367,7 @@ public class ItemEntry extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(190, 190, 190)
-                                .addComponent(btnSave)
-                                .addGap(18, 18, 18)
+                                .addGap(280, 280, 280)
                                 .addComponent(btnDelete)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnEdit))
@@ -429,7 +429,6 @@ public class ItemEntry extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
-                    .addComponent(btnSave)
                     .addComponent(btnEdit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnBack)
@@ -472,7 +471,9 @@ public class ItemEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        // TODO add your handling code here:
+        SMdashboard sm = new SMdashboard(userId, username);
+        sm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -498,7 +499,7 @@ public class ItemEntry extends javax.swing.JFrame {
         String category = model.getValueAt(selectedRow, 4).toString();
 
         // Open the EditItem frame with selected data
-        EditItem editFrame = new EditItem(itemId, itemName, supplierId, price, category);
+        EditItem editFrame = new EditItem(userId, username,itemId, itemName, supplierId, price, category);
         editFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnEditActionPerformed
@@ -577,7 +578,6 @@ public class ItemEntry extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ItemEntry().setVisible(true);
             }
         });
     }
@@ -587,7 +587,6 @@ public class ItemEntry extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbCategory;
     private javax.swing.JLabel jLabel1;

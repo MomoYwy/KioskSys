@@ -15,8 +15,13 @@ public class EditSupplier extends javax.swing.JFrame {
     private String supplierId;
     private ArrayList<JTextField> itemFields = new ArrayList<>();
     
-    public EditSupplier(String supplierId) {
+    private String userId;
+    private String username;
+    
+    public EditSupplier(String userId, String username,String supplierId) {
         this.supplierId = supplierId;
+        this.userId = userId;
+        this.username = username;
         initComponents();
         loadSupplierData();
         itemFields.add(tfSuppliedItem);
@@ -135,7 +140,7 @@ public class EditSupplier extends javax.swing.JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
 
             this.dispose();
-            new SupplierEntry().setVisible(true);
+            new SupplierEntry(userId, username).setVisible(true);
         } catch (IOException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
                 "Error saving supplier: " + e.getMessage(),
@@ -209,7 +214,7 @@ public class EditSupplier extends javax.swing.JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
 
                 this.dispose();
-                new SupplierEntry().setVisible(true);
+                new SupplierEntry(userId, username).setVisible(true);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
@@ -220,7 +225,7 @@ public class EditSupplier extends javax.swing.JFrame {
     }
 
    private void openItemEntryScreen(String itemName) {
-       ItemEntry itemEntry = new ItemEntry();
+       ItemEntry itemEntry = new ItemEntry(userId, username);
        itemEntry.setItemName(itemName);
        itemEntry.setVisible(true);
        this.dispose();
@@ -481,7 +486,7 @@ public class EditSupplier extends javax.swing.JFrame {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-        new SupplierEntry().setVisible(true);
+        new SupplierEntry(userId, username).setVisible(true);
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void rbAddNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbAddNewItemActionPerformed

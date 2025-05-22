@@ -16,6 +16,8 @@ import javax.swing.JOptionPane;
 
 public class EditItem extends javax.swing.JFrame {
 
+    private String userId;
+    private String username;
 
     public EditItem() {
         initComponents();
@@ -24,7 +26,9 @@ public class EditItem extends javax.swing.JFrame {
     
     private String originalItemId;
 
-    public EditItem(String itemId, String itemName, String supplierId, double price, String category) {
+    public EditItem(String userId, String username,String itemId, String itemName, String supplierId, double price, String category) {
+        this.userId = userId;
+        this.username = username;
         initComponents();
         this.originalItemId = itemId;
 
@@ -208,7 +212,7 @@ public class EditItem extends javax.swing.JFrame {
     }
 
     private void returnToItemEntry() {
-        new ItemEntry().setVisible(true);
+        new ItemEntry(userId, username).setVisible(true);
         this.dispose();
     }
     

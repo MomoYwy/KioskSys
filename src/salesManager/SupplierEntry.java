@@ -23,10 +23,15 @@ import shared.utils.SwingUtils;
 
 public class SupplierEntry extends javax.swing.JFrame {
 
+    private String userId;
+    private String username;
+    
 
-    public SupplierEntry() {
+    public SupplierEntry(String userId, String username) {
         initComponents();
         initializeStateComboBox();
+        this.userId = userId;
+        this.username = username;
         loadSuppliersToTable();
     }
     
@@ -168,7 +173,7 @@ public class SupplierEntry extends javax.swing.JFrame {
     }
 
     private void openItemEntryScreen(String itemName) {
-        ItemEntry itemEntry = new ItemEntry();
+        ItemEntry itemEntry = new ItemEntry(userId, username);
         itemEntry.setItemName(itemName);
         itemEntry.setVisible(true);
         this.dispose();
@@ -234,7 +239,6 @@ public class SupplierEntry extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
@@ -343,8 +347,6 @@ public class SupplierEntry extends javax.swing.JFrame {
             }
         });
 
-        btnSave.setText("Save");
-
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,6 +362,11 @@ public class SupplierEntry extends javax.swing.JFrame {
         });
 
         btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
 
         tfStreet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -394,16 +401,6 @@ public class SupplierEntry extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(388, 388, 388)
-                .addComponent(btnAdd)
-                .addGap(12, 12, 12)
-                .addComponent(btnDelete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnSave)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEdit)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -460,7 +457,14 @@ public class SupplierEntry extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jScrollPane4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSearch)))))
+                                .addComponent(btnSearch))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(466, 466, 466)
+                        .addComponent(btnAdd)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEdit)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -489,7 +493,6 @@ public class SupplierEntry extends javax.swing.JFrame {
                         .addGap(12, 12, 12)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnEdit)
-                            .addComponent(btnSave)
                             .addComponent(btnAdd)
                             .addComponent(btnDelete)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -620,13 +623,19 @@ public class SupplierEntry extends javax.swing.JFrame {
         }
 
         String supplierId = (String) jTable1.getValueAt(selectedRow, 0);
-        new EditSupplier(supplierId).setVisible(true);
+        new EditSupplier(userId, username,supplierId).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         searchAndDisplayItems();
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        SMdashboard sm = new SMdashboard(userId, username);
+        sm.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -658,7 +667,6 @@ public class SupplierEntry extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SupplierEntry().setVisible(true);
             }
         });
     }
@@ -670,7 +678,6 @@ public class SupplierEntry extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

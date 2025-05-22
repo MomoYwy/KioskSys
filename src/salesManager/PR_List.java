@@ -11,14 +11,18 @@ import shared.utils.FileUtils;
 
 
 public class PR_List extends javax.swing.JFrame {
+    
+    private String userId;
+    private String username;
 
     private static final String PR_FILE = "src/database/purchase_requisition.txt";
     
     
-    public PR_List() {
+    public PR_List(String userId, String username) {
         initComponents();
         loadPRData();
-
+        this.userId = userId;
+        this.username = username;
     }
     
     private void loadPRData() {
@@ -271,7 +275,9 @@ public class PR_List extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        // TODO add your handling code here:
+        SMdashboard sm = new SMdashboard(userId, username);
+        sm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -312,7 +318,6 @@ public class PR_List extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PR_List().setVisible(true);
             }
         });
     }

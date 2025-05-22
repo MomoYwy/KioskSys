@@ -18,9 +18,10 @@ import javax.swing.JOptionPane;
  */
 public class EditPR extends javax.swing.JFrame {
 
-    /**
-     * Creates new form EditPR
-     */
+    
+    private String userId;
+    private String username;
+    
     public EditPR() {
         initComponents();
     }
@@ -116,7 +117,8 @@ public class EditPR extends javax.swing.JFrame {
     }
 
     private void returnToPRList() {
-        new PR_List().setVisible(true);
+        PR_List prEntry = new PR_List(userId, username);
+        prEntry.setVisible(true);
         this.dispose();
     }
     

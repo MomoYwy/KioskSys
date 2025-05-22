@@ -19,13 +19,18 @@ import shared.models.Recordable;
         private List<String[]> itemsList;
         private static final String SALES_FILE = "src/database/sales_entry.txt";
         private static final String ITEMS_FILE = "src/database/items.txt";
+        
+        private String userId;
+        private String username;
 
-        public DailySalesEntry() {
+        public DailySalesEntry(String userId, String username) {
             initComponents();
             initializeDateComponents();
             loadItems();
             loadSalesToTable(); // Load existing sales entries when form opens
             ensureSalesFileExists();
+            this.userId = userId;
+            this.username = username;
         }
 
         private void initializeDateComponents() {
@@ -433,7 +438,6 @@ import shared.models.Recordable;
         lbItemName = new javax.swing.JLabel();
         spQuantity = new javax.swing.JSpinner();
         btnAdd = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -550,8 +554,6 @@ import shared.models.Recordable;
             }
         });
 
-        btnSave.setText("Save");
-
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -665,7 +667,6 @@ import shared.models.Recordable;
                                                 .addComponent(jLabel11)))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(btnSave)
                                             .addComponent(btnAdd)
                                             .addComponent(btnEdit)
                                             .addComponent(btnDelete))
@@ -720,13 +721,11 @@ import shared.models.Recordable;
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnAdd)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSave)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnEdit)
-                        .addGap(1, 1, 1)))
+                        .addGap(42, 42, 42)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(cbItemID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -788,7 +787,9 @@ import shared.models.Recordable;
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        // TODO add your handling code here:
+        SMdashboard sm = new SMdashboard(userId, username);
+        sm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     
@@ -822,7 +823,6 @@ import shared.models.Recordable;
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DailySalesEntry().setVisible(true);
             }
         });
     }
@@ -832,7 +832,6 @@ import shared.models.Recordable;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbDay;
     private javax.swing.JComboBox<String> cbDayRequired;
