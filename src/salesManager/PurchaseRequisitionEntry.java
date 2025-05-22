@@ -228,11 +228,11 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
 
         btnViewList.setText("View List");
 
-        lblSHItemID.setText("jLabel8");
+        lblSHItemID.setText("Item ID");
 
-        lblSHItemNm.setText("jLabel9");
+        lblSHItemNm.setText("Item Name");
 
-        lblSHStockAmt.setText("jLabel11");
+        lblSHStockAmt.setText("Stock Amt");
 
         txtDateRequired.setText("(DD/MM/YYYY)");
 
