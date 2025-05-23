@@ -27,8 +27,8 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="152" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" min="-2" pref="149" max="-2" attributes="0"/>
+                  <Component id="GenerateStockReport" min="-2" max="-2" attributes="0"/>
+                  <Component id="ViewStock" min="-2" pref="149" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="169" max="32767" attributes="0"/>
           </Group>
@@ -39,9 +39,9 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
-              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <Component id="ViewStock" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+              <Component id="GenerateStockReport" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="166" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -89,20 +89,20 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="ViewStock">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Stocks"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ViewStockActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton3">
+    <Component class="javax.swing.JButton" name="GenerateStockReport">
       <Properties>
         <Property name="text" type="java.lang.String" value="Generate Stock Report"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GenerateStockReportActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

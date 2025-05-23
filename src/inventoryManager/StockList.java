@@ -332,6 +332,8 @@ public class StockList extends javax.swing.JFrame {
         // Saved highlight to file
         private void saveStockListToFile() {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/stocklist.txt"))) {
+                writer.write("Item ID,Item Name,Category,Quantity,Status");
+                writer.newLine();
                 DefaultTableModel model = (DefaultTableModel) StockTable.getModel();
                 for (int i = 0; i < model.getRowCount(); i++) {
                     String itemId = model.getValueAt(i, 0).toString();
@@ -403,11 +405,11 @@ public class StockList extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         StockTable = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        UpdateStock = new javax.swing.JButton();
         btnViewSalesEntry = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        ViewPO = new javax.swing.JButton();
+        LowStock = new javax.swing.JButton();
+        BackButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -451,10 +453,10 @@ public class StockList extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(StockTable);
 
-        jButton1.setText("Update stocks");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        UpdateStock.setText("Update stocks");
+        UpdateStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                UpdateStockActionPerformed(evt);
             }
         });
 
@@ -465,24 +467,24 @@ public class StockList extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("View Purchase Order");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        ViewPO.setText("View Purchase Order");
+        ViewPO.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                ViewPOActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Low Stock");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        LowStock.setText("Low Stock");
+        LowStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                LowStockActionPerformed(evt);
             }
         });
 
-        jButton5.setText("Back");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        BackButton.setText("Back");
+        BackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                BackButtonActionPerformed(evt);
             }
         });
 
@@ -496,18 +498,15 @@ public class StockList extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnViewSalesEntry))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(BackButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnViewSalesEntry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ViewPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(UpdateStock, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                            .addComponent(LowStock, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -519,12 +518,12 @@ public class StockList extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnViewSalesEntry)
-                    .addComponent(jButton5)
-                    .addComponent(jButton1))
+                    .addComponent(BackButton)
+                    .addComponent(UpdateStock))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton4))
+                    .addComponent(ViewPO)
+                    .addComponent(LowStock))
                 .addGap(0, 39, Short.MAX_VALUE))
         );
 
@@ -535,12 +534,12 @@ public class StockList extends javax.swing.JFrame {
        
     }//GEN-LAST:event_formWindowOpened
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void UpdateStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateStockActionPerformed
         loadStockFromItems();
         loadStockListToTable("src/database/stocklist.txt");
         JOptionPane.showMessageDialog(null, "Stocks updated");
     
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_UpdateStockActionPerformed
 
     private void btnViewSalesEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewSalesEntryActionPerformed
         ViewSalesEntry salesEntryFrame = new ViewSalesEntry();
@@ -570,19 +569,19 @@ public class StockList extends javax.swing.JFrame {
       
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void ViewPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ViewPOActionPerformed
         ViewPO viewPOWindow = new ViewPO(); 
         viewPOWindow.setVisible(true);      
         viewPOWindow.setLocationRelativeTo(null);// TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_ViewPOActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void LowStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LowStockActionPerformed
         toggleMarkSelectedRows();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_LowStockActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void BackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButtonActionPerformed
         backToDashboard();// TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_BackButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -622,12 +621,12 @@ public class StockList extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BackButton;
+    private javax.swing.JButton LowStock;
     private javax.swing.JTable StockTable;
+    private javax.swing.JButton UpdateStock;
+    private javax.swing.JButton ViewPO;
     private javax.swing.JButton btnViewSalesEntry;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
