@@ -16,23 +16,62 @@ import java.util.HashMap;
 import shared.frames.ViewSalesEntry;
 import java.util.ArrayList;
 import java.util.List;
+import admin.AdminDashboard;
 
 public class StockList extends javax.swing.JFrame {
     private final java.util.Set<Integer> markedRows = new java.util.HashSet<>();
+       
+    public enum SourceType {
+        ADMIN_DASHBOARD,
+        IM_DASHBOARD
+    }
+    
+    private AdminDashboard previousAdminDashboard;  
+    private IMDashboard previousIMDashboard;        
+    private SourceType sourceType;                  
+
+    public StockList(AdminDashboard previousAdminDashboard) {
+        initComponents();
+        this.previousAdminDashboard = previousAdminDashboard;
+        this.sourceType = SourceType.ADMIN_DASHBOARD;
+        loadStockListToTable("src/database/stocklist.txt");
+    }
+    
+    public StockList(IMDashboard previousIMDashboard) {
+        initComponents();
+        this.previousIMDashboard = previousIMDashboard;
+        this.sourceType = SourceType.IM_DASHBOARD;
+        loadStockListToTable("src/database/stocklist.txt");
+    }
     
     public StockList() {
         initComponents();  
-        applySalesEntryToStock();
-        loadStockListToTable("src/database/stocklist.txt");       
+        this.sourceType = SourceType.IM_DASHBOARD; 
+        loadStockListToTable("src/database/stocklist.txt");  
     }
     
-   private void backToDashboard() {
+    private void backToPreviousDashboard() {
         this.dispose();  
-        IMDashboard dash = new IMDashboard("guangwei", "1234");
-        dash.setVisible(true);
+        
+        switch (sourceType) {
+            case ADMIN_DASHBOARD:
+                if (previousAdminDashboard != null) {
+                    previousAdminDashboard.setVisible(true);
+                } 
+                break;
+                
+            case IM_DASHBOARD:
+                if (previousIMDashboard != null) {
+                    previousIMDashboard.setVisible(true);
+                } else {
+
+                    IMDashboard imDash = new IMDashboard("guangwei", "1234");
+                    imDash.setVisible(true);
+                }
+                break;
+        }
     }
    
-   //Fetch status from sales_entry.txt
    private void applySalesEntryToStock() {
     try {
         File salesFile = new File("src/database/sales_entry.txt");
@@ -50,37 +89,33 @@ public class StockList extends javax.swing.JFrame {
                     continue;
                 }
 
-                String[] parts = line.trim().split("\\s+"); 
+                String[] parts = line.trim().split(",", -1); 
 
                 if (parts.length < 9) {
-                    line = line + " unprocessed";
-                    parts = line.trim().split("\\s+");
+                    allSalesLines.add(line); 
+                    continue;
                 }
 
-                if (parts.length < 9) continue; 
-
-                String status = parts[8].toLowerCase();
+                String status = parts[8].trim().toLowerCase();
                 if ("unprocessed".equals(status)) {
                     String itemId = parts[5].trim();
                     String qtyStr = parts[7].trim();
-                    if (!itemId.isEmpty() && !qtyStr.isEmpty()) {
-                        try {
-                            int qty = Integer.parseInt(qtyStr);
-                            salesMap.put(itemId, salesMap.getOrDefault(itemId, 0) + qty);
-                            parts[8] = "processed";
-                            line = String.join(" ", parts);
-                        } catch (NumberFormatException e) {
-                  
-                        }
+                    try {
+                        int qty = Integer.parseInt(qtyStr);
+                        salesMap.put(itemId, salesMap.getOrDefault(itemId, 0) + qty);
+                        parts[8] = "processed";
+                        allSalesLines.add(String.join(" ", parts)); 
+                    } catch (NumberFormatException e) {
+                        allSalesLines.add(line); 
                     }
+                } else {
+                    allSalesLines.add(line);
                 }
-
-                allSalesLines.add(line);
             }
         }
 
         if (salesMap.isEmpty()) {
-            
+            JOptionPane.showMessageDialog(this, "No sales entries were found in the database.");
             return;
         }
 
@@ -89,36 +124,36 @@ public class StockList extends javax.swing.JFrame {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(stockFile))) {
             String line;
-            int lineIndex = 0;
+            boolean isFirstLine = true;
 
             while ((line = reader.readLine()) != null) {
-                if (lineIndex == 0) {
+                if (isFirstLine) {
                     updatedStockLines.add(line); 
-                } else {
-                    String[] parts = line.trim().split(",", -1);
-                    if (parts.length >= 5) {
-                        String itemId = parts[0].trim();
-                        String itemName = parts[1].trim();
-                        String category = parts[2].trim();
-                        int quantity = Integer.parseInt(parts[3].trim());
-
-                        if (salesMap.containsKey(itemId)) {
-                            int soldQty = salesMap.get(itemId);
-                            quantity -= soldQty;
-                            if (quantity < 0) quantity = 0;
-                        }
-
-                        String status = (quantity < 10) ? "low stock" : "normal";
-                        updatedStockLines.add(itemId + "," + itemName + "," + category + "," + quantity + "," + status);
-                    } else {
-                        updatedStockLines.add(line); 
-                    }
+                    isFirstLine = false;
+                    continue;
                 }
-                lineIndex++;
+
+                String[] parts = line.trim().split(",", -1); 
+
+                if (parts.length >= 5) {
+                    String itemId = parts[0].trim();
+                    String itemName = parts[1].trim();
+                    String category = parts[2].trim();
+                    int quantity = Integer.parseInt(parts[3].trim());
+
+                    if (salesMap.containsKey(itemId)) {
+                        int soldQty = salesMap.get(itemId);
+                        quantity = Math.max(0, quantity - soldQty);
+                    }
+
+                    String status = (quantity < 10) ? "low stock" : "normal";
+                    updatedStockLines.add(String.join(",", itemId, itemName, category, String.valueOf(quantity), status));
+                } else {
+                    updatedStockLines.add(line);
+                }
             }
         }
 
- 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(stockFile))) {
             for (String updatedLine : updatedStockLines) {
                 writer.write(updatedLine);
@@ -133,12 +168,12 @@ public class StockList extends javax.swing.JFrame {
             }
         }
 
-        markedRows.clear();
+        markedRows.clear(); 
         loadStockListToTable("src/database/stocklist.txt");
 
-        JOptionPane.showMessageDialog(this, "Stock updated successfully based on new sales.");
+        JOptionPane.showMessageDialog(this, "Sales entry updated");
     } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Failed to update stock: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "update failed: " + e.getMessage());
     }
 }
 
@@ -537,6 +572,7 @@ public class StockList extends javax.swing.JFrame {
     private void UpdateStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateStockActionPerformed
         loadStockFromItems();
         loadStockListToTable("src/database/stocklist.txt");
+        applySalesEntryToStock();
         JOptionPane.showMessageDialog(null, "Stocks updated");
     
     }//GEN-LAST:event_UpdateStockActionPerformed
@@ -580,7 +616,7 @@ public class StockList extends javax.swing.JFrame {
     }//GEN-LAST:event_LowStockActionPerformed
 
     private void BackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButtonActionPerformed
-        backToDashboard();// TODO add your handling code here:
+        backToPreviousDashboard();// TODO add your handling code here:
     }//GEN-LAST:event_BackButtonActionPerformed
 
     /**

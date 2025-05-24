@@ -15,6 +15,102 @@ import javax.swing.JOptionPane;
 
 public class ViewPO extends javax.swing.JFrame {
     
+     public ViewPO() {
+        initComponents();
+        loadPurchaseOrders();
+    }
+    
+    private void updateFromPO(){
+        int selectedRow = poTable.getSelectedRow();
+    if (selectedRow == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Please select a row first.");
+        return;
+    }
+
+    String itemId = poTable.getValueAt(selectedRow, 2).toString(); 
+    int quantityToAdd = Integer.parseInt(poTable.getValueAt(selectedRow, 4).toString()); 
+
+    String stockFilePath = "src/database/stocklist.txt";
+    java.util.List<String> updatedLines = new java.util.ArrayList<>();
+
+    boolean itemFound = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(stockFilePath))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",", -1);
+            if (parts.length >= 5 && parts[0].trim().equals(itemId)) {
+    int currentStock = Integer.parseInt(parts[3].trim());
+    int newStock = currentStock + quantityToAdd;
+    parts[3] = String.valueOf(newStock);
+
+    if (newStock >= 10) {
+        parts[4] = "normal";
+    } else {
+        parts[4] = "low stock";
+    }
+
+    itemFound = true;
+}
+            updatedLines.add(String.join(",", parts));
+        }
+    } catch (IOException | NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Error reading stock file: " + e.getMessage());
+        return;
+    }
+
+    if (!itemFound) {
+        JOptionPane.showMessageDialog(this, "Item ID not found in stocklist.");
+        return;
+    }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(stockFilePath))) {
+        for (String updatedLine : updatedLines) {
+            writer.write(updatedLine);
+            writer.newLine();
+        }
+        JOptionPane.showMessageDialog(this, "Stock updated successfully.");
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error writing stock file: " + e.getMessage());
+        return;
+    }
+
+    String poFilePath = "src/database/purchase_orders.txt";
+    List<String> poLines = new ArrayList<>();
+    boolean poUpdated = false;
+
+    try (BufferedReader poReader = new BufferedReader(new FileReader(poFilePath))) {
+        String line;
+        while ((line = poReader.readLine()) != null) {
+            String[] parts = line.split(",", -1);
+            if (parts.length > 12 && parts[2].trim().equals(itemId)) {
+                parts[12] = "ITEM RECEIVED";
+                poUpdated = true;
+            }
+            poLines.add(String.join(",", parts));
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error reading purchase_orders file: " + e.getMessage());
+        return;
+    }
+
+    if (poUpdated) {
+        try (BufferedWriter poWriter = new BufferedWriter(new FileWriter(poFilePath))) {
+            for (String updatedLine : poLines) {
+                poWriter.write(updatedLine);
+                poWriter.newLine();
+            }
+            
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error writing purchase_orders file: " + e.getMessage());
+        }
+
+        ((DefaultTableModel) poTable.getModel()).removeRow(selectedRow);
+    } else {
+        JOptionPane.showMessageDialog(this, "No matching purchase order found for the selected Item ID.");
+    }
+    }
+    
     private void loadPurchaseOrders() {
     String purchaseOrderPath = "src/database/purchase_orders.txt";
 
@@ -45,13 +141,6 @@ public class ViewPO extends javax.swing.JFrame {
         System.out.println("Format Wrong：" + e.getMessage());
     }
 }
-
-    public ViewPO() {
-        initComponents();
-        loadPurchaseOrders();
-    }
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -177,97 +266,7 @@ public class ViewPO extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void UpdateStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateStockActionPerformed
-        int selectedRow = poTable.getSelectedRow();
-    if (selectedRow == -1) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select a row first.");
-        return;
-    }
-
-    String itemId = poTable.getValueAt(selectedRow, 2).toString(); 
-    int quantityToAdd = Integer.parseInt(poTable.getValueAt(selectedRow, 4).toString()); 
-
-    String stockFilePath = "src/database/stocklist.txt";
-    java.util.List<String> updatedLines = new java.util.ArrayList<>();
-
-    boolean itemFound = false;
-
-    try (BufferedReader reader = new BufferedReader(new FileReader(stockFilePath))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",", -1);
-            if (parts.length >= 5 && parts[0].trim().equals(itemId)) {
-    int currentStock = Integer.parseInt(parts[3].trim());
-    int newStock = currentStock + quantityToAdd;
-    parts[3] = String.valueOf(newStock);
-
-    // 自动更新状态字段（第5个字段）
-    if (newStock >= 10) {
-        parts[4] = "normal";
-    } else {
-        parts[4] = "low stock";
-    }
-
-    itemFound = true;
-}
-            updatedLines.add(String.join(",", parts));
-        }
-    } catch (IOException | NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Error reading stock file: " + e.getMessage());
-        return;
-    }
-
-    if (!itemFound) {
-        JOptionPane.showMessageDialog(this, "Item ID not found in stocklist.");
-        return;
-    }
-
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(stockFilePath))) {
-        for (String updatedLine : updatedLines) {
-            writer.write(updatedLine);
-            writer.newLine();
-        }
-        JOptionPane.showMessageDialog(this, "Stock updated successfully.");
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error writing stock file: " + e.getMessage());
-        return;
-    }
-
-    String poFilePath = "src/database/purchase_orders.txt";
-    List<String> poLines = new ArrayList<>();
-    boolean poUpdated = false;
-
-    try (BufferedReader poReader = new BufferedReader(new FileReader(poFilePath))) {
-        String line;
-        while ((line = poReader.readLine()) != null) {
-            String[] parts = line.split(",", -1);
-            if (parts.length > 12 && parts[2].trim().equals(itemId)) {
-                parts[12] = "ITEM RECEIVED";
-                poUpdated = true;
-            }
-            poLines.add(String.join(",", parts));
-        }
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error reading purchase_orders file: " + e.getMessage());
-        return;
-    }
-
-    if (poUpdated) {
-        try (BufferedWriter poWriter = new BufferedWriter(new FileWriter(poFilePath))) {
-            for (String updatedLine : poLines) {
-                poWriter.write(updatedLine);
-                poWriter.newLine();
-            }
-            
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error writing purchase_orders file: " + e.getMessage());
-        }
-
-        ((DefaultTableModel) poTable.getModel()).removeRow(selectedRow);
-    } else {
-        JOptionPane.showMessageDialog(this, "No matching purchase order found for the selected Item ID.");
-    }
-
-
+        updateFromPO();
     }//GEN-LAST:event_UpdateStockActionPerformed
 
     private void BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackActionPerformed

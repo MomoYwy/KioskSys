@@ -7,6 +7,8 @@ package admin;
 import PurchaseManager.GeneratePurchaseOrderForm;
 import PurchaseManager.ViewPR;
 import PurchaseManager.ViewPurchaseOrder;
+import inventoryManager.StockList;
+
 
 /**
  *
@@ -97,8 +99,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnDailySales.setText("Daily Sales");
 
         btnStockList.setText("Stock List");
+        btnStockList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStockListActionPerformed(evt);
+            }
+        });
 
         btnStockReport.setText("Stock Report");
+        btnStockReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStockReportActionPerformed(evt);
+            }
+        });
 
         btnPO.setText("Generate PO");
         btnPO.addActionListener(new java.awt.event.ActionListener() {
@@ -230,6 +242,19 @@ public class AdminDashboard extends javax.swing.JFrame {
         // Show the ViewPO form
         viewPOForm.setVisible(true);
     }//GEN-LAST:event_btnviewPOActionPerformed
+
+    private void btnStockListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStockListActionPerformed
+        StockList stockList = new StockList(this); // 传入AdminDashboard引用
+        stockList.setVisible(true);
+        this.setVisible(false); // 隐藏当前窗口
+
+ 
+        this.dispose();  
+    }//GEN-LAST:event_btnStockListActionPerformed
+
+    private void btnStockReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStockReportActionPerformed
+        
+    }//GEN-LAST:event_btnStockReportActionPerformed
 
     /**
      * @param args the command line arguments

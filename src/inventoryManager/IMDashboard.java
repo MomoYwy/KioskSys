@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package inventoryManager;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.io.BufferedReader;
@@ -19,7 +16,7 @@ public class IMDashboard extends javax.swing.JFrame {
     private String userId;
     private String username;
 
-    private void generateReportFromStocklist() {
+    public void generateReportFromStocklist() {
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setDialogTitle("Save Inventory Report");
     int userSelection = fileChooser.showSaveDialog(this);

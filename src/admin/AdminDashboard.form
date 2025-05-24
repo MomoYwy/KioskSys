@@ -190,11 +190,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Stock List"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStockListActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnStockReport">
           <Properties>
             <Property name="text" type="java.lang.String" value="Stock Report"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStockReportActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnPO">
           <Properties>
