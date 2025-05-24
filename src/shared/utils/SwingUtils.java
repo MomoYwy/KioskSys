@@ -90,4 +90,58 @@ public class SwingUtils {
         }
         return items;
     }
+     
+     public static String getDashboardClassByUserId(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("User ID cannot be null or empty");
+        }
+
+        // Check the prefix pattern (first 1-2 characters)
+        String prefix = userId.length() >= 2 ? userId.substring(0, 2).toUpperCase() 
+                                           : userId.substring(0, 1).toUpperCase();
+
+        switch (prefix) {
+            case "A":
+                return "admin.AdminDashboard";
+            case "S":
+            case "SM": // Sales Manager
+                return "salesManager.SMdashboard";
+            case "F":
+            case "FM": // Finance Manager
+                return "finance.FinanceDashboard";
+            case "P":
+            case "PM": // Purchase Manager
+                return "PurchaseManager.PMDashboard";
+            case "I":
+            case "IM": // Inventory Manager
+                return "inventoryManager.IMDashboard";
+            default:
+                throw new IllegalArgumentException("Unknown user role prefix: " + prefix);
+        }
+    }
+
+    public static void handleBackButton(JFrame currentFrame, String userId, String username) {
+        try {
+            String dashboardClass = getDashboardClassByUserId(userId);
+            
+            Class<?> clazz = Class.forName(dashboardClass);
+            JFrame dashboard = (JFrame) clazz.getConstructor(String.class, String.class)
+                                           .newInstance(userId, username);
+            
+            dashboard.setVisible(true);
+            currentFrame.dispose();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(currentFrame, 
+                e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(currentFrame, 
+                "Failed to open dashboard: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+     
 }

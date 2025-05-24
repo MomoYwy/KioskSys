@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
+import shared.utils.SwingUtils;
 
 
 public class PR_List extends javax.swing.JFrame {
@@ -275,9 +276,8 @@ public class PR_List extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        SMdashboard sm = new SMdashboard(userId, username);
-        sm.setVisible(true);
-        this.dispose();
+        SwingUtils.handleBackButton(this, userId, username);
+
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed

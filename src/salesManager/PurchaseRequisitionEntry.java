@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 import shared.models.PurchaseRequisition;
 import shared.models.Recordable;
 import shared.utils.FileUtils;
+import shared.utils.SwingUtils;
 
 
 
@@ -432,7 +433,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        
+        SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_btnBackActionPerformed
 
     

@@ -21,6 +21,7 @@ import shared.models.Item;
 import shared.utils.FileUtils;
 import shared.utils.FileUtils.TableUtils;
 import static shared.utils.FileUtils.ensureFileExists;
+import shared.utils.SwingUtils;
 
 
 public class ItemEntry extends javax.swing.JFrame {
@@ -471,9 +472,7 @@ public class ItemEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        SMdashboard sm = new SMdashboard(userId, username);
-        sm.setVisible(true);
-        this.dispose();
+        SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed

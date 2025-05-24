@@ -787,9 +787,7 @@ import shared.models.Recordable;
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        SMdashboard sm = new SMdashboard(userId, username);
-        sm.setVisible(true);
-        this.dispose();
+        SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_btnBackActionPerformed
 
     
