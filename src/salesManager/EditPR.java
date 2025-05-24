@@ -18,7 +18,8 @@ import javax.swing.JOptionPane;
  */
 public class EditPR extends javax.swing.JFrame {
 
-    
+    private static final String PR_FILE = "src/database/purchase_requisition.txt";
+
     private String userId;
     private String username;
     
@@ -76,8 +77,8 @@ public class EditPR extends javax.swing.JFrame {
     }
     
     private void updatePRInFile(int newQuantity, String newDateRequired) throws IOException {
-        File prFile = new File("purchase_requisitions.txt");
-        File tempFile = new File("purchase_requisitions_temp.txt");
+        File prFile = new File(PR_FILE);
+        File tempFile = new File("src/database/purchase_requisitions_temp.txt");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(prFile));
              BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
