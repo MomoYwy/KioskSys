@@ -14,3 +14,4 @@ S001,Leong,Bread,3.0,0102233442,2,Sri Petaling|Bukit Jalil|Kuala Lumpur|57000
 S002,Alibaba,Scissors,9.0,080123124,7,Alibaba in the house|Bukit Bintang|Kuala Lumpur|57500
 S009,Charlie,Hand Sanitizer (10ml),3.0,0112223333,4,Jalan DEF|Mont. K Elegant|Kuala Lumpur|57770
 S005,Polar,Fish,20.0,009990213,5,Taman Rinting|beringin|Malacca|12993
+S010,Ophelia Tan,Maggie Curry Instant Cup Noodles,2.0,0187776666,1,Jalan Epal|Sri Petaling|Kuala Lumpur|57000
