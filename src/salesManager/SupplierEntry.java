@@ -635,9 +635,7 @@ public class SupplierEntry extends javax.swing.JFrame {
         SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_btnBackActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

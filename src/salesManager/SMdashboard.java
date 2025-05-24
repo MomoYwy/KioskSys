@@ -1,9 +1,9 @@
 package salesManager;
 
-/**
- *
- * @author user
- */
+import shared.frames.LoginScreen;
+import shared.frames.ViewPO;
+
+
 public class SMdashboard extends javax.swing.JFrame {
 
     private String userId;
@@ -122,6 +122,11 @@ public class SMdashboard extends javax.swing.JFrame {
         });
 
         btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -224,12 +229,18 @@ public class SMdashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRequisitionActionPerformed
 
     private void btnPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPOActionPerformed
-        // TODO add your handling code here:
+        ViewPO viewPO = new ViewPO(this);
+        viewPO.setVisible(true);
+        this.setVisible(false); 
     }//GEN-LAST:event_btnPOActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        LoginScreen login = new LoginScreen();
+        login.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

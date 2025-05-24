@@ -17,7 +17,12 @@ public class RegisterScreen extends javax.swing.JFrame {
 
     private static final String USERS_FILE = "src/database/users.txt";
     
-    public RegisterScreen() {
+    private String userId;
+    private String username;
+    
+    public RegisterScreen(String userId, String username) {
+        this.userId = userId;
+        this.username = username;
         initComponents();
         cbRole.setModel(new javax.swing.DefaultComboBoxModel<>(
             new String[] {"ADMIN", "SALES_MANAGER", "PURCHASE_MANAGER", "INVENTORY_MANAGER", "FINANCE_MANAGER"}
@@ -262,12 +267,11 @@ public class RegisterScreen extends javax.swing.JFrame {
 }
     
     private void cancelRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelRegisterActionPerformed
-        // TODO add your handling code here:
+        AdminDashboard admin = new AdminDashboard(userId, username);
+        admin.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_cancelRegisterActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -295,7 +299,6 @@ public class RegisterScreen extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegisterScreen().setVisible(true);
             }
         });
     }

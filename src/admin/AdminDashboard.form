@@ -165,26 +165,41 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="User Registration"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnUserRegistrationActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnItemList">
           <Properties>
             <Property name="text" type="java.lang.String" value="Item List"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnItemListActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnPR">
           <Properties>
             <Property name="text" type="java.lang.String" value="PR"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPRActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnSupplierList">
           <Properties>
             <Property name="text" type="java.lang.String" value="Supplier List"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSupplierListActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnDailySales">
           <Properties>
             <Property name="text" type="java.lang.String" value="Daily Sales"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDailySalesActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnStockList">
           <Properties>
@@ -224,6 +239,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Logout"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLogoutActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnviewPO">
           <Properties>

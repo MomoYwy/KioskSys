@@ -16,10 +16,14 @@ public class Users extends javax.swing.JFrame {
 
     private static final String USERS_FILE = "src/database/users.txt";
     
+    private String userId;
+    private String username;
     
-    public Users() {
+    public Users(String userId, String username) {
         initComponents();
         loadUsersToTable();
+        this.userId = userId;
+        this.username = username;
     }
     
     private void loadUsersToTable() {
@@ -128,6 +132,11 @@ public class Users extends javax.swing.JFrame {
         });
 
         btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
 
         jScrollPane2.setViewportView(txtSearch);
 
@@ -243,9 +252,13 @@ public class Users extends javax.swing.JFrame {
         searchAndDisplayItems();
     }//GEN-LAST:event_btnSearchActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        AdminDashboard admin = new AdminDashboard(userId, username);
+        admin.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnBackActionPerformed
+
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -274,7 +287,6 @@ public class Users extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Users().setVisible(true);
             }
         });
     }
