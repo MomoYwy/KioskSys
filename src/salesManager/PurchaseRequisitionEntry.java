@@ -140,7 +140,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         lblDateRequired = new javax.swing.JLabel();
         lblSupplier = new javax.swing.JLabel();
         btnAdd = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
         btnViewList = new javax.swing.JButton();
         lblSHItemID = new javax.swing.JLabel();
         lblSHItemNm = new javax.swing.JLabel();
@@ -224,14 +223,12 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             }
         });
 
-        btnEdit.setText("Edit");
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+        btnViewList.setText("View List");
+        btnViewList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
+                btnViewListActionPerformed(evt);
             }
         });
-
-        btnViewList.setText("View List");
 
         lblSHItemID.setText("Item ID");
 
@@ -263,20 +260,25 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                         .addComponent(lblFlaggedStock))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblItemID)
-                            .addComponent(lblItemNm)
-                            .addComponent(lblStockAmt))
-                        .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblSHItemID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblSHItemNm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
-                        .addGap(107, 107, 107)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDateRequired)
-                            .addComponent(lblSupplier)
-                            .addComponent(lblQuantity))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblItemID)
+                                    .addComponent(lblItemNm)
+                                    .addComponent(lblStockAmt))
+                                .addGap(36, 36, 36)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(lblSHItemID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblSHItemNm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblSHStockAmt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
+                                .addGap(107, 107, 107)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblDateRequired)
+                                    .addComponent(lblSupplier)
+                                    .addComponent(lblQuantity)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnViewList, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtDateRequired, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
@@ -286,11 +288,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnViewList, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(240, 240, 240)
                 .addComponent(btnBack)
                 .addGap(171, 171, 171))
         );
@@ -326,7 +324,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
-                    .addComponent(btnEdit)
                     .addComponent(btnViewList)
                     .addComponent(btnBack))
                 .addGap(39, 39, 39))
@@ -334,10 +331,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
        String itemId = lblSHItemID.getText().trim();
@@ -436,6 +429,12 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_btnBackActionPerformed
 
+    private void btnViewListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewListActionPerformed
+        PR_List prEntry = new PR_List(userId, username);
+        prEntry.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnViewListActionPerformed
+
     
     private boolean isDuplicatePR(String itemName) throws IOException {
         File prFile = new File(PR_FILE);
@@ -491,7 +490,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnViewList;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;

@@ -56,22 +56,30 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblItemID" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblItemNm" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblStockAmt" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="lblSHItemID" max="32767" attributes="0"/>
-                          <Component id="lblSHItemNm" max="32767" attributes="0"/>
-                          <Component id="lblSHStockAmt" alignment="1" pref="90" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="107" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblDateRequired" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblSupplier" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblQuantity" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblItemID" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblItemNm" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblStockAmt" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="lblSHItemID" max="32767" attributes="0"/>
+                                  <Component id="lblSHItemNm" max="32767" attributes="0"/>
+                                  <Component id="lblSHStockAmt" alignment="1" pref="90" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="107" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblDateRequired" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblSupplier" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblQuantity" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="btnViewList" min="-2" pref="111" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -86,11 +94,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="32767" attributes="0"/>
               <Component id="btnAdd" min="-2" pref="111" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="btnEdit" min="-2" pref="111" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="btnViewList" min="-2" pref="111" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="240" max="-2" attributes="0"/>
               <Component id="btnBack" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="171" max="-2" attributes="0"/>
           </Group>
@@ -134,7 +138,6 @@
               <EmptySpace pref="28" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnAdd" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnEdit" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnViewList" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnBack" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -276,18 +279,13 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btnEdit">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Edit"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="btnViewList">
       <Properties>
         <Property name="text" type="java.lang.String" value="View List"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnViewListActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lblSHItemID">
       <Properties>

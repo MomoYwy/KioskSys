@@ -2,5 +2,5 @@ PR_ID Item_ID Item_Name Stock_Amount Quantity Date_Required Supplier_ID User_ID 
 
 
 PR0001,G003,Cabbage(per kg),-45,100,10/10/2025,S007,SM437,21/05/2025,Pending
-PR0003,G005,chocalate,-5,120,12/12/2026,S003|S004,SM437,21/05/2025,Pending
+PR0003,G005,chocalate,-5,200,12/12/2026,S003|S004,SM437,21/05/2025,Pending
 PR0004,G004,Socks,-20,20,24/07/2025,S002|S006,SM033,22/05/2025,Pending

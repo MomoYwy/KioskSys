@@ -266,14 +266,13 @@ public class PR_List extends javax.swing.JFrame {
         String dateRequired = tblPRList.getValueAt(selectedRow, 5).toString();
 
         // Open EditPR frame with selected data
-        EditPR editFrame = new EditPR(prId, itemId, itemName, quantity, dateRequired);
+        EditPR editFrame = new EditPR(userId, username,prId, itemId, itemName, quantity, dateRequired);
         editFrame.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         SwingUtils.handleBackButton(this, userId, username);
-
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed

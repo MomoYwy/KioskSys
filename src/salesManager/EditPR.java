@@ -18,10 +18,12 @@ import javax.swing.JOptionPane;
  */
 public class EditPR extends javax.swing.JFrame {
 
-    private static final String PR_FILE = "src/database/purchase_requisition.txt";
-
+    
     private String userId;
     private String username;
+    
+    private static final String PR_FILE = "src/database/purchase_requisition.txt";
+
     
     public EditPR() {
         initComponents();
@@ -29,10 +31,11 @@ public class EditPR extends javax.swing.JFrame {
     
     private String originalPRId;
     
-    public EditPR(String prId, String itemId, String itemName, int quantity, String dateRequired) {
+    public EditPR(String userId, String username, String prId, String itemId, String itemName, int quantity, String dateRequired) {
         initComponents();
         this.originalPRId = prId;
-
+        this.userId = userId;
+        this.username = username;
         // Display original values
         lbShowPRID.setText(prId);
         lbShowItemID.setText(itemId);
@@ -284,7 +287,7 @@ public class EditPR extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_btnSaveActionPerformed
 
     /**
