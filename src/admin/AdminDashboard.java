@@ -8,6 +8,7 @@ import PurchaseManager.GeneratePurchaseOrderForm;
 import PurchaseManager.ViewPR;
 import PurchaseManager.ViewPurchaseOrder;
 import inventoryManager.StockList;
+import inventoryManager.IMDashboard;
 import salesManager.DailySalesEntry;
 import salesManager.ItemEntry;
 import salesManager.PurchaseRequisitionEntry;
@@ -277,16 +278,14 @@ public class AdminDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnviewPOActionPerformed
 
     private void btnStockListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStockListActionPerformed
-        StockList stockList = new StockList(this); // 传入AdminDashboard引用
+        StockList stockList = new StockList(this); 
         stockList.setVisible(true);
-        this.setVisible(false); // 隐藏当前窗口
-
- 
+        this.setVisible(false); 
         this.dispose();  
     }//GEN-LAST:event_btnStockListActionPerformed
 
     private void btnStockReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStockReportActionPerformed
-        
+        IMDashboard.ReportGenerator.generateReportFromStocklist(this);
     }//GEN-LAST:event_btnStockReportActionPerformed
 
     private void btnUserRegistrationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserRegistrationActionPerformed

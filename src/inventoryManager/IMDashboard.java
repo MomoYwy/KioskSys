@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.IOException;
+import javax.swing.JFrame;
+
 /**
  *
  * @author user
@@ -16,43 +18,43 @@ public class IMDashboard extends javax.swing.JFrame {
     private String userId;
     private String username;
 
-    public void generateReportFromStocklist() {
-    JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setDialogTitle("Save Inventory Report");
-    int userSelection = fileChooser.showSaveDialog(this);
 
-    if (userSelection == JFileChooser.APPROVE_OPTION) {
-        File saveFile = fileChooser.getSelectedFile();
 
-        try (
-            BufferedReader reader = new BufferedReader(new FileReader("src/database/stocklist.txt"));
-            PrintWriter writer = new PrintWriter(saveFile)
-        ) {
-            writer.println("Inventory Report - " + java.time.LocalDate.now());
-            writer.println();
-            writer.printf("%-10s %-20s %-15s %-10s %-15s%n", "Item ID", "Item Name", "Category", "Quantity", "Status");
-            writer.println("--------------------------------------------------------------------------");
+public class ReportGenerator {
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(","); 
-                if (parts.length >= 5) {
-                    String id = parts[0];
-                    String name = parts[1];
-                    String category = parts[2];
-                    String quantity = parts[3];
-                    String status = parts[4];
+    public static void generateReportFromStocklist(JFrame parent) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Inventory Report");
+        int userSelection = fileChooser.showSaveDialog(parent);
 
-                    writer.printf("%-10s %-20s %-15s %-10s %-15s%n", id, name, category, quantity, status);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File saveFile = fileChooser.getSelectedFile();
+
+            try (
+                BufferedReader reader = new BufferedReader(new FileReader("src/database/stocklist.txt"));
+                PrintWriter writer = new PrintWriter(saveFile)
+            ) {
+                writer.println("Inventory Report - " + java.time.LocalDate.now());
+                writer.println();
+                writer.printf("%-10s %-20s %-15s %-10s %-15s%n", "Item ID", "Item Name", "Category", "Quantity", "Status");
+                writer.println("--------------------------------------------------------------------------");
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 5) {
+                        writer.printf("%-10s %-20s %-15s %-10s %-15s%n", parts[0], parts[1], parts[2], parts[3], parts[4]);
+                    }
                 }
+
+                JOptionPane.showMessageDialog(parent, "Report generated: " + saveFile.getAbsolutePath());
+
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(parent, "Error generating report: " + e.getMessage());
             }
-
-            JOptionPane.showMessageDialog(this, "Report generated: " + saveFile.getAbsolutePath());
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage());
         }
     }
+
 }
     
     public IMDashboard(String userId, String username) {
@@ -148,7 +150,7 @@ public class IMDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_ViewStockActionPerformed
 
     private void GenerateStockReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateStockReportActionPerformed
-        generateReportFromStocklist();// TODO add your handling code here:
+       IMDashboard.ReportGenerator.generateReportFromStocklist(this);// TODO add your handling code here:
     }//GEN-LAST:event_GenerateStockReportActionPerformed
 
     /**
