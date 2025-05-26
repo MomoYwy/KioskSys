@@ -129,7 +129,7 @@ public class LoginScreen extends javax.swing.JFrame {
                 inventoryDashboard.setVisible(true);
                 break;
             case "FINANCE_MANAGER":
-                FinanceDashboard financeDashboard = new FinanceDashboard();
+                FinanceDashboard financeDashboard = new FinanceDashboard(user.getUserId(), user.getUsername());
                 financeDashboard.setVisible(true);
                 break;
             default:

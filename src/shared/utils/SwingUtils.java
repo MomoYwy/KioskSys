@@ -97,23 +97,19 @@ public class SwingUtils {
         }
 
         // Check the prefix pattern (first 1-2 characters)
-        String prefix = userId.length() >= 2 ? userId.substring(0, 2).toUpperCase() 
+        String prefix = userId.length() >= 2 ? userId.substring(0, 1).toUpperCase() 
                                            : userId.substring(0, 1).toUpperCase();
 
         switch (prefix) {
             case "A":
                 return "admin.AdminDashboard";
             case "S":
-            case "SM": // Sales Manager
                 return "salesManager.SMdashboard";
             case "F":
-            case "FM": // Finance Manager
                 return "finance.FinanceDashboard";
             case "P":
-            case "PM": // Purchase Manager
                 return "PurchaseManager.PMDashboard";
             case "I":
-            case "IM": // Inventory Manager
                 return "inventoryManager.IMDashboard";
             default:
                 throw new IllegalArgumentException("Unknown user role prefix: " + prefix);

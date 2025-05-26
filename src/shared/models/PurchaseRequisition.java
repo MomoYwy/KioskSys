@@ -10,7 +10,7 @@ public class PurchaseRequisition implements Recordable {
     private int stockAmount;
     private int quantity;
     private String dateRequired;
-    private String supplierId; // This will now store pipe-separated supplier IDs
+    private String supplierId;
     private String userId;
     private String dateCreated;
     private String status;

@@ -13,7 +13,7 @@ public class SMdashboard extends javax.swing.JFrame {
         initComponents();
         this.userId = userId;
         this.username = username;
-        txtUsername.setText(username); // Set the username label
+        txtUsername.setText(username);
         setTitle("Sales Manager Dashboard - " + username + " (" + userId + ")");
     }
 
