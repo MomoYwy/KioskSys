@@ -229,11 +229,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Approve PO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnApprovePOActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnProcessPayments">
           <Properties>
             <Property name="text" type="java.lang.String" value="Process Payments"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnProcessPaymentsActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnLogout">
           <Properties>

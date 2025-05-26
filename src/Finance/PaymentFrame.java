@@ -1,5 +1,6 @@
 package Finance;
 
+import admin.AdminDashboard;
 import javax.swing.JOptionPane;
 import java.awt.event.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +20,8 @@ import java.util.Set;
 
 
 public class PaymentFrame extends javax.swing.JFrame {
-    
+    private FinanceDashboard previousFMForm;
+    private AdminDashboard previousAdminForm;    
     private Set<String> paidPOs = new HashSet<>();
 
 
@@ -28,6 +30,14 @@ public class PaymentFrame extends javax.swing.JFrame {
         initializeTableListener();      
 
     }
+    public PaymentFrame(FinanceDashboard previousForm) {
+        this();
+        this.previousFMForm = previousForm;
+    }  
+    public PaymentFrame(AdminDashboard previousForm) {
+        this();
+        this.previousAdminForm = previousForm;
+    }      
     
     // Function to read the "APPROVED" PO details from the "purchase_orders.txt" file and display selected fields in the JTable
     private void loadApprovedPOs() {
@@ -426,13 +436,12 @@ public class PaymentFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        btnBack.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        
-        FinanceDashboard financeDashboard = new FinanceDashboard();
-        financeDashboard.setVisible(true);       
-        dispose();
-        }});
+        if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        } else if (previousAdminForm != null) {
+            previousAdminForm.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnLoadPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadPOActionPerformed

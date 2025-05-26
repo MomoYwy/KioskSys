@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
  * @author User
  */
 public class InventoryUpdates extends javax.swing.JFrame {
+    private FinanceDashboard previousFMForm;    
 
     /**
      * Creates new form InventoryUpdates
@@ -26,7 +27,10 @@ public class InventoryUpdates extends javax.swing.JFrame {
         loadSalesData("src/database/sales_entry.txt");
      
     }
-    
+    public InventoryUpdates(FinanceDashboard previousForm) {
+        this();
+        this.previousFMForm = previousForm;
+    }      
         private void loadSalesData(String filePath) {
     try {
        
@@ -245,13 +249,10 @@ public class InventoryUpdates extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProceedtoPaymentActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        btnBack.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        
-        FinanceDashboard financeDashboard = new FinanceDashboard();
-        financeDashboard.setVisible(true);       
-        dispose();
-        }});     
+        if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**
