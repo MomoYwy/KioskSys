@@ -6,6 +6,7 @@ package admin;
 
 import Finance.ManagementPO;
 import Finance.PaymentFrame;
+import Finance.FinanceReportF;
 import PurchaseManager.GeneratePurchaseOrderForm;
 import PurchaseManager.ViewPR;
 import PurchaseManager.ViewPurchaseOrder;
@@ -59,6 +60,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         btnProcessPayments = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
         btnviewPO = new javax.swing.JButton();
+        btnFinanceReport = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -176,17 +178,30 @@ public class AdminDashboard extends javax.swing.JFrame {
             }
         });
 
+        btnFinanceReport.setText("Finance Report");
+        btnFinanceReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFinanceReportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(47, 47, 47)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSupplierList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(36, 36, 36)
+                    .addComponent(btnFinanceReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(btnUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnSupplierList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(31, 31, 31)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnDailySales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnviewPO, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -201,11 +216,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                     .addComponent(btnProcessPayments, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnStockReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnPR, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(30, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -228,7 +239,9 @@ public class AdminDashboard extends javax.swing.JFrame {
                     .addComponent(btnApprovePO)
                     .addComponent(btnProcessPayments)
                     .addComponent(btnviewPO))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(btnFinanceReport)
+                .addGap(7, 7, 7)
                 .addComponent(btnLogout)
                 .addGap(25, 25, 25))
         );
@@ -358,6 +371,17 @@ public class AdminDashboard extends javax.swing.JFrame {
         PFForm.setVisible(true);
     }//GEN-LAST:event_btnProcessPaymentsActionPerformed
 
+    private void btnFinanceReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinanceReportActionPerformed
+        FinanceReportF FRForm = new FinanceReportF(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        FRForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        FRForm.setVisible(true);
+    }//GEN-LAST:event_btnFinanceReportActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -395,6 +419,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApprovePO;
     private javax.swing.JButton btnDailySales;
+    private javax.swing.JButton btnFinanceReport;
     private javax.swing.JButton btnItemList;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnPO;

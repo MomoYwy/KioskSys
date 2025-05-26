@@ -87,14 +87,22 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="btnLogout" min="-2" pref="81" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+              </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="btnUserList" max="32767" attributes="0"/>
-                      <Component id="btnPO" max="32767" attributes="0"/>
-                      <Component id="btnSupplierList" max="32767" attributes="0"/>
+                      <Component id="btnFinanceReport" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="btnUserList" max="32767" attributes="0"/>
+                          <Component id="btnPO" max="32767" attributes="0"/>
+                          <Component id="btnSupplierList" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
-                  <EmptySpace min="36" pref="36" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="btnDailySales" alignment="0" max="32767" attributes="0"/>
                       <Component id="btnviewPO" max="32767" attributes="0"/>
@@ -112,12 +120,7 @@
                       <Component id="btnStockReport" alignment="0" max="32767" attributes="0"/>
                       <Component id="btnPR" alignment="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="30" max="32767" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Component id="btnLogout" min="-2" pref="81" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                  <EmptySpace pref="22" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -145,7 +148,9 @@
                       <Component id="btnProcessPayments" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnviewPO" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="60" max="32767" attributes="0"/>
+                  <EmptySpace pref="30" max="32767" attributes="0"/>
+                  <Component id="btnFinanceReport" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                   <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               </Group>
@@ -255,6 +260,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnviewPOActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnFinanceReport">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Finance Report"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnFinanceReportActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

@@ -1,5 +1,6 @@
 package Finance;
 
+import admin.AdminDashboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +15,7 @@ import shared.models.OrderManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import shared.models.dataOperation;
+import admin.AdminDashboard;
 
 
 
@@ -23,6 +25,8 @@ public class FinanceReportF extends javax.swing.JFrame {
     private FinanceDashboard previousFMForm;    
     private OrderManager orderManager;
     private static final int STATUS_COLUMN_INDEX = 12;
+    private AdminDashboard previousAdminForm;
+  
 
 
     public FinanceReportF() {
@@ -31,10 +35,16 @@ public class FinanceReportF extends javax.swing.JFrame {
         orderManager.loadOrdersFromFile("src\\database\\purchase_orders.txt");
         populateManagerComboBox();
     }
+    public FinanceReportF(AdminDashboard previousForm) {
+        this();
+        this.previousAdminForm = previousForm;
+        
+    }
+    
     public FinanceReportF(FinanceDashboard previousForm) {
         this();
         this.previousFMForm = previousForm;
-    }     
+    }
     
         private void populateManagerComboBox() {
         // Get unique Purchase Manager IDs from the orderManager
@@ -313,6 +323,8 @@ public class FinanceReportF extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         if (previousFMForm != null) {
             previousFMForm.setVisible(true);
+        } else if (previousAdminForm != null) {
+            previousAdminForm.setVisible(true);
         }
         this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed

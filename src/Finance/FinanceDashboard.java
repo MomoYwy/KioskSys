@@ -285,6 +285,13 @@ public class FinanceDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+            // Use test values for userId and username
+            String testUserId = "PM336";
+            String testUsername = "PurchaseManager";
+            
+            // Create and display the dashboard
+            FinanceDashboard dashboard = new FinanceDashboard(testUserId, testUsername);
+            dashboard.setVisible(true);                
             }
         });
     }
