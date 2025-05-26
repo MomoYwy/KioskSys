@@ -313,8 +313,6 @@ public class FinanceReportF extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         if (previousFMForm != null) {
             previousFMForm.setVisible(true);
-        } else if (previousFMForm != null) {
-            previousFMForm.setVisible(true);
         }
         this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
