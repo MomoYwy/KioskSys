@@ -185,6 +185,8 @@ public class LoginScreen extends javax.swing.JFrame {
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
         jLabel2.setText("Username:");
 
         jLabel3.setText("Password:");

@@ -289,6 +289,26 @@ public class FileUtils {
                 parts[8]  // Total
             }, 9);
         }
+        
+        public static void loadSalesToTableByDate(String filePath, DefaultTableModel model, String date) {
+            loadDataToTable(filePath, model, parts -> {
+                if (parts[1].equals(date)) { // Match with sales date column
+                    return new Object[]{
+                        parts[0], // Sales ID
+                        parts[1], // Date
+                        parts[2], // Date Required
+                        parts[3], // Customer Name
+                        parts[4], // Customer Contact
+                        parts[5], // Item ID
+                        parts[6], // Item Name
+                        Integer.parseInt(parts[7]), // Quantity
+                        parts[8]  // Total
+                    };
+                }
+                return null; // Skip this row
+            }, 9);
+        }
+
 
         public static void loadPurchaseRequisitionsToTable(String filePath, DefaultTableModel model) {
             loadDataToTable(filePath, model, parts -> new Object[]{
