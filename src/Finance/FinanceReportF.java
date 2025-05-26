@@ -19,7 +19,8 @@ import shared.models.dataOperation;
 
 
 public class FinanceReportF extends javax.swing.JFrame {
-    
+
+    private FinanceDashboard previousFMForm;    
     private OrderManager orderManager;
     private static final int STATUS_COLUMN_INDEX = 12;
 
@@ -30,6 +31,10 @@ public class FinanceReportF extends javax.swing.JFrame {
         orderManager.loadOrdersFromFile("src\\database\\purchase_orders.txt");
         populateManagerComboBox();
     }
+    public FinanceReportF(FinanceDashboard previousForm) {
+        this();
+        this.previousFMForm = previousForm;
+    }     
     
         private void populateManagerComboBox() {
         // Get unique Purchase Manager IDs from the orderManager
@@ -306,13 +311,12 @@ public class FinanceReportF extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        btnBack.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        
-        FinanceDashboard financeDashboard = new FinanceDashboard();
-        financeDashboard.setVisible(true);       
-        dispose();
-        }});
+        if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        } else if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed

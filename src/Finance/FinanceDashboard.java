@@ -8,15 +8,20 @@ import shared.frames.LoginScreen;
 
 public class FinanceDashboard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form FinanceDashboard
-     */
-    public FinanceDashboard() {
-        initComponents();
+    private String userId;
+    private String username;
+    
 
+    public FinanceDashboard(String userId, String username) {
+        initComponents();
+        this.userId = userId;
+        this.username = username;
+        setTitle("Finance Manager Dashboard - " + username + " (" + userId + ")");
     }
     
-    
+        public String getUserId() {
+    return userId;
+    }
 
 
     /**
@@ -175,81 +180,69 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnApprovePOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApprovePOActionPerformed
-    btnApprovePO.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Create and display the PO Management frame when the button is clicked
-            ManagementPO poFrame = new ManagementPO();
-            poFrame.setVisible(true); // Make the PO Management frame visible
-            poFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Optionally close PO frame on exit
-            
-            dispose();  // Optionally hide the current FinanceDashboard frame (if you don't want both open)
-        }
-    });
+        ManagementPO MPOForm = new ManagementPO(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        MPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        MPOForm.setVisible(true);
     }//GEN-LAST:event_btnApprovePOActionPerformed
 
     private void btnProcessPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessPaymentActionPerformed
-        btnProcessPayment.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        // Create an instance of the PaymentProcessing frame
-        PaymentFrame paymentFrame = new PaymentFrame();
-        paymentFrame.setVisible(true); // Make the PaymentProcessing frame visible
-        paymentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only the PaymentProcessing frame
-        setVisible(false); // Optionally hide the current FinanceDashboard frame
-    }
-});
+        PaymentFrame PFForm = new PaymentFrame(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        PFForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        PFForm.setVisible(true);
     }//GEN-LAST:event_btnProcessPaymentActionPerformed
 
     private void btnViewPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPOActionPerformed
-    btnViewPO.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Create and display the PO Management frame when the button is clicked
-            ManagementPO poFrame = new ManagementPO();
-            poFrame.setVisible(true); // Make the PO Management frame visible
-            poFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Optionally close PO frame on exit
-            
-            dispose();  // Optionally hide the current FinanceDashboard frame (if you don't want both open)
-        }
-    });
+        ManagementPO MPOForm = new ManagementPO(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        MPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        MPOForm.setVisible(true);
     }//GEN-LAST:event_btnViewPOActionPerformed
 
     private void btnViewPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPRActionPerformed
-        btnViewPR.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        // Create and display the ViewPR frame when the button is clicked
-        ViewPR viewPRFrame = new ViewPR(); // Create the PR frame instance
-        viewPRFrame.setVisible(true); // Make the PR frame visible
+        ViewPR ViewPRForm = new ViewPR(this);
         
-        // Optionally, you can close the current Finance Dashboard frame
-        dispose(); // Close the Finance Dashboard frame if needed
-    }
-});
+        java.awt.Point dashboardLocation = this.getLocation();
+        ViewPRForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        ViewPRForm.setVisible(true);
     }//GEN-LAST:event_btnViewPRActionPerformed
 
     private void btnFinanceReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinanceReportActionPerformed
-        btnFinanceReport.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        // Create an instance of the FinanceReport frame
-        FinanceReportF financeReportFrame = new FinanceReportF();
-        financeReportFrame.setVisible(true); // Show the FinanceReport frame
-        financeReportFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the FinanceReport frame, not the whole app
-        setVisible(false); // Optionally hide the current FinanceDashboard frame
-    }
-});
+        FinanceReportF FRForm = new FinanceReportF(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        FRForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        FRForm.setVisible(true);
     }//GEN-LAST:event_btnFinanceReportActionPerformed
 
     private void btnInventoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryUpdateActionPerformed
-        btnInventoryUpdate.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        // Create and display the InventoryUpdates frame when the button is clicked
-        InventoryUpdates inventoryUpdatesFrame = new InventoryUpdates();  // Create the InventoryUpdates instance
-        inventoryUpdatesFrame.setVisible(true);  // Make the InventoryUpdates frame visible
-        setVisible(false);  // Optionally hide the current FinanceDashboard frame
-    }
-        });
+        InventoryUpdates IUForm = new InventoryUpdates(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        IUForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        IUForm.setVisible(true);
     }//GEN-LAST:event_btnInventoryUpdateActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
@@ -292,7 +285,6 @@ public class FinanceDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FinanceDashboard().setVisible(true);
             }
         });
     }

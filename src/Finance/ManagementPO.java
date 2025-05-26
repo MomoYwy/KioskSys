@@ -1,5 +1,6 @@
 package Finance;
 
+import admin.AdminDashboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -22,7 +23,8 @@ import shared.models.dataOperation;
  * @author User
  */
 public class ManagementPO extends javax.swing.JFrame {
-
+    private FinanceDashboard previousFMForm;  
+    private AdminDashboard previousAdminForm;     
     /**
      * Creates new form ManagementPO
      */
@@ -30,6 +32,15 @@ public class ManagementPO extends javax.swing.JFrame {
         initComponents();
         initializeTableListener();
     }
+    
+    public ManagementPO(FinanceDashboard previousForm) {
+        this();
+        this.previousFMForm = previousForm;
+    } 
+    public ManagementPO(AdminDashboard previousForm) {
+        this();
+        this.previousAdminForm = previousForm;
+    }    
     
             private void initializeTableListener() {
                 tblPO.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -473,13 +484,12 @@ public class ManagementPO extends javax.swing.JFrame {
     }//GEN-LAST:event_btnApprovePOActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-                btnBack.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                FinanceDashboard financeDashboard = new FinanceDashboard();
-                financeDashboard.setVisible(true);
-                dispose();
-            }});
+        if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        } else if (previousAdminForm != null) {
+            previousAdminForm.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnLoadPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadPOActionPerformed

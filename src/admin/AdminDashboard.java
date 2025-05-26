@@ -4,6 +4,8 @@
  */
 package admin;
 
+import Finance.ManagementPO;
+import Finance.PaymentFrame;
 import PurchaseManager.GeneratePurchaseOrderForm;
 import PurchaseManager.ViewPR;
 import PurchaseManager.ViewPurchaseOrder;
@@ -147,8 +149,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         });
 
         btnApprovePO.setText("Approve PO");
+        btnApprovePO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnApprovePOActionPerformed(evt);
+            }
+        });
 
         btnProcessPayments.setText("Process Payments");
+        btnProcessPayments.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcessPaymentsActionPerformed(evt);
+            }
+        });
 
         btnLogout.setText("Logout");
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
@@ -323,6 +335,28 @@ public class AdminDashboard extends javax.swing.JFrame {
         login.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnApprovePOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApprovePOActionPerformed
+        ManagementPO MPOForm = new ManagementPO(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        MPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        MPOForm.setVisible(true);
+    }//GEN-LAST:event_btnApprovePOActionPerformed
+
+    private void btnProcessPaymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessPaymentsActionPerformed
+        PaymentFrame PFForm = new PaymentFrame(this);
+        
+        java.awt.Point dashboardLocation = this.getLocation();
+        PFForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
+        
+        this.setVisible(false);
+        
+        PFForm.setVisible(true);
+    }//GEN-LAST:event_btnProcessPaymentsActionPerformed
 
     /**
      * @param args the command line arguments

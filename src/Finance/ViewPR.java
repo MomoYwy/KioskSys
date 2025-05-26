@@ -10,6 +10,7 @@ import java.io.IOException;
 
 
 public class ViewPR extends javax.swing.JFrame {
+    private FinanceDashboard previousFMForm;        
 
     /**
      * Creates new form ViewPR
@@ -18,7 +19,10 @@ public class ViewPR extends javax.swing.JFrame {
         initComponents();
         loadPRData();
     }
-    
+    public ViewPR(FinanceDashboard previousForm) {
+        this();
+        this.previousFMForm = previousForm;
+    }        
     private void loadPRData() {
         String[] columns = {"PR ID", "Item ID", "Item Name", "Stock Amount", "Quantity", "Date Required", "Supplier ID", "User ID", "Status"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
@@ -141,14 +145,10 @@ public class ViewPR extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        btnBack.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        
-        FinanceDashboard financeDashboard = new FinanceDashboard();
-        financeDashboard.setVisible(true);       
-        dispose();
-        }});
-                     
+        if (previousFMForm != null) {
+            previousFMForm.setVisible(true);
+        }
+        this.dispose();           
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**
