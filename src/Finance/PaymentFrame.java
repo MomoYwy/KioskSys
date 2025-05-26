@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import shared.models.dataOperation;
 import java.util.HashSet;
 import java.util.Set;
+import shared.models.Payment;
 
 
 
@@ -23,11 +24,14 @@ public class PaymentFrame extends javax.swing.JFrame {
     private FinanceDashboard previousFMForm;
     private AdminDashboard previousAdminForm;    
     private Set<String> paidPOs = new HashSet<>();
+    
+    private static int paymentCounter = 1;  
 
 
     public PaymentFrame() {
         initComponents();
-        initializeTableListener();      
+        initializeTableListener();     
+        readCounterFromFile();  
 
     }
     public PaymentFrame(FinanceDashboard previousForm) {
@@ -140,7 +144,41 @@ public class PaymentFrame extends javax.swing.JFrame {
         }
     });
 }
-    
+ 
+private String generatePaymentId() {
+    // Format the Payment_ID as "PAY0001", "PAY0002", etc.
+    String paymentId = String.format("PAY%04d", paymentCounter++);
+    updateCounterInFile();  // Save the updated counter to the file
+    return paymentId;
+}
+
+private void readCounterFromFile() {
+    try {
+        File file = new File("src/database/payment_counter.txt"); // Path to store the counter
+        if (file.exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            if (line != null) {
+                paymentCounter = Integer.parseInt(line.trim());
+            }
+            reader.close();
+        }
+    } catch (IOException e) {
+        System.out.println("Error reading payment counter file: " + e.getMessage());
+    }
+}
+
+private void updateCounterInFile() {
+    try {
+        File file = new File("src/database/payment_counter.txt");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(String.valueOf(paymentCounter));
+        writer.close();
+    } catch (IOException e) {
+        System.out.println("Error writing payment counter to file: " + e.getMessage());
+    }
+}
+
 
 
 
@@ -366,7 +404,7 @@ public class PaymentFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
-       // Retrieve input data from the text fields and combo box
+        // Retrieve input data from the text fields and combo box
     String paymentAmount = txtPAmount.getText().trim(); // Get the payment amount
     String paymentDate = txtPDate.getText().trim(); // Get the payment date
     String paymentMethod = cmbPMethod.getSelectedItem() != null ? cmbPMethod.getSelectedItem().toString() : ""; // Get the payment method
@@ -389,13 +427,16 @@ public class PaymentFrame extends javax.swing.JFrame {
             // Proceed if all fields are filled
             JOptionPane.showMessageDialog(this, "Paid Successfully!", "Payment Status", JOptionPane.INFORMATION_MESSAGE);
 
+            // Generate a unique Payment_ID for the payment
+            String paymentId = generatePaymentId(); // Implement this method to generate a new unique ID
+
             // Store payment data into payment.txt file using BufferedWriter
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/database/payment.txt", true))) {
                 // Prepare the payment details string to write to the file
-                String recordLine = poId + "," + tblPO.getValueAt(selectedRow, 1).toString() + "," + tblPO.getValueAt(selectedRow, 2).toString() + "," 
-                                    + tblPO.getValueAt(selectedRow, 3).toString() + "," + tblPO.getValueAt(selectedRow, 4).toString() + "," 
-                                    + tblPO.getValueAt(selectedRow, 5).toString() + "," + tblPO.getValueAt(selectedRow, 6).toString() + "," 
-                                    + paymentMethod + "," + paymentAmount + "," + paymentDate + "\n";
+                String recordLine = paymentId + "," + poId + "," + tblPO.getValueAt(selectedRow, 1).toString() + "," 
+                                    + tblPO.getValueAt(selectedRow, 2).toString() + "," + tblPO.getValueAt(selectedRow, 3).toString() + "," 
+                                    + tblPO.getValueAt(selectedRow, 4).toString() + "," + tblPO.getValueAt(selectedRow, 5).toString() + "," 
+                                    + tblPO.getValueAt(selectedRow, 6).toString() + "," + paymentMethod + "," + paymentAmount + "," + paymentDate + "\n";
                 writer.write(recordLine);
                 writer.newLine();  // Blank line between entries for readability
                 System.out.println("Payment details saved to file.");
@@ -436,12 +477,13 @@ public class PaymentFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (previousFMForm != null) {
-            previousFMForm.setVisible(true);
-        } else if (previousAdminForm != null) {
-            previousAdminForm.setVisible(true);
-        }
-        this.dispose();
+    if (previousFMForm != null) {
+        previousFMForm.setVisible(true);  // Show the previous Finance Manager form
+    } else if (previousAdminForm != null) {
+        previousAdminForm.setVisible(true);  // Show the previous Admin form
+    }
+    this.setVisible(false);  // Hide the current frame instead of disposing it
+
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnLoadPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadPOActionPerformed
