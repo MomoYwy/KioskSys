@@ -2,11 +2,9 @@ package shared.models;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import shared.models.Recordable;
 
-/**
- * Model class representing a Purchase Order in the OWSB system
- */
-public class PurchaseOrder {
+public class PurchaseOrder implements Recordable {
     private String purchaseOrderId;
     private String purchaseRequisitionId;
     private String itemId;
@@ -19,103 +17,248 @@ public class PurchaseOrder {
     private String supplierId;
     private String salesManagerId;
     private String purchaseManagerId;
-    private String status; // "PENDING", "APPROVED", "REJECTED", "PAID", "RECEIVED_ITEMS"
+    private PurchaseOrderStatus status;
 
-    /**
-     * Constructor for creating a new Purchase Order
-     */
+    // Enum for status
+    public enum PurchaseOrderStatus {
+        PENDING, APPROVED, REJECTED, PAID, RECEIVED_ITEMS
+    }
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
+    // Private constructor for Builder
+    private PurchaseOrder(Builder builder) {
+        this.purchaseOrderId = builder.purchaseOrderId;
+        this.purchaseRequisitionId = builder.purchaseRequisitionId;
+        this.itemId = builder.itemId;
+        this.itemName = builder.itemName;
+        this.quantity = builder.quantity;
+        this.itemPrice = builder.itemPrice;
+        this.totalPrice = calculateTotalPrice();
+        this.dateCreated = builder.dateCreated;
+        this.dateRequired = builder.dateRequired;
+        this.supplierId = builder.supplierId;
+        this.salesManagerId = builder.salesManagerId;
+        this.purchaseManagerId = builder.purchaseManagerId;
+        this.status = builder.status != null ? builder.status : PurchaseOrderStatus.PENDING;
+    }
+
+    //PUBLIC CONSTRUCTOR FOR OrderManager COMPATIBILITY
     public PurchaseOrder(String purchaseOrderId, String purchaseRequisitionId, String itemId, 
-            String itemName, int quantity, double itemPrice, Date dateCreated, 
-            Date dateRequired, String supplierId, String salesManagerId, String purchaseManagerId) {
-        
+                        String itemName, int quantity, double itemPrice, double totalPrice, 
+                        Date dateCreated, Date dateRequired, String supplierId, 
+                        String salesManagerId, String purchaseManagerId, String status) {
         this.purchaseOrderId = purchaseOrderId;
         this.purchaseRequisitionId = purchaseRequisitionId;
         this.itemId = itemId;
         this.itemName = itemName;
         this.quantity = quantity;
         this.itemPrice = itemPrice;
-        this.totalPrice = quantity * itemPrice;
+        this.totalPrice = calculateTotalPrice(); // Recalculate to ensure consistency
         this.dateCreated = dateCreated;
         this.dateRequired = dateRequired;
         this.supplierId = supplierId;
         this.salesManagerId = salesManagerId;
         this.purchaseManagerId = purchaseManagerId;
-        this.status = "PENDING"; // Default status is PENDING
-    }
-    
-    /**
-     * Full constructor for PurchaseOrder with all fields
-     */
-    public PurchaseOrder(String purchaseOrderId, String purchaseRequisitionId, String itemId, 
-            String itemName, int quantity, double itemPrice, double totalPrice, 
-            Date dateCreated, Date dateRequired, String supplierId, 
-            String salesManagerId, String purchaseManagerId, String status) {
         
-        this.purchaseOrderId = purchaseOrderId;
-        this.purchaseRequisitionId = purchaseRequisitionId;
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.quantity = quantity;
-        this.itemPrice = itemPrice;
-        this.totalPrice = totalPrice;
-        this.dateCreated = dateCreated;
-        this.dateRequired = dateRequired;
-        this.supplierId = supplierId;
-        this.salesManagerId = salesManagerId;
-        this.purchaseManagerId = purchaseManagerId;
-        this.status = status;
-    }
-
-    /**
-     * Constructor for parsing from text file
-     */
-    public static PurchaseOrder fromString(String line) {
+        // Convert String status to enum
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String[] parts = line.split(",");
-            
-            return new PurchaseOrder(
-                parts[0].trim(),  // PO ID
-                parts[1].trim(),  // PR ID
-                parts[2].trim(),  // Item ID
-                parts[3].trim(),  // Item Name
-                Integer.parseInt(parts[4].trim()),  // Quantity
-                Double.parseDouble(parts[5].trim()),  // Item Price
-                Double.parseDouble(parts[6].trim()),  // Total Price
-                dateFormat.parse(parts[7].trim()),  // Date Created
-                dateFormat.parse(parts[8].trim()),  // Date Required
-                parts[9].trim(),  // Supplier ID
-                parts[10].trim(), // Sales Manager ID
-                parts[11].trim(), // Purchase Manager ID
-                parts[12].trim()  // Status
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Error parsing PurchaseOrder from string: " + e.getMessage());
+            this.status = PurchaseOrderStatus.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // Default to PENDING if status is invalid
+            this.status = PurchaseOrderStatus.PENDING;
+            System.err.println("Warning: Invalid status '" + status + "' for PO " + purchaseOrderId + 
+                              ". Defaulting to PENDING.");
         }
     }
-    
-    /**
-     * Convert to string for saving to file
-     */
-    public String toFileString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return String.format("%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s,%s",
-                purchaseOrderId,
-                purchaseRequisitionId,
-                itemId,
-                itemName,
-                quantity,
-                itemPrice,
-                totalPrice,
-                dateFormat.format(dateCreated),
-                dateFormat.format(dateRequired),
-                supplierId,
-                salesManagerId,
-                purchaseManagerId,
-                status);
+
+    // Builder Pattern (unchanged)
+    public static class Builder {
+        private String purchaseOrderId;
+        private String purchaseRequisitionId;
+        private String itemId;
+        private String itemName;
+        private int quantity;
+        private double itemPrice;
+        private Date dateCreated;
+        private Date dateRequired;
+        private String supplierId;
+        private String salesManagerId;
+        private String purchaseManagerId;
+        private PurchaseOrderStatus status;
+
+        public Builder setPurchaseOrderId(String purchaseOrderId) {
+            this.purchaseOrderId = purchaseOrderId;
+            return this;
+        }
+
+        public Builder setPurchaseRequisitionId(String purchaseRequisitionId) {
+            this.purchaseRequisitionId = purchaseRequisitionId;
+            return this;
+        }
+
+        public Builder setItemId(String itemId) {
+            this.itemId = itemId;
+            return this;
+        }
+
+        public Builder setItemName(String itemName) {
+            this.itemName = itemName;
+            return this;
+        }
+
+        public Builder setQuantity(int quantity) {
+            this.quantity = quantity;
+            return this;
+        }
+
+        public Builder setItemPrice(double itemPrice) {
+            this.itemPrice = itemPrice;
+            return this;
+        }
+
+        public Builder setDateCreated(Date dateCreated) {
+            this.dateCreated = dateCreated;
+            return this;
+        }
+
+        public Builder setDateRequired(Date dateRequired) {
+            this.dateRequired = dateRequired;
+            return this;
+        }
+
+        public Builder setSupplierId(String supplierId) {
+            this.supplierId = supplierId;
+            return this;
+        }
+
+        public Builder setSalesManagerId(String salesManagerId) {
+            this.salesManagerId = salesManagerId;
+            return this;
+        }
+
+        public Builder setPurchaseManagerId(String purchaseManagerId) {
+            this.purchaseManagerId = purchaseManagerId;
+            return this;
+        }
+
+        public Builder setStatus(PurchaseOrderStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public PurchaseOrder build() {
+            return new PurchaseOrder(this);
+        }
     }
 
-    // Getters
+    // Factory method for creating from CSV string (unchanged)
+    public static PurchaseOrder fromCsvString(String csvLine) {
+        try {
+            String[] parts = csvLine.split(",");
+            if (parts.length < 13) {
+                throw new IllegalArgumentException("Invalid CSV format for PurchaseOrder");
+            }
+
+            return new Builder()
+                    .setPurchaseOrderId(parts[0].trim())
+                    .setPurchaseRequisitionId(parts[1].trim())
+                    .setItemId(parts[2].trim())
+                    .setItemName(parts[3].trim())
+                    .setQuantity(Integer.parseInt(parts[4].trim()))
+                    .setItemPrice(Double.parseDouble(parts[5].trim()))
+                    .setDateCreated(DATE_FORMAT.parse(parts[7].trim()))
+                    .setDateRequired(DATE_FORMAT.parse(parts[8].trim()))
+                    .setSupplierId(parts[9].trim())
+                    .setSalesManagerId(parts[10].trim())
+                    .setPurchaseManagerId(parts[11].trim())
+                    .setStatus(PurchaseOrderStatus.valueOf(parts[12].trim()))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing PurchaseOrder from CSV: " + e.getMessage(), e);
+        }
+    }
+
+    // Business Logic Methods (unchanged)
+    public void approve() {
+        if (status == PurchaseOrderStatus.PENDING) {
+            this.status = PurchaseOrderStatus.APPROVED;
+        } else {
+            throw new IllegalStateException("Can only approve PENDING orders");
+        }
+    }
+
+    public void reject() {
+        if (status == PurchaseOrderStatus.PENDING) {
+            this.status = PurchaseOrderStatus.REJECTED;
+        } else {
+            throw new IllegalStateException("Can only reject PENDING orders");
+        }
+    }
+
+    public void markAsPaid() {
+        if (status == PurchaseOrderStatus.APPROVED) {
+            this.status = PurchaseOrderStatus.PAID;
+        } else {
+            throw new IllegalStateException("Can only mark APPROVED orders as paid");
+        }
+    }
+
+    public void markAsReceived() {
+        if (status == PurchaseOrderStatus.PAID) {
+            this.status = PurchaseOrderStatus.RECEIVED_ITEMS;
+        } else {
+            throw new IllegalStateException("Can only mark PAID orders as received");
+        }
+    }
+
+    public boolean canBeEdited() {
+    return status == PurchaseOrderStatus.PENDING || 
+           status == PurchaseOrderStatus.APPROVED ||
+           status == PurchaseOrderStatus.REJECTED;
+    }
+
+    public boolean canBeDeleted() {
+        return status == PurchaseOrderStatus.PENDING;
+    }
+
+    public void updateQuantity(int newQuantity) {
+        if (!canBeEdited()) {
+            throw new IllegalStateException("Cannot edit non-pending orders");
+        }
+        this.quantity = newQuantity;
+        this.totalPrice = calculateTotalPrice();
+    }
+
+    public void updateSupplier(String newSupplierId, double newItemPrice) {
+        if (!canBeEdited()) {
+            throw new IllegalStateException("Cannot edit non-pending orders");
+        }
+        this.supplierId = newSupplierId;
+        this.itemPrice = newItemPrice;
+        this.totalPrice = calculateTotalPrice();
+    }
+
+    private double calculateTotalPrice() {
+        return quantity * itemPrice;
+    }
+
+    // Implement Recordable interface
+    @Override
+    public String getId() {
+        return purchaseOrderId;
+    }
+
+    @Override
+    public String toCsvString() {
+        return String.format("%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s,%s",
+                purchaseOrderId, purchaseRequisitionId, itemId, itemName, quantity,
+                itemPrice, totalPrice, DATE_FORMAT.format(dateCreated),
+                DATE_FORMAT.format(dateRequired), supplierId, salesManagerId,
+                purchaseManagerId, status.name());
+    }
+
+    // Getters (unchanged)
     public String getPurchaseOrderId() { return purchaseOrderId; }
     public String getPurchaseRequisitionId() { return purchaseRequisitionId; }
     public String getItemId() { return itemId; }
@@ -128,49 +271,45 @@ public class PurchaseOrder {
     public String getSupplierId() { return supplierId; }
     public String getSalesManagerId() { return salesManagerId; }
     public String getPurchaseManagerId() { return purchaseManagerId; }
-    public String getStatus() { return status; }
-    
-    // Setters
-    public void setPurchaseOrderId(String purchaseOrderId) { this.purchaseOrderId = purchaseOrderId; }
-    public void setPurchaseRequisitionId(String purchaseRequisitionId) { this.purchaseRequisitionId = purchaseRequisitionId; }
-    public void setItemId(String itemId) { this.itemId = itemId; }
-    public void setItemName(String itemName) { this.itemName = itemName; }
-    public void setQuantity(int quantity) { 
+    public PurchaseOrderStatus getStatus() { return status; }
+
+    // For backward compatibility with existing code
+    public String getStatusString() {
+        return status.name();
+    }
+
+    // Keep these methods for backward compatibility
+    public void setStatus(String statusString) {
+        this.status = PurchaseOrderStatus.valueOf(statusString);
+    }
+
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
-        this.totalPrice = this.quantity * this.itemPrice; // Update total price
+        this.totalPrice = calculateTotalPrice();
     }
-    public void setItemPrice(double itemPrice) { 
+
+    public void setItemPrice(double itemPrice) {
         this.itemPrice = itemPrice;
-        this.totalPrice = this.quantity * this.itemPrice; // Update total price
+        this.totalPrice = calculateTotalPrice();
     }
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
-    public void setDateCreated(Date dateCreated) { this.dateCreated = dateCreated; }
-    public void setDateRequired(Date dateRequired) { this.dateRequired = dateRequired; }
-    public void setSupplierId(String supplierId) { this.supplierId = supplierId; }
-    public void setSalesManagerId(String salesManagerId) { this.salesManagerId = salesManagerId; }
-    public void setPurchaseManagerId(String purchaseManagerId) { this.purchaseManagerId = purchaseManagerId; }
-    public void setStatus(String status) { this.status = status; }
-    
-    // Business logic methods
-    public void approve() {
-        this.status = "APPROVED";
+
+    // Legacy methods for backward compatibility
+    public static PurchaseOrder fromString(String line) {
+        return fromCsvString(line);
     }
-    
-    public void reject() {
-        this.status = "REJECTED";
+
+    public String toFileString() {
+        return toCsvString();
     }
-    
+
     public void markReceived() {
-        this.status = "RECEIVED_ITEMS";
+        markAsReceived();
     }
-    
-    /**
-     * Calculates and updates the total price based on quantity and item price
-     */
+
     public void updateTotalPrice() {
-        this.totalPrice = this.quantity * this.itemPrice;
+        this.totalPrice = calculateTotalPrice();
     }
-    
+
     @Override
     public String toString() {
         return "PurchaseOrder{" +
@@ -189,10 +328,4 @@ public class PurchaseOrder {
                 ", status='" + status + '\'' +
                 '}';
     }
-    
-    public String getOrderDetails() {
-    return purchaseOrderId + "," + purchaseRequisitionId + "," + itemId + "," + itemName + ","
-        + quantity + "," + itemPrice + "," + totalPrice + "," + dateCreated + "," + dateRequired + ","
-        + supplierId + "," + salesManagerId + "," + purchaseManagerId + "," + status; 
-}
 }

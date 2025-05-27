@@ -12,6 +12,8 @@ import javax.swing.table.DefaultTableModel;
 import shared.utils.PurchaseOrderUtils;
 import shared.utils.FileUtils;
 import shared.models.PurchaseOrder;
+import PurchaseManager.PurchaseOrderService;
+import PurchaseManager.ServiceException;
 
 public class AddPurchaseOrderDialog extends javax.swing.JDialog {
     private boolean confirmed = false;
@@ -34,12 +36,19 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
     /**
      * Creates new form AddPurchaseOrderDialog
      */
+ 
+    private final PurchaseOrderService purchaseOrderService;
+    
     public AddPurchaseOrderDialog(java.awt.Frame parent, boolean modal,
             String prId, String itemId, String itemName, int quantity, 
             String dateRequired, String salesManagerId, String purchaseManagerId) {
         super(parent, modal);
+        
+        this.purchaseOrderService = new PurchaseOrderService();
+        
         initComponents();
         
+        // Keep all your existing initialization code as-is
         this.prId = prId;
         this.itemId = itemId;
         this.itemName = itemName;
@@ -48,8 +57,8 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         this.salesManagerId = salesManagerId;
         this.purchaseManagerId = purchaseManagerId; 
         
-        // Initialize the dialog with PR data
         initializePRData();
+        setTitle("Add Purchase Order Dialog");         
     }
     /**
      * Initialize the dialog with PR data
@@ -63,10 +72,6 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         jLabel.setText(dateRequired);
         jTextFieldsalesManagerId.setText(salesManagerId);
         
-        // Initialize the supplier combo box
-        jComboBoxSupplierID_Name.removeAllItems();
-        jComboBoxSupplierID_Name.addItem("-- Choose --");
-        
         // Load suppliers for the selected item
         loadSuppliers();
         
@@ -76,18 +81,10 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
                 supplierSelectionChanged();
             }
         });
-        
-        // Initialize default values
-        Price.setText("------");
-        
-        // Default status is PENDING
-        jRadioButtonPENDING.setSelected(true);
-        
+
         // Initialize table with empty rows
         updateItemTable();
-        
-        // Set Save button initially disabled
-        jButton1.setEnabled(false);
+
     }
     
     /**
@@ -214,8 +211,8 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
      */
     private String generatePOId() {
         try {
-            return PurchaseOrderUtils.generatePurchaseOrderId();
-        } catch (IOException e) {
+            return purchaseOrderService.generateNextPurchaseOrderId();
+        } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this, 
                     "Error generating PO ID: " + e.getMessage(),
                     "Error",
@@ -237,45 +234,28 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         }
         
         try {
-            // Generate PO ID
-            String poId = generatePOId();
-            
-            // Get price
+            // Get price and calculate total
             double itemPrice = supplierPriceMap.getOrDefault(currentSupplierId, 0.0);
-            double totalPrice = itemPrice * quantity;
             
-            // Get status
-            String status = "PENDING";
+            // Create Purchase Order using Builder pattern
+            PurchaseOrder purchaseOrder = new PurchaseOrder.Builder()
+                    .setPurchaseOrderId(generatePOId())
+                    .setPurchaseRequisitionId(prId)
+                    .setItemId(itemId)
+                    .setItemName(itemName)
+                    .setQuantity(quantity)
+                    .setItemPrice(itemPrice)
+                    .setDateCreated(new Date())
+                    .setDateRequired(PurchaseOrderUtils.parseDate(dateRequired))
+                    .setSupplierId(currentSupplierId)
+                    .setSalesManagerId(salesManagerId)
+                    .setPurchaseManagerId(purchaseManagerId)
+                    .build();
             
-            // Get current date
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            String currentDate = sdf.format(new Date());
+            // Save using service
+            String poId = purchaseOrderService.createPurchaseOrder(purchaseOrder);
             
-            // Create PO record
-            String poRecord = String.format("%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s,%s",
-                    poId, prId, itemId, itemName, quantity, itemPrice, totalPrice,
-                    currentDate, dateRequired, currentSupplierId, salesManagerId, 
-                    purchaseManagerId,status);
-            
-            // Ensure file exists
-            File file = new File(PO_FILE);
-            boolean isNewFile = !file.exists();
-            
-            if (isNewFile) {
-                FileUtils.ensureFileExists(PO_FILE);
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                    writer.write("PO_ID,PR_ID,Item_ID,Item_Name,Quantity,Item_Price,Total_Price,Date_Created,Date_Required,Supplier_ID,Sales_Manager_ID,Purchase_Manager_ID,Status");
-                    writer.newLine();
-                }
-            }
-            
-            // Write to file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                writer.write(poRecord);
-                writer.newLine();
-            }
-            
-            // Update PR status
+            // Update PR status (keep existing method - no changes to PR code)
             updatePRStatus(prId, "Approved");
             
             JOptionPane.showMessageDialog(this, 
@@ -286,7 +266,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
             confirmed = true;
             this.dispose();
             
-        } catch (IOException e) {
+        } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this, 
                     "Error saving purchase order: " + e.getMessage(),
                     "Error",
@@ -378,6 +358,11 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         jTextFieldPurchaseOrderId.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jTextFieldPurchaseOrderId.setRequestFocusEnabled(false);
         jTextFieldPurchaseOrderId.setSelectionColor(new java.awt.Color(0, 102, 204));
+        jTextFieldPurchaseOrderId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldPurchaseOrderIdActionPerformed(evt);
+            }
+        });
 
         ItemID1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         ItemID1.setText("Item ID :");
@@ -412,7 +397,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         PleaseSelectSupplier.setText("Please Select Supplier :");
 
         jComboBoxSupplierID_Name.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jComboBoxSupplierID_Name.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxSupplierID_Name.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Choose --" }));
         jComboBoxSupplierID_Name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxSupplierID_NameActionPerformed(evt);
@@ -494,6 +479,7 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Save");
+        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -687,6 +673,10 @@ public class AddPurchaseOrderDialog extends javax.swing.JDialog {
         confirmed = false;
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextFieldPurchaseOrderIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPurchaseOrderIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldPurchaseOrderIdActionPerformed
 
     /**
      * @param args the command line arguments
