@@ -4,6 +4,7 @@
  */
 package salesManager;
 
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.FileUtils;
@@ -25,10 +26,46 @@ public class ViewAllSales extends javax.swing.JFrame {
         this.username = username;
     }
     
+    private void searchAndDisplayItems() {
+            String query = txtSearch.getText().trim();
+            if (query.isEmpty()) {
+                 loadSalesToTable();
+                return;
+            }
+
+            DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+            model.setRowCount(0); // Clear existing data
+
+            try {
+                List<String> results = FileUtils.findLinesWithValue(SALES_FILE, query);
+                for (String line : results) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 9) { // Ensure we have all required columns
+                        model.addRow(new Object[]{
+                            parts[0], // Sales ID
+                            parts[1], // Date
+                            parts[2], // Date Required
+                            parts[3], // Customer Name
+                            parts[4], // Customer Contact
+                            parts[5], // Item ID
+                            parts[6], // Item Name
+                            Integer.parseInt(parts[7]), // Quantity
+                            parts[8]  // Total
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error searching sales data: " + e.getMessage(),
+                    "Search Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    
 
     private void loadSalesToTable() {
         DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-        model.setRowCount(0); // Clear existing data
+        model.setRowCount(0);
 
         try {
             FileUtils.TableUtils.loadSalesToTable(SALES_FILE, model);
@@ -50,6 +87,9 @@ public class ViewAllSales extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
         btnBack = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtSearch = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -106,25 +146,43 @@ public class ViewAllSales extends javax.swing.JFrame {
             }
         });
 
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jScrollPane4.setViewportView(txtSearch);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnBack)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSearch))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnBack)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(13, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnBack)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -150,6 +208,10 @@ public class ViewAllSales extends javax.swing.JFrame {
         dse.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        searchAndDisplayItems();
+    }//GEN-LAST:event_btnSearchActionPerformed
 
 
     public static void main(String args[]) {
@@ -185,10 +247,13 @@ public class ViewAllSales extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTextPane txtSearch;
     // End of variables declaration//GEN-END:variables
 }
