@@ -104,7 +104,7 @@ public class StockList extends javax.swing.JFrame {
                         int qty = Integer.parseInt(qtyStr);
                         salesMap.put(itemId, salesMap.getOrDefault(itemId, 0) + qty);
                         parts[8] = "processed";
-                        allSalesLines.add(String.join(" ", parts)); 
+                        allSalesLines.add(String.join(",", parts)); 
                     } catch (NumberFormatException e) {
                         allSalesLines.add(line); 
                     }
