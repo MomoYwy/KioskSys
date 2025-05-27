@@ -1,11 +1,11 @@
 Sales_ID Date Date_Required Customer_Name Customer_Contact Item_Id  Item_Name Quantity Status
 
-SE0001 21/4/2025 24/4/2025 Ella 01022399433 G003 Cabbage(per kg) 40 processed
-SE0002 29/6/2025 22/7/2025 Guang Wei 01111955422 G003 Cabbage(per kg) 5 processed
-SE0004 23/4/2025 23/4/2025 France 01978662252 G004 Socks 20 processed
-SE0005 23/4/2025 23/4/2025 Halen 0143325645 E001 Scissors 30 processed
-SE0006 30/4/2025 27/7/2025 Iris 034535 G006 banana 100 processed
-SE0007 14/5/2025 16/8/2027 DrZus 1323124 G005 chocalate 5 processed
-SE0008 20/5/2025 22/8/2025 Jennie 123124155 E001 Scissors 10 processed
-SE0010 21/5/2025 28/5/2025 Leong Zi Ning 0198765432 G005 chocalate 5 processed
-SE0011 22/5/2025 31/5/2025 Ken 0125556666 G005 Chocalate 3 processed
+SE0001,21/4/2025,24/4/2025,Ella,01022399433,G003,Cabbage(per kg),40,processed
+SE0002,29/6/2025,22/7/2025,Guang Wei,01111955422,G003,Cabbage(per kg),5,processed
+SE0004,23/4/2025,23/4/2025,France,01978662252,G004,Socks,20,processed
+SE0005,23/4/2025,23/4/2025,Halen,0143325645,E001,Scissors,30,processed
+SE0006,30/4/2025,27/7/2025,Iris,034535,G006,banana,100,processed
+SE0007,14/5/2025,16/8/2027,DrZus,1323124,G005,chocalate,5,processed
+SE0008,20/5/2025,22/8/2025,Jennie,123124155,E001,Scissors,10,processed
+SE0010,21/5/2025,28/5/2025,Leong Zi Ning,0198765432,G005,chocalate,5,processed
+SE0011,22/5/2025,31/5/2025,Ken,0125556666,G005,Chocalate,3,processed

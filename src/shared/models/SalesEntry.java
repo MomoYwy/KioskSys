@@ -11,7 +11,7 @@ public class SalesEntry implements Recordable {
 
     public SalesEntry(String salesId, String date, String dateRequired, 
                     Customer customer, Item item, int quantity) {
-        this(salesId, date, dateRequired, customer, item, quantity, "unprocessed"); // Default status
+        this(salesId, date, dateRequired, customer, item, quantity, "unprocessed");
     }
 
     // New constructor with status
