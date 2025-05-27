@@ -6,7 +6,7 @@ F001,Papaya,FRESH PRODUCE,0,low stock
 G003,Cabbage(per kg),GROCERIES,0,low stock
 G004,Socks,GROCERIES,0,low stock
 G005,Chocalate,GROCERIES,0,low stock
-G006,Banana,FRESH PRODUCE,0,low stock
+G006,Banana,FRESH PRODUCE,-100,low stock
 G007,Plushies,GROCERIES,0,low stock
 F002,Fish,FRESH PRODUCE,0,low stock
 E002,Face Mask (20 Sheets/Box),ESSENTIAL GOODS,0,low stock
