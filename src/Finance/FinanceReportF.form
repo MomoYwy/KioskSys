@@ -325,7 +325,7 @@
               <StringArray count="5">
                 <StringItem index="0" value="ALL"/>
                 <StringItem index="1" value="PENDING"/>
-                <StringItem index="2" value="APROVED"/>
+                <StringItem index="2" value="APPROVED"/>
                 <StringItem index="3" value="REJECTED"/>
                 <StringItem index="4" value="RECEIVED_ITEMS"/>
               </StringArray>

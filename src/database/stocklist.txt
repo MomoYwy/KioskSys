@@ -1,13 +1,16 @@
 Item ID,Item Name,Category,Quantity,Status
 G001,Bread,GROCERIES,0,low stock
-E001,Scissors,ESSENTIAL GOODS,300,low stock
+E001,Scissors,ESSENTIAL GOODS,260,normal
 G002,Strawberry,GROCERIES,0,low stock
 F001,Papaya,FRESH PRODUCE,0,low stock
-G003,Cabbage(per kg),GROCERIES,-45,low stock
-G004,Socks,GROCERIES,-20,low stock
-G005,Chocalate,GROCERIES,-5,low stock
-G006,Banana,FRESH PRODUCE,-100,normal
+G003,Cabbage(per kg),GROCERIES,0,low stock
+G004,Socks,GROCERIES,0,low stock
+G005,Chocalate,GROCERIES,0,low stock
+G006,Banana,FRESH PRODUCE,0,low stock
 G007,Plushies,GROCERIES,0,low stock
 F002,Fish,FRESH PRODUCE,0,low stock
 E002,Face Mask (20 Sheets/Box),ESSENTIAL GOODS,0,low stock
 E003,Hand Sanitizer (10ml),ESSENTIAL GOODS,0,low stock
+F004,Raspberry (500g),FRESH PRODUCE,0,low stock
+G008,Maggie Curry Instant Cup Noodles,GROCERIES,0,low stock
+G009,Indomee,GROCERIES,0,low stock

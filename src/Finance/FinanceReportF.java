@@ -1,21 +1,16 @@
 package Finance;
 
-import admin.AdminDashboard;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.table.DefaultTableModel;
+
 import shared.models.PurchaseOrder;
 import java.util.List;
 import javax.swing.table.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.Set;
 import shared.models.OrderManager;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import shared.models.dataOperation;
 import admin.AdminDashboard;
+
 
 
 
@@ -181,7 +176,7 @@ public class FinanceReportF extends javax.swing.JFrame {
 
         jLabel4.setText("Status:");
 
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "PENDING", "APROVED", "REJECTED", "RECEIVED_ITEMS" }));
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "PENDING", "APPROVED", "REJECTED", "RECEIVED_ITEMS" }));
         cmbStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbStatusActionPerformed(evt);

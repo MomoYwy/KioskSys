@@ -235,7 +235,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFinanceReportActionPerformed
 
     private void btnInventoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryUpdateActionPerformed
-        InventoryUpdates IUForm = new InventoryUpdates(this);
+        Inventory_Updates IUForm = new Inventory_Updates(this);
         
         java.awt.Point dashboardLocation = this.getLocation();
         IUForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
