@@ -8,31 +8,25 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import shared.utils.PurchaseOrderUtils;
+import shared.utils.SwingUtils;
+
 
 public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
 
-    private PMDashboard previousPMForm;
-    private AdminDashboard previousAdminForm;
-    private String purchaseManagerId; // this field to store the PM ID     
-     
-    public GeneratePurchaseOrderForm() {
+   
+    private String userId;
+    private String username; 
+    
+    public GeneratePurchaseOrderForm(String userId, String username) {
         initComponents();
         setupTableListeners();
         loadPendingPurchaseRequisitions();
         loadPurchaseOrders();
+        this.userId = userId;
+        this.username = username;    
+        setTitle("Generate Purchase Order - " + username + " (" + userId + ")");        
     }
-    public GeneratePurchaseOrderForm(PMDashboard previousForm) {
-        this();
-        this.previousPMForm = previousForm;
-        this.purchaseManagerId = previousForm.getUserId(); // Get the PM ID from the dashboard        
-    }
-    
-    // Add a new constructor for AdminDashboard
-    public GeneratePurchaseOrderForm(AdminDashboard previousForm) {
-        this();
-        this.previousAdminForm = previousForm;
-        this.purchaseManagerId = previousForm.getUserId(); // Get the Admin ID from the dashboard
-    }    
+  
 
     private void setupTableListeners() {
         // Add selection listener to the pending PR table
@@ -291,19 +285,13 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        // Modified to handle both types of previous forms
-        if (previousPMForm != null) {
-            previousPMForm.setVisible(true);
-        } else if (previousAdminForm != null) {
-            previousAdminForm.setVisible(true);
-        }
-        this.dispose();
+        SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void generatePOButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatePOButtonActionPerformed
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow < 0) {
-            return; // No row selected
+            return; 
         }
 
         try {
@@ -318,7 +306,7 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
             // Pass the purchaseManagerId to the dialog
             AddPurchaseOrderDialog dialog = new AddPurchaseOrderDialog(
                     this, true, prId, itemId, itemName, quantity, dateRequired, 
-                    salesManagerId, purchaseManagerId); // Add purchaseManagerId here
+                    salesManagerId, userId); 
 
             // Position the dialog relative to this form
             dialog.setLocationRelativeTo(this);
@@ -339,46 +327,7 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_generatePOButtonActionPerformed
-    private String getItemName(String itemId) {
-        try {
-            java.io.File file = new java.io.File("src/database/items.txt");
-            if (!file.exists()) {
-                return "";
-            }
-            
-            try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                    new java.io.FileReader(file))) {
-                String line;
-                boolean headerSkipped = false;
-                
-                while ((line = reader.readLine()) != null) {
-                    // Skip header line
-                    if (!headerSkipped) {
-                        headerSkipped = true;
-                        continue;
-                    }
-                    
-                    // Skip empty lines
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    
-                    String[] parts = line.split(",");
-                    if (parts.length >= 2 && parts[0].trim().equals(itemId)) {
-                        return parts[1].trim();
-                    }
-                }
-            }
-            
-            return "";
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                    "Error finding item name: " + e.getMessage(),
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            return "";
-        }
-    }
+
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         loadPendingPurchaseRequisitions();
         loadPurchaseOrders();
@@ -417,7 +366,7 @@ public class GeneratePurchaseOrderForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GeneratePurchaseOrderForm().setVisible(true);
+
             }
         });
     }

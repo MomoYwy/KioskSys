@@ -96,11 +96,9 @@
                   <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="btnFinanceReport" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="btnUserList" max="32767" attributes="0"/>
-                          <Component id="btnPO" max="32767" attributes="0"/>
-                          <Component id="btnSupplierList" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="btnUserList" max="32767" attributes="0"/>
+                      <Component id="btnPO" max="32767" attributes="0"/>
+                      <Component id="btnSupplierList" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">

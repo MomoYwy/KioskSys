@@ -309,7 +309,7 @@ public class FinanceReportF extends javax.swing.JFrame {
             po.getSupplierId(),
             po.getSalesManagerId(),
             po.getPurchaseManagerId(),
-            po.getStatus()
+            po.getStatusString()
         });}
     
     updateSummaryFields();
@@ -353,7 +353,7 @@ public class FinanceReportF extends javax.swing.JFrame {
             order.getSupplierId(),
             order.getSalesManagerId(),
             order.getPurchaseManagerId(),
-            order.getStatus()
+            order.getStatusString()
         });
     }
     

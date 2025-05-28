@@ -515,7 +515,7 @@ public class ManagementPO extends javax.swing.JFrame {
                 po.getSupplierId(),
                 po.getSalesManagerId(),
                 po.getPurchaseManagerId(),
-                po.getStatus()
+                po.getStatusString()
             });}
 
     }//GEN-LAST:event_btnLoadPOActionPerformed
@@ -570,7 +570,7 @@ public class ManagementPO extends javax.swing.JFrame {
                     po.getSupplierId(),
                     po.getSalesManagerId(),
                     po.getPurchaseManagerId(),
-                    po.getStatus()
+                    po.getStatusString()
                 });}            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 

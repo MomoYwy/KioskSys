@@ -275,30 +275,24 @@ public class AdminDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnUserListActionPerformed
 
     private void btnPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPOActionPerformed
-        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(this);
+        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(userId, username);
         
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         poForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
         
-        // Make dashboard invisible while working with PO form
         this.setVisible(false);
         
-        // Show the PO form
         poForm.setVisible(true);
     }//GEN-LAST:event_btnPOActionPerformed
 
     private void btnviewPOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnviewPOActionPerformed
-        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(this);
+        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(userId, username);
 
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         viewPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
 
-        // Make dashboard invisible while working with ViewPO form
         this.setVisible(false);
 
-        // Show the ViewPO form
         viewPOForm.setVisible(true);
     }//GEN-LAST:event_btnviewPOActionPerformed
 

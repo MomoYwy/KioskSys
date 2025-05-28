@@ -1,5 +1,8 @@
 package shared.frames;
 
+import PurchaseManager.PurchaseOrderService;
+import PurchaseManager.ServiceException;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -11,7 +14,7 @@ import shared.models.PurchaseOrder;
 
 public class EditPurchaseOrderDialog extends javax.swing.JDialog {
 
-    
+    private final PurchaseOrderService purchaseOrderService;    
     private static final String PO_FILE = "src/database/purchase_orders.txt";
     private static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -37,6 +40,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
     
     public EditPurchaseOrderDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        this.purchaseOrderService = new PurchaseOrderService();        
         initComponents();
         // Add document listener to quantity field to update the table in real-time
         jTextFieldquantity.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -55,6 +59,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                 updateTableOnQuantityChange();
             }
         });
+        setTitle("Edit Purchase Order Dialog");                 
     }
 
     public void loadPurchaseOrderData(String poId) {
@@ -67,25 +72,25 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             boolean found = false;
-            
+
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 boolean headerSkipped = false;
-                
+
                 while ((line = reader.readLine()) != null) {
                     // Skip header line
                     if (!headerSkipped) {
                         headerSkipped = true;
                         continue;
                     }
-                    
+
                     // Skip empty lines
                     if (line.trim().isEmpty()) {
                         continue;
                     }
-                    
+
                     String[] parts = line.split(",");
                     if (parts.length >= 13 && parts[0].trim().equals(poId)) {
                         // Found the purchase order
@@ -103,7 +108,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                         purchaseManagerId = parts[11].trim();
                         status = parts[12].trim();
                         originalSupplierId = supplierId;
-                        
+
                         // Set values in the form
                         jLabelPurchaseOrderId.setText(purchaseOrderId);
                         jLabelPurchaseRequisitionId.setText(purchaseRequisitionId);
@@ -111,11 +116,11 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                         jLabel.setText(DATE_FORMAT.format(dateRequired));
                         jLabelPurchaseManagerId.setText(purchaseManagerId);
                         jLabelsalesManagerId.setText(salesManagerId);
-                        
+
                         jLabelItemID.setText(itemId);
                         jLabelItemName.setText(itemName);
                         jTextFieldquantity.setText(String.valueOf(quantity));
-                        
+
                         // Set radio button based on status
                         switch (status) {
                             case "PENDING":
@@ -131,13 +136,13 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                                 jRadioButtonRECEIVED_ITEMS.setSelected(true);
                                 break;                                
                             case "RECEIVED_ITEMS":
-                                jRadioButtonRECEIVED_ITEMS.setSelected(true);
+                                jRadioButtonRECEIVED_ITEMS1.setSelected(true);
                                 break;
                         }
-                        
-                        // Load suppliers for the item
+
+                        // Load suppliers for the item FIRST
                         loadSuppliersForItem();
-                        
+
                         // Select supplier in combo box
                         selectSupplierInComboBox(supplierId);
                         
@@ -152,7 +157,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                     }
                 }
             }
-            
+
             if (!found) {
                 JOptionPane.showMessageDialog(this, 
                         "Purchase Order not found: " + poId,
@@ -160,7 +165,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                         JOptionPane.ERROR_MESSAGE);
                 this.dispose();
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
                     "Error loading purchase order: " + e.getMessage(),
@@ -171,10 +176,13 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
         }
     }
     
+/**
+ * Load suppliers for the selected item - REVERTED VERSION
+ */
     private void loadSuppliersForItem() {
         jComboBoxSupplierID_Name.removeAllItems();
         supplierPriceMap.clear();
-        
+
         try {
             File file = new File(SUPPLIERS_FILE);
             if (!file.exists()) {
@@ -184,29 +192,29 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
-                
+
                 while ((line = reader.readLine()) != null) {
                     // Skip empty lines
                     if (line.trim().isEmpty()) {
                         continue;
                     }
-                    
+
                     String[] parts = line.split(",");
                     if (parts.length >= 4) {
                         String supplierId = parts[0].trim();
                         String supplierName = parts[1].trim();
                         String supplierItemName = parts[2].trim();
-                        
+
                         // Check if this supplier supplies the current item
                         if (itemName != null && supplierItemName.equalsIgnoreCase(itemName)) {
                             double price = Double.parseDouble(parts[3].trim());
-                            
+
                             // Store price for this supplier
                             supplierPriceMap.put(supplierId, price);
-                            
+
                             // Add to combo box
                             String displayText = supplierId + " - " + supplierName;
                             jComboBoxSupplierID_Name.addItem(displayText);
@@ -214,7 +222,16 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                     }
                 }
             }
-            
+
+            // After loading all suppliers, try to select the current one
+            SwingUtilities.invokeLater(() -> {
+                selectSupplierInComboBox(supplierId);
+                // Update price display after selection
+                Price.setText(String.format("%.2f", itemPrice));
+                // Update table after everything is loaded
+                updateItemTable();
+            });
+
         } catch (IOException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this, 
                     "Error loading suppliers: " + e.getMessage(),
@@ -226,10 +243,12 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
     /**
      * Select the supplier in the combo box
      */
-    private void selectSupplierInComboBox(String supplierId) {
+    private void selectSupplierInComboBox(String targetSupplierId) {
+
         for (int i = 0; i < jComboBoxSupplierID_Name.getItemCount(); i++) {
             String item = jComboBoxSupplierID_Name.getItemAt(i);
-            if (item.startsWith(supplierId + " ")) {
+
+            if (item != null && item.startsWith(targetSupplierId + " -")) {
                 jComboBoxSupplierID_Name.setSelectedIndex(i);
                 return;
             }
@@ -242,13 +261,24 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
     private void updateItemTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
- 
+
+        // Get current quantity from text field if possible
+        int currentQuantity = quantity;
+        try {
+            currentQuantity = Integer.parseInt(jTextFieldquantity.getText());
+        } catch (NumberFormatException e) {
+            // Use default quantity if parsing fails
+        }
+
+        // Calculate current total price
+        double currentTotalPrice = currentQuantity * itemPrice;
+
         model.addRow(new Object[]{
             itemId,
             itemName,
-            quantity,
+            currentQuantity,
             itemPrice,
-            totalPrice
+            currentTotalPrice
         });
     }
     
@@ -257,27 +287,27 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
      */
     private void supplierSelectionChanged() {
         int selectedIndex = jComboBoxSupplierID_Name.getSelectedIndex();
-        
+
         if (selectedIndex < 0) {
             return;
         }
-        
+
         String selectedItem = jComboBoxSupplierID_Name.getSelectedItem().toString();
         String selectedSupplierId = selectedItem.substring(0, selectedItem.indexOf(" -"));
-        
+
         // Update supplier ID
         supplierId = selectedSupplierId;
-        
+
         // Get price for this supplier
         double newItemPrice = supplierPriceMap.getOrDefault(supplierId, 0.0);
-        
+
         // Update price
         itemPrice = newItemPrice;
         totalPrice = quantity * itemPrice;
-        
+
         // Update price label
         Price.setText(String.format("%.2f", itemPrice));
-        
+
         // Update table
         updateItemTable();
     }
@@ -320,26 +350,26 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
             // Get updated values
             int newQuantity = Integer.parseInt(jTextFieldquantity.getText());
             String newStatus;
-            
+
             if (jRadioButtonPENDING.isSelected()) {
                 newStatus = "PENDING";
             } else if (jRadioButtonAPPROVED.isSelected()) {
                 newStatus = "APPROVED";
             } else if (jRadioButtonREJECTED.isSelected()) {
                 newStatus = "REJECTED";
-            } else if (jRadioButtonREJECTED.isSelected()) {
-                newStatus = "PAID";                
             } else if (jRadioButtonRECEIVED_ITEMS.isSelected()) {
+                newStatus = "PAID";
+            } else if (jRadioButtonRECEIVED_ITEMS1.isSelected()) {
                 newStatus = "RECEIVED_ITEMS";
             } else {
                 newStatus = status; // Default to current
             }
-            
+
             // Check if anything has changed
             boolean supplierChanged = !supplierId.equals(originalSupplierId);
             boolean quantityChanged = newQuantity != quantity;
             boolean statusChanged = !newStatus.equals(status);
-            
+
             if (!supplierChanged && !quantityChanged && !statusChanged) {
                 JOptionPane.showMessageDialog(this, 
                         "No changes made to Purchase Order",
@@ -348,30 +378,40 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                 this.dispose();
                 return;
             }
-            
-            // Update values
-            quantity = newQuantity;
-            status = newStatus;
-            totalPrice = quantity * itemPrice;
-            
-            // Create updated PO record
+
+            // CUSTOM BUSINESS RULES - Only prevent editing of finalized orders
+            if (status.equals("PAID") || status.equals("RECEIVED_ITEMS")) {
+                JOptionPane.showMessageDialog(this,
+                        "Purchase orders with status '" + status + "' cannot be edited.",
+                        "Edit Not Allowed",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Update itemPrice based on selected supplier (IMPORTANT FIX)
+            if (supplierChanged) {
+                itemPrice = supplierPriceMap.getOrDefault(supplierId, itemPrice);
+            }
+
+            // Create updated Purchase Order record
+            double newTotalPrice = newQuantity * itemPrice;
             String updatedRecord = String.format("%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s,%s",
-                    purchaseOrderId, purchaseRequisitionId, itemId, itemName, quantity, 
-                    itemPrice, totalPrice, DATE_FORMAT.format(dateCreated), 
-                    DATE_FORMAT.format(dateRequired), supplierId, salesManagerId, 
-                    purchaseManagerId, status);
-            
-            // Update the file
+                    purchaseOrderId, purchaseRequisitionId, itemId, itemName, newQuantity,
+                    itemPrice, newTotalPrice, DATE_FORMAT.format(dateCreated),
+                    DATE_FORMAT.format(dateRequired), supplierId, salesManagerId,
+                    purchaseManagerId, newStatus);
+
+            // Update directly in file - COMPLETELY BYPASS SERVICE
             updatePurchaseOrderInFile(purchaseOrderId, updatedRecord);
-            
+
             JOptionPane.showMessageDialog(this, 
                     "Purchase Order updated successfully!",
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
-            
+
             confirmed = true;
             this.dispose();
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, 
                     "Please enter a valid quantity",
@@ -382,6 +422,7 @@ public class EditPurchaseOrderDialog extends javax.swing.JDialog {
                     "Error saving purchase order: " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
     

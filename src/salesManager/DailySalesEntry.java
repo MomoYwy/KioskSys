@@ -2,6 +2,7 @@
     package salesManager;
 
     import java.io.IOException;
+import java.time.LocalDate;
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
@@ -64,7 +65,8 @@ import shared.models.Recordable;
             DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
             model.setRowCount(0); // Clear existing data
 
-            String today = java.time.LocalDate.now().toString(); // Format: YYYY-MM-DD
+            LocalDate now = LocalDate.now();
+            String today = now.getDayOfMonth() + "/" + now.getMonthValue() + "/" + now.getYear();
 
             try {
                 FileUtils.TableUtils.loadSalesToTableByDate(SALES_FILE, model, today);
@@ -75,6 +77,7 @@ import shared.models.Recordable;
                     JOptionPane.ERROR_MESSAGE);
             }
         }
+
 
         
         // Add new Sales Entry

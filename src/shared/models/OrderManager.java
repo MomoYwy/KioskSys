@@ -54,17 +54,18 @@ public class OrderManager {
     // Method to filter orders by both Status and Purchase Manager ID
     public List<PurchaseOrder> filterOrdersByStatusAndPurchaseManager(String status, String purchaseManagerId) {
         List<PurchaseOrder> filteredOrders = new ArrayList<>();
-    
+
         for (PurchaseOrder order : orders) {
             // If status is "ALL", it means we want to show all statuses
-            if ((status.equals("ALL") || order.getStatus().equals(status)) && 
+            // FIXED: Use getStatus().name() instead of getStatus() for enum comparison
+            if ((status.equals("ALL") || order.getStatus().name().equals(status)) && 
                 order.getPurchaseManagerId().equals(purchaseManagerId)) {
                 filteredOrders.add(order);
             }
         }
-    
-    return filteredOrders;
-}
+
+        return filteredOrders;
+    }
 
     // Method to get all orders
     public List<PurchaseOrder> getAllOrders() {

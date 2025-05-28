@@ -5,7 +5,7 @@ import java.awt.Point;
 import javax.swing.JOptionPane;
 import shared.frames.ViewSalesEntry;
 import shared.frames.ViewSupplierEntry;
-
+import shared.frames.LoginScreen;
 
 public class PMDashboard extends javax.swing.JFrame {
 
@@ -182,76 +182,51 @@ public class PMDashboard extends javax.swing.JFrame {
     private void btnViewSuppliersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewSuppliersActionPerformed
         ViewSupplierEntry ViewSupplierFrame = new ViewSupplierEntry();
     
-        // Position it to the right of the StockList frame
         Point PMDashboardLocation = this.getLocation();
-        int x = PMDashboardLocation.x + this.getWidth() + 10; // 10 pixels gap
+        int x = PMDashboardLocation.x + this.getWidth() + 10;
         int y = PMDashboardLocation.y;
         ViewSupplierFrame.setLocation(x, y);
 
-        // Make sure both frames stay on top when either is clicked
         ViewSupplierFrame.setAlwaysOnTop(this.isAlwaysOnTop());
 
-        // Show the sales entry frame
         ViewSupplierFrame.setVisible(true);
 
-        // Add listener to refresh stock list when sales entry is closed
-        ViewSupplierFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                loadSuppliersData("src/database/suppliers.txt");
-            }
-        
-
-
-
- 
-        });
     }//GEN-LAST:event_btnViewSuppliersActionPerformed
 
     private void btnViewItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewItemsActionPerformed
         ViewItem itemForm = new ViewItem(this);
         
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         itemForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
         
-        // Make dashboard invisible while working with PO form
         this.setVisible(false);
         
-        // Show the PO form
         itemForm.setVisible(true);
     }//GEN-LAST:event_btnViewItemsActionPerformed
 
     private void btnViewPurchaseRequisitionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseRequisitionActionPerformed
         ViewPR PRForm = new ViewPR(this);
         
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         PRForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
         
-        // Make dashboard invisible while working with PO form
         this.setVisible(false);
         
-        // Show the PO form
         PRForm.setVisible(true);
     }//GEN-LAST:event_btnViewPurchaseRequisitionActionPerformed
 
     private void btnGeneratePurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeneratePurchaseOrdersActionPerformed
-        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(this);
+        GeneratePurchaseOrderForm poForm = new GeneratePurchaseOrderForm(userId, username);
         
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         poForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
         
-        // Make dashboard invisible while working with PO form
         this.setVisible(false);
         
-        // Show the PO form
         poForm.setVisible(true);
     }//GEN-LAST:event_btnGeneratePurchaseOrdersActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        // Confirm logout
         int confirm = JOptionPane.showConfirmDialog(
             this,
             "Are you sure you want to logout?",
@@ -259,29 +234,23 @@ public class PMDashboard extends javax.swing.JFrame {
             JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            // Close the current dashboard
             this.dispose();
 
-            // Open the login screen
             shared.frames.LoginScreen loginScreen = new shared.frames.LoginScreen();
             loginScreen.setVisible(true);
 
-            // Center the login screen on the display
             loginScreen.setLocationRelativeTo(null);
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnViewPurchaseOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewPurchaseOrdersActionPerformed
-        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(this);
+        ViewPurchaseOrder viewPOForm = new ViewPurchaseOrder(userId, username);
 
-        // Position it relative to the dashboard
         java.awt.Point dashboardLocation = this.getLocation();
         viewPOForm.setLocation(dashboardLocation.x + 50, dashboardLocation.y + 50);
 
-        // Make dashboard invisible while working with ViewPO form
         this.setVisible(false);
 
-        // Show the ViewPO form
         viewPOForm.setVisible(true);
     }//GEN-LAST:event_btnViewPurchaseOrdersActionPerformed
 

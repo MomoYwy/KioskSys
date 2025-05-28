@@ -9,3 +9,4 @@ SE0007,14/5/2025,16/8/2027,DrZus,1323124,G005,chocalate,5,processed
 SE0008,20/5/2025,22/8/2025,Jennie,123124155,E001,Scissors,10,processed
 SE0010,21/5/2025,28/5/2025,Leong Zi Ning,0198765432,G005,chocalate,5,processed
 SE0011,22/5/2025,31/5/2025,Ken,0125556666,G005,Chocalate,3,processed
+SE0012,28/5/2025,01/9/2029,Harpy,24634563456,E001,Scissors,10,unprocessed

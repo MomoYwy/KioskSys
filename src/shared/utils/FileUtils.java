@@ -238,7 +238,10 @@ public class FileUtils {
                         while ((line = reader.readLine()) != null) {
                             String[] parts = line.split(",");
                             if (parts.length >= expectedColumns) {
-                                model.addRow(rowMapper.apply(parts));
+                                Object[] row = rowMapper.apply(parts);
+                                if (row != null) {
+                                    model.addRow(row); 
+                                }
                             }
                         }
                     }
@@ -247,6 +250,7 @@ public class FileUtils {
                 throw new RuntimeException("Error loading data to table: " + e.getMessage(), e);
             }
         }
+
 
         public static void loadItemsToTable(String filePath, DefaultTableModel model) {
             loadDataToTable(filePath, model, parts -> new Object[]{

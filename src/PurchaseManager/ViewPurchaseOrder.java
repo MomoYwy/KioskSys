@@ -13,27 +13,29 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import shared.utils.PurchaseOrderUtils;
 import shared.frames.EditPurchaseOrderDialog;
+import PurchaseManager.PurchaseOrderService;
+import PurchaseManager.ServiceException;
+import shared.utils.SwingUtils;
 
 public class ViewPurchaseOrder extends javax.swing.JFrame {
-
-    private PMDashboard previousPMForm;
-    private AdminDashboard previousAdminForm;    
+       
     private TableRowSorter<DefaultTableModel> sorter;
+    private final PurchaseOrderService purchaseOrderService;   
+    private String userId;
+    private String username;    
     
-    public ViewPurchaseOrder() {
+    public ViewPurchaseOrder(String userId, String username) {
+        this.purchaseOrderService = new PurchaseOrderService();        
+        this.userId = userId;
+        this.username = username; 
         initComponents();
         setupTableListeners(); 
         loadPurchaseOrders();
+       
+        setTitle("View Purchase Order (Edit & Delete)"+ username + " (" + userId + ")");         
     }
-    public ViewPurchaseOrder(PMDashboard previousForm) {
-        this();
-        this.previousPMForm = previousForm;
-    }
+    
 
-    public ViewPurchaseOrder(AdminDashboard previousForm) {
-        this();
-        this.previousAdminForm = previousForm;
-    }    
     
 //add a constructor field to track if the edit was confirmed
     private boolean editConfirmed = false;
@@ -316,19 +318,13 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        // Modified to handle both types of previous forms
-        if (previousPMForm != null) {
-            previousPMForm.setVisible(true);
-        } else if (previousAdminForm != null) {
-            previousAdminForm.setVisible(true);
-        }
-        this.dispose();
+        SwingUtils.handleBackButton(this, userId, username);
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void EditPOButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditPOButtonActionPerformed
         int selectedRow = poTable.getSelectedRow();
         if (selectedRow < 0) {
-            return; // No row selected
+            return; 
         }
         
         // Convert to model index in case table is sorted/filtered
@@ -384,7 +380,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         int selectedRow = poTable.getSelectedRow();
         if (selectedRow < 0) {
-            return; // No row selected
+            return; 
         }
         
         // Convert to model index in case table is sorted/filtered
@@ -412,11 +408,11 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION);
             
             if (confirm == JOptionPane.YES_OPTION) {
-                // Delete the purchase order
-                boolean deleted = PurchaseOrderUtils.deletePurchaseOrder(poId);
+                // Delete using service
+                boolean deleted = purchaseOrderService.deletePurchaseOrder(poId);
                 
                 if (deleted) {
-                    // Also update the PR status back to PENDING
+                    // Update PR status back to PENDING (keep existing method - no changes to PR code)
                     PurchaseOrderUtils.updatePRStatus(prId, "Pending");
                     
                     JOptionPane.showMessageDialog(this,
@@ -433,7 +429,7 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this, 
                     "Error deleting Purchase Order: " + e.getMessage(),
                     "Error", 
@@ -486,7 +482,6 @@ public class ViewPurchaseOrder extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewPurchaseOrder().setVisible(true);
             }
         });
     }
