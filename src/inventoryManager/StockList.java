@@ -34,7 +34,7 @@ public class StockList extends javax.swing.JFrame {
         initComponents();
         this.previousAdminDashboard = previousAdminDashboard;
         this.sourceType = SourceType.ADMIN_DASHBOARD;
-        loadStockListToTable("cccc");
+        loadStockListToTable("src/database/stocklist.txt");
     }
     
     public StockList(IMDashboard previousIMDashboard) {

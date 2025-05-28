@@ -18,45 +18,6 @@ public class IMDashboard extends javax.swing.JFrame {
     private String userId;
     private String username;
 
-
-
-public class ReportGenerator {
-
-    public static void generateReportFromStocklist(JFrame parent) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save Inventory Report");
-        int userSelection = fileChooser.showSaveDialog(parent);
-
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File saveFile = fileChooser.getSelectedFile();
-
-            try (
-                BufferedReader reader = new BufferedReader(new FileReader("src/database/stocklist.txt"));
-                PrintWriter writer = new PrintWriter(saveFile)
-            ) {
-                writer.println("Inventory Report - " + java.time.LocalDate.now());
-                writer.println();
-                writer.printf("%-10s %-20s %-15s %-10s %-15s%n", "Item ID", "Item Name", "Category", "Quantity", "Status");
-                writer.println("--------------------------------------------------------------------------");
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
-                    if (parts.length >= 5) {
-                        writer.printf("%-10s %-20s %-15s %-10s %-15s%n", parts[0], parts[1], parts[2], parts[3], parts[4]);
-                    }
-                }
-
-                JOptionPane.showMessageDialog(parent, "Report generated: " + saveFile.getAbsolutePath());
-
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(parent, "Error generating report: " + e.getMessage());
-            }
-        }
-    }
-
-}
-    
     public IMDashboard(String userId, String username) {
         initComponents();
         this.userId = userId;
@@ -146,11 +107,14 @@ public class ReportGenerator {
         StockList stockListWindow = new StockList();
             stockListWindow.setVisible(true);
 
-            this.dispose();// TODO add your handling code here:
+            this.dispose();
     }//GEN-LAST:event_ViewStockActionPerformed
 
     private void GenerateStockReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateStockReportActionPerformed
-       IMDashboard.ReportGenerator.generateReportFromStocklist(this);// TODO add your handling code here:
+       GenerateReport GenerateReportWindow = new GenerateReport(this);
+        GenerateReportWindow.setVisible(true);
+        this.dispose();
+
     }//GEN-LAST:event_GenerateStockReportActionPerformed
 
     /**
