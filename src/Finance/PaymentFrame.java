@@ -2,7 +2,6 @@ package Finance;
 
 import admin.AdminDashboard;
 import javax.swing.JOptionPane;
-import java.awt.event.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,10 +12,8 @@ import java.io.IOException;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableCellRenderer;
-import shared.models.dataOperation;
 import java.util.HashSet;
 import java.util.Set;
-import shared.models.Payment;
 
 
 
@@ -145,39 +142,39 @@ public class PaymentFrame extends javax.swing.JFrame {
     });
 }
  
-private String generatePaymentId() {
-    // Format the Payment_ID as "PAY0001", "PAY0002", etc.
-    String paymentId = String.format("PAY%04d", paymentCounter++);
-    updateCounterInFile();  // Save the updated counter to the file
-    return paymentId;
-}
+    private String generatePaymentId() {
+        // Format the Payment_ID as "PAY0001", "PAY0002", etc.
+        String paymentId = String.format("PAY%04d", paymentCounter++);
+        updateCounterInFile();  // Save the updated counter to the file
+        return paymentId;
+    }
 
-private void readCounterFromFile() {
-    try {
-        File file = new File("src/database/payment_counter.txt"); // Path to store the counter
-        if (file.exists()) {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line = reader.readLine();
-            if (line != null) {
-                paymentCounter = Integer.parseInt(line.trim());
+    private void readCounterFromFile() {
+        try {
+            File file = new File("src/database/payment_counter.txt"); // Path to store the counter
+            if (file.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String line = reader.readLine();
+                if (line != null) {
+                    paymentCounter = Integer.parseInt(line.trim());
+                }
+                reader.close();
             }
-            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error reading payment counter file: " + e.getMessage());
         }
-    } catch (IOException e) {
-        System.out.println("Error reading payment counter file: " + e.getMessage());
     }
-}
 
-private void updateCounterInFile() {
-    try {
-        File file = new File("src/database/payment_counter.txt");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(String.valueOf(paymentCounter));
-        writer.close();
-    } catch (IOException e) {
-        System.out.println("Error writing payment counter to file: " + e.getMessage());
+    private void updateCounterInFile() {
+        try {
+            File file = new File("src/database/payment_counter.txt");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(String.valueOf(paymentCounter));
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing payment counter to file: " + e.getMessage());
+        }
     }
-}
 
 
 
