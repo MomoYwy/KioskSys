@@ -7,7 +7,6 @@ S004,Timmy,Chocolate,2,010331131,2,George Town|Pulao pinang|Penang|13123123
 S005,Polar,Banana,12,009990213,5,Taman Rinting|beringin|Malacca|12993
 S005,Polar,Papaya,4.0,009990213,5,Taman Rinting|beringin|Malacca|12993
 S006,Chiikawa,Socks,2.5,123123123,7,Uwawa|SomeWhere|Penang|78893
-S007,Adam,Cabbage(per kg),4.0,56788654,7,Street|City|Perlis|67568
 S008,Becca,Plushies,45.0,0192837465,3,Jalan ABC|Bukit Tinggi|Johor|81700
 S009,Charlie,Face Mask (20 Sheets/Box),8.0,0112223333,4,Jalan DEF|Mont. K Elegant|Kuala Lumpur|57770
 S001,Leong,Bread,3.0,0102233442,2,Sri Petaling|Bukit Jalil|Kuala Lumpur|57000
@@ -15,3 +14,4 @@ S002,Alibaba,Scissors,9.0,080123124,7,Alibaba in the house|Bukit Bintang|Kuala L
 S009,Charlie,Hand Sanitizer (10ml),3.0,0112223333,4,Jalan DEF|Mont. K Elegant|Kuala Lumpur|57770
 S005,Polar,Fish,20.0,009990213,5,Taman Rinting|beringin|Malacca|12993
 S010,Ophelia Tan,Maggie Curry Instant Cup Noodles,2.0,0187776666,1,Jalan Epal|Sri Petaling|Kuala Lumpur|57000
+    

@@ -23,6 +23,7 @@ public class FileUtils {
     public static final String RECORD_TYPE_PURCHASE_REQUISITION = "PURCHASE_REQUISITION";
     public static final String DEFAULT_STATUS = "pending"; 
     public static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
+    public static final String ITEMS_FILE = "src/database/items.txt";
    
     
 // This method is used to check if a txt file for the item is created or not
@@ -44,6 +45,53 @@ public class FileUtils {
             showErrorDialog("File Error",
                     "Failed to create file: " + filePath + "\nError: " + e.getMessage());
             return false;
+        }
+    }
+    
+     public static void removeItemSupplierId(String itemName, String supplierIdToRemove) throws IOException {
+        File originalFile = new File(ITEMS_FILE);
+        File tempFile = new File(ITEMS_FILE + ".tmp");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) { // Ensure enough parts for Item
+                    String currentItemId = parts[0];
+                    String currentItemName = parts[1];
+                    String currentSupplierId = parts[2];
+                    double currentPrice = Double.parseDouble(parts[3]);
+                    String currentCategory = parts[4];
+
+                    if (currentItemName.equalsIgnoreCase(itemName) && currentSupplierId.equals(supplierIdToRemove)) {
+                        // Remove the supplier ID. If no other suppliers, set to "null".
+                        // This logic assumes a single supplier ID per item for now.
+                        // If multiple supplier IDs are possible, this logic would need to be more complex.
+                        writer.write(String.join(",",
+                                currentItemId,
+                                currentItemName,
+                                "null", // Set supplier ID to null
+                                String.valueOf(currentPrice),
+                                currentCategory
+                        ));
+                    } else {
+                        writer.write(line);
+                    }
+                    writer.newLine();
+                } else {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        }
+
+        if (!originalFile.delete()) {
+            throw new IOException("Could not delete original items file");
+        }
+        if (!tempFile.renameTo(originalFile)) {
+            throw new IOException("Could not rename temp items file");
         }
     }
     

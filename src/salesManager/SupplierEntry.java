@@ -580,6 +580,7 @@ public class SupplierEntry extends javax.swing.JFrame {
         String supplierName = (String) jTable1.getValueAt(selectedRow, 1);
         String suppliedItem = (String) jTable1.getValueAt(selectedRow, 2);
 
+
         int confirm = JOptionPane.showConfirmDialog(this,
             "Are you sure you want to delete this supplier?\n\n" +
             "Supplier ID: " + supplierId + "\n" +
@@ -591,21 +592,24 @@ public class SupplierEntry extends javax.swing.JFrame {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
+                // Delete supplier from suppliers.txt
                 FileUtils.deleteFromFileByField(SUPPLIERS_FILE, 0, supplierId);
 
-                loadSuppliersToTable();
+                // Update the item in items.txt: remove supplierId and set to "null" if no other supplier
+                FileUtils.removeItemSupplierId(suppliedItem, supplierId);
+
+                loadSuppliersToTable(); // Reload supplier data
+                clearSupplierForm(); // Clear the form fields
 
                 JOptionPane.showMessageDialog(this,
-                    "Supplier deleted successfully!",
+                    "Supplier and associated item data updated successfully!",
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
-                clearSupplierForm();
-
             } catch (IOException ex) {
-                // Show error message if deletion fails
+                // Show error message if deletion/update fails
                 JOptionPane.showMessageDialog(this,
-                    "Error deleting supplier: " + ex.getMessage(),
+                    "Error deleting supplier or updating item: " + ex.getMessage(),
                     "Deletion Error",
                     JOptionPane.ERROR_MESSAGE);
             }
