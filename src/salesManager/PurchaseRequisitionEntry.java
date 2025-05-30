@@ -88,9 +88,10 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                     supplierNames.add(supplierData[1].trim());
                 }
             }
-            listSupplier.setListData(supplierNames.toArray(new String[0]));
+            // Set the text of the JLabel to display supplier names
+            listSupplier.setText(String.join(", ", supplierNames));
         } else {
-            listSupplier.setListData(new String[]{"Supplier Not Found"});
+            listSupplier.setText("Supplier Not Found");
         }
     }
 
@@ -118,7 +119,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         lblSHStockAmt.setText("");
         spQuantity.setValue(0);
         txtDateRequired.setText("");
-        listSupplier.clearSelection();
+        listSupplier.setText("");
     }
 
     
@@ -145,10 +146,9 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
         lblSHItemNm = new javax.swing.JLabel();
         lblSHStockAmt = new javax.swing.JLabel();
         txtDateRequired = new javax.swing.JTextField();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        listSupplier = new javax.swing.JList<>();
         spQuantity = new javax.swing.JSpinner();
         btnBack = new javax.swing.JButton();
+        listSupplier = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -238,14 +238,14 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
 
         txtDateRequired.setText("(DD/MM/YYYY)");
 
-        jScrollPane2.setViewportView(listSupplier);
-
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBackActionPerformed(evt);
             }
         });
+
+        listSupplier.setText("Supplier List");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -279,12 +279,11 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnViewList, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(33, 33, 33)))
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtDateRequired, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(spQuantity))))
-                .addContainerGap(139, Short.MAX_VALUE))
+                            .addComponent(spQuantity)
+                            .addComponent(listSupplier))))
+                .addContainerGap(157, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -319,9 +318,10 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblStockAmt)
                         .addComponent(lblSHStockAmt))
-                    .addComponent(lblSupplier)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblSupplier)
+                        .addComponent(listSupplier)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnViewList)
@@ -364,25 +364,26 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
             // Generate PR ID
             String prId = FileUtils.generatePurchaseRequisitionId(PR_FILE);
 
-            // Get all supplier IDs from the list
-            ListModel<String> supplierModel = listSupplier.getModel();
+            // Get supplier IDs for the selected item name
+            List<String> supplierLines = FileUtils.findLinesWithValue(SUPPLIERS_FILE, itemName);
             StringBuilder allSupplierIds = new StringBuilder();
 
-            for (int i = 0; i < supplierModel.getSize(); i++) {
-                String supplierName = supplierModel.getElementAt(i);
-                try {
-                    String supplierId = getSupplierIdByName(supplierName);
-                    if (i > 0) {
-                        allSupplierIds.append("|");
+            if (supplierLines != null && !supplierLines.isEmpty()) {
+                for (String supplierLine : supplierLines) {
+                    String[] supplierData = supplierLine.split(",");
+                    if (supplierData.length > 0) {
+                        if (allSupplierIds.length() > 0) {
+                            allSupplierIds.append("|");
+                        }
+                        allSupplierIds.append(supplierData[0].trim()); // Assuming supplier ID is the first part
                     }
-                    allSupplierIds.append(supplierId);
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(this,
-                        "Error getting ID for supplier: " + supplierName,
-                        "Database Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
                 }
+            } else {
+                 JOptionPane.showMessageDialog(this,
+                        "No suppliers found for item: " + itemName,
+                        "Data Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
 
             // Create PurchaseRequisition object
@@ -393,7 +394,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
                 stockAmount,
                 quantity,
                 dateRequired,
-                allSupplierIds.toString(), // Pass all supplier IDs as pipe-separated string
+                allSupplierIds.toString(), // Pass all found supplier IDs as pipe-separated string
                 userId
             );
 
@@ -495,7 +496,6 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblDateRequired;
     private javax.swing.JLabel lblFlaggedStock;
     private javax.swing.JLabel lblItemID;
@@ -507,7 +507,7 @@ public class PurchaseRequisitionEntry extends javax.swing.JFrame {
     private javax.swing.JLabel lblSHStockAmt;
     private javax.swing.JLabel lblStockAmt;
     private javax.swing.JLabel lblSupplier;
-    private javax.swing.JList<String> listSupplier;
+    private javax.swing.JLabel listSupplier;
     private javax.swing.JSpinner spQuantity;
     private javax.swing.JTable tblStockList;
     private javax.swing.JTextField txtDateRequired;
