@@ -504,7 +504,7 @@ public class ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
+       int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
                 "Please select an item to delete",
@@ -516,31 +516,41 @@ public class ItemEntry extends javax.swing.JFrame {
         // Get selected item data
         String itemId = (String) jTable1.getValueAt(selectedRow, 0);
         String itemName = (String) jTable1.getValueAt(selectedRow, 1);
+        String supplierId = (String) jTable1.getValueAt(selectedRow, 2); // Get supplier ID
 
-        // Confirmation dialog
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to delete:\n" + itemName + " (ID: " + itemId + ")",
-            "Confirm Deletion",
-            JOptionPane.YES_NO_OPTION);
+        // Check if supplierId is "null" or empty
+        if (supplierId == null || supplierId.trim().isEmpty() || supplierId.trim().equals("|")) { //
+            // Confirmation dialog
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete:\n" + itemName + " (ID: " + itemId + ")",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION);
 
-        if (confirm == JOptionPane.YES_OPTION) {
-            try {
-                // Use the reusable FileUtils method
-                FileUtils.deleteFromFileByField(ITEMS_FILE, 0, itemId);
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    // Use the reusable FileUtils method
+                    FileUtils.deleteFromFileByField(ITEMS_FILE, 0, itemId); //
 
-                // Refresh the table using the reusable TableUtils method
-                FileUtils.TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel());
+                    // Refresh the table using the reusable TableUtils method
+                    FileUtils.TableUtils.loadItemsToTable(ITEMS_FILE, (DefaultTableModel) jTable1.getModel()); //
 
-                JOptionPane.showMessageDialog(this,
-                    "Item deleted successfully",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Error deleting item: " + ex.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                        "Item deleted successfully",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        "Error deleting item: " + ex.getMessage(),
+                        "Database Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
+        } else {
+            // Inform the user that the item cannot be deleted because it has a supplier
+            JOptionPane.showMessageDialog(this,
+                "This item cannot be deleted because it is associated with a supplier (Supplier ID: " + supplierId + ").",
+                "Deletion Not Allowed",
+                JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
