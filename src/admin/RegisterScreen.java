@@ -189,8 +189,8 @@ public class RegisterScreen extends javax.swing.JFrame {
         String role = (String) cbRole.getSelectedItem();
 
         try {
-            // Generate role-specific ID
-            String userId = generateUserId(role);
+            // Generate role-specific ID using FileUtils.generateUserId
+            String userId = FileUtils.generateUserId(role); // Use the updated function from FileUtils
 
             // Check if username exists
             if (FileUtils.isUsernameTaken(USERS_FILE, username)) {

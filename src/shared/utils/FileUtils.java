@@ -24,6 +24,7 @@ public class FileUtils {
     public static final String DEFAULT_STATUS = "pending"; 
     public static final String SUPPLIERS_FILE = "src/database/suppliers.txt";
     public static final String ITEMS_FILE = "src/database/items.txt";
+    public static final String USERS_FILE = "src/database/users.txt";
    
     
 // This method is used to check if a txt file for the item is created or not
@@ -251,6 +252,23 @@ public class FileUtils {
                 prefix = "X";
         }
         return generateId(filePath, prefix, 3);
+    }
+    
+    public static String generateUserId(String role) { // Updated generateUserId function
+        String prefix = "";
+
+        // Determine prefix based on role
+        prefix = switch (role) {
+            case "ADMIN" -> "A";
+            case "SALES_MANAGER" -> "SM";
+            case "PURCHASE_MANAGER" -> "PM";
+            case "INVENTORY_MANAGER" -> "IM";
+            case "FINANCE_MANAGER" -> "FM";
+            default -> "U";
+        };
+
+        // Use the generateId function to create an ascending ID
+        return generateId(USERS_FILE, prefix, 3); // Calls generateId with USERS_FILE and a fixed length of 3
     }
 
     public static String generateSupplierId(String filePath) {
