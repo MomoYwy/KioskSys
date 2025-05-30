@@ -171,18 +171,19 @@ public class EditSupplier extends javax.swing.JFrame {
         String newItemName = tfNewItemName.getText().trim();
 
         try {
-            // Check if item exists in inventory
+            // Check if item exists in inventory and show warning if it doesn't
             if (!FileUtils.itemExistsByName("src/database/items.txt", newItemName)) {
                 int choice = JOptionPane.showConfirmDialog(this,
                     "Item '" + newItemName + "' doesn't exist in inventory.\n" +
-                    "Would you like to add it now?",
-                    "Add New Item",
+                    "Would you like to add it to inventory now? (No will still add the supplier)",
+                    "Item Not Found",
                     JOptionPane.YES_NO_OPTION);
 
                 if (choice == JOptionPane.YES_OPTION) {
                     openItemEntryScreen(newItemName);
-                    return; // Exit saving process
+                    return; // Exit saving process to add item first
                 }
+                // If NO is selected, continue with supplier creation
             }
 
             // Create Address object
@@ -223,7 +224,7 @@ public class EditSupplier extends javax.swing.JFrame {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
    private void openItemEntryScreen(String itemName) {
        ItemEntry itemEntry = new ItemEntry(userId, username);
        itemEntry.setItemName(itemName);
