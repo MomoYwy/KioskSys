@@ -141,12 +141,40 @@ public class ItemEntry extends javax.swing.JFrame {
                     "<b>Price:</b> RM" + String.format("%.2f", price) + "<br>" +
                     "<b>Category:</b> " + category + "</html>");
 
+            // Update stock list with the new item
+            updateStockListWithNewItem(itemId, name, category);
+
             loadItemsToTable();
             clearItemForm();
         }
     }
 
-        private void showSuccessMessage(String title, String message) {
+    private void updateStockListWithNewItem(String itemId, String itemName, String category) {
+        try {
+            // Create or update the stocklist.txt file
+            File stockFile = new File("src/database/stocklist.txt");
+            boolean fileExists = stockFile.exists();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stockFile, true))) {
+                // If file doesn't exist or is empty, write header
+                if (!fileExists || stockFile.length() == 0) {
+                    writer.write("Item ID,Item Name,Category,Quantity,Status");
+                    writer.newLine();
+                }
+
+                // Add new item with default values (quantity 0, status "low stock")
+                writer.write(itemId + "," + itemName + "," + category + ",0,low stock");
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error updating stock list: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+        
+    private void showSuccessMessage(String title, String message) {
             JOptionPane.showMessageDialog(this, 
                 message, 
                 title, 
